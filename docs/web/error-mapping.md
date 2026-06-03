@@ -156,12 +156,67 @@ For ordinary exceptions:
 
 ## `ToHttpResult()` and 401/403
 
-`ResultHttpExtensions.ToHttpResult()` uses the mapper to find the status, but it does not return an envelope in all cases:
+`ResultHttpExtensions.ToHttpResult()` (Minimal APIs) uses the mapper to find the status, but it does not return an envelope in all cases:
 
 - `401` becomes `Results.Unauthorized()`
 - `403` becomes `Results.Forbid()`
 
 That is, in these two cases the HTTP protocol speaks for itself and the body is not built by the helper.
+
+The MVC helper `ToActionResult()` behaves differently: it **does** return the envelope for `401`/`403` and injects a `traceId`. See [result-extensions.md](./result-extensions.md#toactionresult-vs-tohttpresult).
+
+## Auth challenge/forbidden responses (401/403)
+
+The helpers above only run for failures that reach your action/endpoint. When the
+**authentication middleware** rejects a request (missing/invalid token, or an
+authenticated user lacking permission), JwtBearer short-circuits with a bodiless
+`401`/`403` before the action runs — so neither the wrapping filters nor
+`ToActionResult()` get a chance to produce the envelope.
+
+`Pottmayer.Tars.Security.Identity.AspNetCore` ships an opt-in helper that closes
+this gap by wiring JwtBearer's `OnChallenge`/`OnForbidden` events to emit the same
+`HttpErrorResponse` envelope, resolved through the registered `IHttpErrorMapper`:
+
+```csharp
+using Pottmayer.Tars.Core.Primitives.Outcomes;
+using Pottmayer.Tars.Security.Identity.AspNetCore.DI;
+
+builder.Services.AddAuthentication()
+    .AddJwtBearer(options =>
+    {
+        options.ConfigureTarsIdentityJwtBearerEvents();           // token reading
+        options.ConfigureTarsIdentityProblemResponses(            // 401/403 envelope
+            unauthorizedError: Error.Unauthorized("Auth.NotAuthenticated", "Authentication required."),
+            forbiddenError:    Error.Forbidden("Auth.AccessDenied", "Access denied."));
+    });
+```
+
+Both arguments are optional; they default to `Error.Unauthorized("UNAUTHORIZED", "")`
+and `Error.Forbidden("FORBIDDEN", "")`. Because the body is built by the registered
+`IHttpErrorMapper`, the `errorCode` is the `Error.Code` you pass and the
+`errorMessage` is resolved exactly like any other error — including localization when
+the mapper is backed by an `IMessageProvider` (use the code as the message key, or
+pass a non-empty message as the fallback).
+
+Resulting body for an unauthenticated request to a protected endpoint:
+
+```json
+{
+  "success": false,
+  "errorCode": "Auth.NotAuthenticated",
+  "errorMessage": "Authentication required.",
+  "fieldErrors": null,
+  "traceId": "00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01"
+}
+```
+
+Notes:
+
+- The helper preserves any handler already set on `JwtBearerEvents` (e.g. the
+  `OnMessageReceived` wired by `ConfigureTarsIdentityJwtBearerEvents`); only
+  `OnChallenge` and `OnForbidden` are assigned.
+- `OnChallenge` calls `HandleResponse()` so the default empty `401` is suppressed.
+- If the response has already started, the helper writes nothing.
 
 ## Custom mapper
 

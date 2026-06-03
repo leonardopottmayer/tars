@@ -153,3 +153,4 @@ For multi-instance production, implement the store contracts (e.g. Redis, relati
 - [Endpoints — built-in and custom](./endpoints.md)
 - [Token delivery (header, cookie, hybrid)](./token-delivery.md)
 - [OAuth and external providers](./oauth.md)
+- [Standardizing 401/403 auth responses (`ConfigureTarsIdentityProblemResponses`)](../../web/error-mapping.md#auth-challengeforbidden-responses-401403)

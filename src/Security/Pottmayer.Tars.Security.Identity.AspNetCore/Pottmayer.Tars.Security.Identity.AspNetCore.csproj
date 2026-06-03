@@ -17,6 +17,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Pottmayer.Tars.Security.Identity\Pottmayer.Tars.Security.Identity.csproj" />
+    <ProjectReference Include="..\..\Core\Pottmayer.Tars.Core.Primitives\Pottmayer.Tars.Core.Primitives.csproj" />
+    <ProjectReference Include="..\..\Web\Pottmayer.Tars.Web.Http\Pottmayer.Tars.Web.Http.csproj" />
   </ItemGroup>
 
 </Project>

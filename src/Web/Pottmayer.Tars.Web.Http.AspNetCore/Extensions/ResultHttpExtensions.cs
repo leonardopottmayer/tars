@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Pottmayer.Tars.Core.Primitives.Outcomes;
@@ -10,51 +11,51 @@ public static class ResultHttpExtensions
     public static IActionResult ToActionResult<T>(this Result<T> result, IHttpErrorMapper mapper)
         where T : notnull
     {
+        var traceId = ResolveTraceId();
+
         if (result.IsSuccess)
-            return new OkObjectResult(new HttpResponse<T> { Success = true, Data = result.Value });
+            return new OkObjectResult(new HttpResponse<T> { Success = true, Data = result.Value, TraceId = traceId });
 
-        var first = result.Errors.FirstOrDefault();
-        if (first is null)
-            return new StatusCodeResult(500);
-
-        var statusCode = mapper.MapToStatusCode(first.Type);
-        var response   = mapper.Map(first);
-
-        return statusCode switch
-        {
-            400 => new BadRequestObjectResult(response),
-            401 => new UnauthorizedResult(),
-            403 => new ForbidResult(),
-            404 => new NotFoundObjectResult(response),
-            409 => new ConflictObjectResult(response),
-            422 => new UnprocessableEntityObjectResult(response),
-            _   => new ObjectResult(first.Message) { StatusCode = statusCode }
-        };
+        return BuildErrorActionResult(result.Errors, mapper, traceId);
     }
 
     public static IActionResult ToActionResult(this Result result, IHttpErrorMapper mapper)
     {
-        if (result.IsSuccess)
-            return new OkObjectResult(new HttpResponse<object?> { Success = true, Data = null });
+        var traceId = ResolveTraceId();
 
-        var first = result.Errors.FirstOrDefault();
+        if (result.IsSuccess)
+            return new OkObjectResult(new HttpResponse<object?> { Success = true, Data = null, TraceId = traceId });
+
+        return BuildErrorActionResult(result.Errors, mapper, traceId);
+    }
+
+    private static IActionResult BuildErrorActionResult(
+        IReadOnlyList<Error> errors, IHttpErrorMapper mapper, string? traceId)
+    {
+        var first = errors.FirstOrDefault();
         if (first is null)
-            return new StatusCodeResult(500);
+            return new ObjectResult(new HttpErrorResponse { Success = false, ErrorCode = "ERROR", TraceId = traceId })
+            {
+                StatusCode = 500
+            };
 
         var statusCode = mapper.MapToStatusCode(first.Type);
-        var response   = mapper.Map(first);
+        var mapped     = mapper.Map(first);
 
-        return statusCode switch
+        var response = new HttpErrorResponse
         {
-            400 => new BadRequestObjectResult(response),
-            401 => new UnauthorizedResult(),
-            403 => new ForbidResult(),
-            404 => new NotFoundObjectResult(response),
-            409 => new ConflictObjectResult(response),
-            422 => new UnprocessableEntityObjectResult(response),
-            _   => new ObjectResult(first.Message) { StatusCode = statusCode }
+            Success      = false,
+            ErrorCode    = mapped.ErrorCode,
+            ErrorMessage = mapped.ErrorMessage,
+            FieldErrors  = mapped.FieldErrors,
+            TraceId      = traceId
         };
+
+        return new ObjectResult(response) { StatusCode = statusCode };
     }
+
+    internal static string? ResolveTraceId()
+        => Activity.Current?.TraceId.ToHexString() is { Length: > 0 } id ? id : null;
 
 
     public static IResult ToHttpResult<T>(this Result<T> result, IHttpErrorMapper mapper)

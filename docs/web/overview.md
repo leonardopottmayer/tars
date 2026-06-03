@@ -23,7 +23,7 @@ The `Web` family covers the framework's HTTP presentation layer:
 - [http.md](./http.md) - packages, DI, options, appsettings and complete scenarios
 - [error-mapping.md](./error-mapping.md) - `IHttpErrorMapper`, messages, `TarsExceptionFilter`
 - [response-wrapping.md](./response-wrapping.md) - wrapping in controllers and Minimal APIs
-- [result-extensions.md](./result-extensions.md) - `ToHttpResult()` and `WritePaginationHeaders()`
+- [result-extensions.md](./result-extensions.md) - `ToActionResult()` (MVC), `ToHttpResult()` (Minimal API) and `WritePaginationHeaders()`
 - [../core/localization.md](../core/localization.md) - the message base used by the default mapper
 
 ## Minimal registration

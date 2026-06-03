@@ -27,6 +27,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Web\Pottmayer.Tars.Web.Http.Abstractions\Pottmayer.Tars.Web.Http.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\Web\Pottmayer.Tars.Web.Http\Pottmayer.Tars.Web.Http.csproj" />
+    <ProjectReference Include="..\..\src\Web\Pottmayer.Tars.Web.Http.AspNetCore\Pottmayer.Tars.Web.Http.AspNetCore.csproj" />
   </ItemGroup>
 
 </Project>
