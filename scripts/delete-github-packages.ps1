@@ -1,4 +1,4 @@
-[CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
+[CmdletBinding(SupportsShouldProcess = $true)]
 param(
     [Parameter(Mandatory = $true)]
     [string]$Token,
@@ -23,7 +23,7 @@ param(
 $ErrorActionPreference = "Stop"
 
 $apiBaseUrl = "https://api.github.com"
-$apiVersion = "2026-03-10"
+$apiVersion = "2022-11-28"
 $pageSize = 100
 
 function Get-AuthHeaders {
@@ -47,38 +47,42 @@ function Get-ScopePath {
     return "/user$ResourceSuffix"
 }
 
-function Invoke-GitHubJson {
+function Invoke-GitHubGet {
     param(
-        [Parameter(Mandatory = $true)]
-        [ValidateSet("GET", "DELETE")]
-        [string]$Method,
-
         [Parameter(Mandatory = $true)]
         [string]$Path
     )
 
-    $uri = "$apiBaseUrl$Path"
-    $headers = Get-AuthHeaders
+    return Invoke-RestMethod -Method Get -Uri "$apiBaseUrl$Path" -Headers (Get-AuthHeaders)
+}
 
-    if ($Method -eq "GET") {
-        return Invoke-RestMethod -Method Get -Uri $uri -Headers $headers
-    }
+function Invoke-GitHubDelete {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Path
+    )
 
-    Invoke-WebRequest -Method Delete -Uri $uri -Headers $headers | Out-Null
+    # Invoke-RestMethod (not Invoke-WebRequest) so DELETE never blocks on an
+    # interactive prompt under -NonInteractive.
+    Invoke-RestMethod -Method Delete -Uri "$apiBaseUrl$Path" -Headers (Get-AuthHeaders) | Out-Null
 }
 
 function Get-AllPackages {
-    $packages = @()
+    $all = @()
     $page = 1
 
     do {
         $path = Get-ScopePath "/packages?package_type=$PackageType&per_page=$pageSize&page=$page"
-        $currentPage = @(Invoke-GitHubJson -Method GET -Path $path)
-        $packages += $currentPage
+        # Assign to a variable first: Invoke-RestMethod emits a JSON array as a
+        # single object, so @($response) flattens it but @(Invoke-GitHubGet ...)
+        # would keep the whole page nested as one element.
+        $response = Invoke-GitHubGet -Path $path
+        $currentPage = @($response)
+        $all += $currentPage
         $page++
     } while ($currentPage.Count -eq $pageSize)
 
-    return $packages
+    return $all
 }
 
 function Get-PackageVersions {
@@ -93,12 +97,34 @@ function Get-PackageVersions {
 
     do {
         $path = Get-ScopePath "/packages/$PackageType/$encodedPackageName/versions?per_page=$pageSize&page=$page"
-        $currentPage = @(Invoke-GitHubJson -Method GET -Path $path)
+        $response = Invoke-GitHubGet -Path $path
+        $currentPage = @($response)
         $versions += $currentPage
         $page++
     } while ($currentPage.Count -eq $pageSize)
 
     return $versions
+}
+
+function Test-PackageSelected {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Name
+    )
+
+    if ($Prefix -ne "" -and $Name -notlike "$Prefix*") {
+        return $false
+    }
+
+    if ($IncludePackages.Count -gt 0 -and $IncludePackages -notcontains $Name) {
+        return $false
+    }
+
+    if ($ExcludePackages.Count -gt 0 -and $ExcludePackages -contains $Name) {
+        return $false
+    }
+
+    return $true
 }
 
 function Test-VersionIncluded {
@@ -126,9 +152,7 @@ function Remove-Package {
     )
 
     $encodedPackageName = [Uri]::EscapeDataString($PackageName)
-    $path = Get-ScopePath "/packages/$PackageType/$encodedPackageName"
-
-    Invoke-GitHubJson -Method DELETE -Path $path
+    Invoke-GitHubDelete -Path (Get-ScopePath "/packages/$PackageType/$encodedPackageName")
 }
 
 function Remove-PackageVersion {
@@ -141,44 +165,32 @@ function Remove-PackageVersion {
     )
 
     $encodedPackageName = [Uri]::EscapeDataString($PackageName)
-    $path = Get-ScopePath "/packages/$PackageType/$encodedPackageName/versions/$PackageVersionId"
-
-    Invoke-GitHubJson -Method DELETE -Path $path
-}
-
-function Test-ShouldProcess {
-    param(
-        [Parameter(Mandatory = $true)]
-        [string]$Target,
-
-        [Parameter(Mandatory = $true)]
-        [string]$Action
-    )
-
-    if ($null -eq $PSCmdlet) {
-        return $true
-    }
-
-    return $PSCmdlet.ShouldProcess($Target, $Action)
+    Invoke-GitHubDelete -Path (Get-ScopePath "/packages/$PackageType/$encodedPackageName/versions/$PackageVersionId")
 }
 
 Write-Host "Listing '$PackageType' packages from GitHub Packages ($($Scope): $Owner)..." -ForegroundColor Cyan
 
-$packages = Get-AllPackages |
-    Where-Object {
-        ($Prefix -eq "" -or $_.name -like "$Prefix*") -and
-        ($IncludePackages.Count -eq 0 -or $IncludePackages -contains $_.name) -and
-        ($ExcludePackages.Count -eq 0 -or $ExcludePackages -notcontains $_.name)
-    } |
-    Sort-Object name
+# Materialize the full list first, then filter explicitly. Filtering a streamed
+# function pipeline directly proved unreliable here.
+$allPackages = @(Get-AllPackages)
 
-if (-not $packages) {
+$packages = @(
+    $allPackages |
+        Where-Object { Test-PackageSelected -Name ([string]$_.name) } |
+        Sort-Object name
+)
+
+if ($packages.Count -eq 0) {
     Write-Host "No matching packages found." -ForegroundColor Yellow
     exit 0
 }
 
+if ($Prefix -ne "") {
+    Write-Host "Filter: package name starts with '$Prefix'" -ForegroundColor DarkGray
+}
+
 Write-Host ""
-Write-Host "Packages selected:" -ForegroundColor Green
+Write-Host "Packages selected ($($packages.Count)):" -ForegroundColor Green
 $packages | ForEach-Object {
     Write-Host " - $($_.name)"
 }
@@ -212,7 +224,7 @@ foreach ($package in $packages) {
             $versionLabel = if ($version.name) { $version.name } else { $version.id }
             $target = "$packageName version $versionLabel"
 
-            if (Test-ShouldProcess -Target $target -Action "Delete package version") {
+            if ($PSCmdlet.ShouldProcess($target, "Delete package version")) {
                 Write-Host ""
                 Write-Host "Deleting $target" -ForegroundColor Cyan
                 Remove-PackageVersion -PackageName $packageName -PackageVersionId ([long]$version.id)
@@ -222,7 +234,7 @@ foreach ($package in $packages) {
         continue
     }
 
-    if (Test-ShouldProcess -Target $packageName -Action "Delete package") {
+    if ($PSCmdlet.ShouldProcess($packageName, "Delete package")) {
         Write-Host ""
         Write-Host "Deleting package $packageName" -ForegroundColor Cyan
         Remove-Package -PackageName $packageName
