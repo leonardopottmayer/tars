@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <RootNamespace>Pottmayer.Tars.Core.Tests.Unit</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" Version="6.0.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="FluentAssertions" Version="8.4.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.2" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Core\Pottmayer.Tars.Core.Primitives\Pottmayer.Tars.Core.Primitives.csproj" />
+    <ProjectReference Include="..\..\src\Core\Pottmayer.Tars.Core.Mediator.Abstractions\Pottmayer.Tars.Core.Mediator.Abstractions.csproj" />
+    <ProjectReference Include="..\..\src\Core\Pottmayer.Tars.Core.Mediator\Pottmayer.Tars.Core.Mediator.csproj" />
+    <ProjectReference Include="..\..\src\Core\Pottmayer.Tars.Core.Cqrs\Pottmayer.Tars.Core.Cqrs.csproj" />
+    <ProjectReference Include="..\..\src\Core\Pottmayer.Tars.Core.Localization.Abstractions\Pottmayer.Tars.Core.Localization.Abstractions.csproj" />
+    <ProjectReference Include="..\..\src\Core\Pottmayer.Tars.Core.Localization\Pottmayer.Tars.Core.Localization.csproj" />
+  </ItemGroup>
+
+</Project>

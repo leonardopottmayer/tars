@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Pottmayer.Tars.Core.Localization.AspNetCore</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Pottmayer.Tars.Core.Localization\Pottmayer.Tars.Core.Localization.csproj" />
+    <ProjectReference Include="..\Pottmayer.Tars.Core.Localization.Abstractions\Pottmayer.Tars.Core.Localization.Abstractions.csproj" />
+  </ItemGroup>
+</Project>

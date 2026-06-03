@@ -1,0 +1,171 @@
+<Project>
+  <PropertyGroup>
+    <Version>0.0.1</Version>
+    <PackageVersion>0.0.1</PackageVersion>
+    <AssemblyVersion>$(Version).0</AssemblyVersion>
+    <FileVersion>$(Version).0</FileVersion>
+    <InformationalVersion>$(Version)</InformationalVersion>
+    <Authors>Leonardo Gian Pottmayer</Authors>
+    <Company>Pottmayer</Company>
+    <Copyright>Copyright (c) 2026 Leonardo Gian Pottmayer. All rights reserved.</Copyright>
+    <RepositoryUrl>https://github.com/leonardopottmayer/tars</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageProjectUrl>https://github.com/leonardopottmayer/tars</PackageProjectUrl>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageTags>pottmayer;tars;dotnet;aspnetcore;ddd;cqrs;mediator;data;security;caching</PackageTags>
+  </PropertyGroup>
+
+  <Choose>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Multitenancy.Abstractions'">
+      <PropertyGroup>
+        <Description>Multitenancy abstractions for tenant resolution, context, catalog and execution runners in the Pottmayer.Tars framework.</Description>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Multitenancy'">
+      <PropertyGroup>
+        <Description>Multitenancy implementations including tenant resolvers (subdomain, header, claim, static, composite), context, catalog and execution helpers for the Pottmayer.Tars framework.</Description>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Multitenancy.AspNetCore'">
+      <PropertyGroup>
+        <Description>ASP.NET Core middleware for tenant resolution pipeline integration in the Pottmayer.Tars framework.</Description>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Caching.Abstractions'">
+      <PropertyGroup>
+        <Description>Abstractions for the Pottmayer.Tars caching stack, including cache service, serialization, key building and entry options.</Description>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Caching.Core'">
+      <PropertyGroup>
+        <Description>Core caching services and default implementations for the Pottmayer.Tars framework.</Description>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Caching.Memory'">
+      <PropertyGroup>
+        <Description>In-memory caching provider for the Pottmayer.Tars framework.</Description>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Caching.Redis'">
+      <PropertyGroup>
+        <Description>Redis caching provider for the Pottmayer.Tars framework.</Description>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Core.Cqrs'">
+      <PropertyGroup>
+        <Description>CQRS abstractions and behaviors for the Pottmayer.Tars framework.</Description>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Core.Ddd'">
+      <PropertyGroup>
+        <Description>DDD building blocks such as entities, aggregate roots and domain event contracts for the Pottmayer.Tars framework.</Description>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Core.Mediator.Abstractions'">
+      <PropertyGroup>
+        <Description>Mediator abstractions and pipeline contracts for the Pottmayer.Tars framework.</Description>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Core.Mediator'">
+      <PropertyGroup>
+        <Description>Mediator implementation and dependency injection helpers for the Pottmayer.Tars framework.</Description>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Core.Primitives'">
+      <PropertyGroup>
+        <Description>Core primitives such as result, error and optional types for the Pottmayer.Tars framework.</Description>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Data.Abstractions'">
+      <PropertyGroup>
+        <Description>Provider-agnostic data abstractions for the Pottmayer.Tars framework: repository contracts, unit of work, data context, keys and query models.</Description>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Data.Relational.Abstractions'">
+      <PropertyGroup>
+        <Description>Relational data abstractions for the Pottmayer.Tars framework: connection descriptors and resolvers, context factory, multi-database coordination and tenant connection/schema providers.</Description>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Data.Relational'">
+      <PropertyGroup>
+        <Description>Relational data provider for the Pottmayer.Tars framework on EF Core + Dapper: RelationalDbContext, unit of work, standard repository base, QueryParams translation, configuration-based connection resolution, multi-database coordination and DI helpers.</Description>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Core.Localization.Abstractions'">
+      <PropertyGroup>
+        <Description>Localization abstractions for the Pottmayer.Tars framework: IMessageProvider and IMessageSource contracts.</Description>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Core.Localization'">
+      <PropertyGroup>
+        <Description>Localization runtime for Pottmayer.Tars: CompositeMessageProvider, InMemoryMessageSource and ResourceManagerMessageSource.</Description>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Core.Localization.AspNetCore'">
+      <PropertyGroup>
+        <Description>ASP.NET Core localization integration for Pottmayer.Tars: request localization middleware setup and IStringLocalizer adapter.</Description>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Web.Http.Abstractions'">
+      <PropertyGroup>
+        <Description>HTTP web abstractions for the Pottmayer.Tars framework: response envelope contracts, error mapper, wrap decision and pagination info.</Description>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Web.Http'">
+      <PropertyGroup>
+        <Description>HTTP web runtime for Pottmayer.Tars: response models, default error mapper, wrap decision service and options. Has no dependency on ASP.NET Core.</Description>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Web.Http.AspNetCore'">
+      <PropertyGroup>
+        <Description>ASP.NET Core HTTP integration for Pottmayer.Tars: exception filter, MVC result filter, Minimal API endpoint filter, Result extensions and response wrapper attributes.</Description>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Security.Identity.Abstractions'">
+      <PropertyGroup>
+        <Description>Identity and token-related abstractions for authentication flows in the Pottmayer.Tars framework.</Description>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Security.Identity'">
+      <PropertyGroup>
+        <Description>Identity core services: JWT issuance and validation, refresh tokens, revocation, magic link and token delivery policy for the Pottmayer.Tars framework. Has no dependency on ASP.NET Core.</Description>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Security.Identity.AspNetCore'">
+      <PropertyGroup>
+        <Description>ASP.NET Core adapter for Pottmayer.Tars Identity: token readers and writers for header/cookie transport, JwtBearer integration, API key authentication handler and Minimal API endpoint mapping.</Description>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.UserContext.Abstractions'">
+      <PropertyGroup>
+        <Description>User context abstractions for resolving and accessing the current user in the Pottmayer.Tars framework.</Description>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.UserContext'">
+      <PropertyGroup>
+        <Description>User context core services: claims resolver, context factory, accessor and options. Has no dependency on ASP.NET Core.</Description>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.UserContext.AspNetCore'">
+      <PropertyGroup>
+        <Description>ASP.NET Core adapter for Pottmayer.Tars UserContext: HttpContext-based principal accessor and its DI registration.</Description>
+      </PropertyGroup>
+    </When>
+    <Otherwise>
+      <PropertyGroup>
+        <Description>Reusable building blocks for the Pottmayer.Tars framework.</Description>
+      </PropertyGroup>
+    </Otherwise>
+  </Choose>
+
+  <ItemGroup Condition="Exists('$(MSBuildThisFileDirectory)README.md')">
+    <None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath="\" Visible="false" />
+  </ItemGroup>
+
+  <ItemGroup Condition="Exists('$(MSBuildThisFileDirectory)LICENSE')">
+    <None Include="$(MSBuildThisFileDirectory)LICENSE" Pack="true" PackagePath="\" Visible="false" />
+  </ItemGroup>
+</Project>

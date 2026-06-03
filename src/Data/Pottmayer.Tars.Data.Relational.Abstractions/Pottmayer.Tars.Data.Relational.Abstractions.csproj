@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\Pottmayer.Tars.Core.Ddd\Pottmayer.Tars.Core.Ddd.csproj" />
+    <ProjectReference Include="..\Pottmayer.Tars.Data.Abstractions\Pottmayer.Tars.Data.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

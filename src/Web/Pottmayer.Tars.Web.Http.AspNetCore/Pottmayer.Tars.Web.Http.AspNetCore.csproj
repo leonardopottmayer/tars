@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Pottmayer.Tars.Web.Http.AspNetCore</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Pottmayer.Tars.Web.Http\Pottmayer.Tars.Web.Http.csproj" />
+    <ProjectReference Include="..\Pottmayer.Tars.Web.Http.Abstractions\Pottmayer.Tars.Web.Http.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Core\Pottmayer.Tars.Core.Primitives\Pottmayer.Tars.Core.Primitives.csproj" />
+  </ItemGroup>
+</Project>

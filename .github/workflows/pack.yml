@@ -1,0 +1,51 @@
+name: Pack
+
+on:
+  workflow_dispatch:
+    inputs:
+      push_to_nuget:
+        description: 'Push packages to NuGet.org'
+        required: false
+        default: 'false'
+        type: boolean
+
+concurrency:
+  group: pack-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pack:
+    name: Pack NuGet Packages
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.x'
+
+      - name: Restore
+        run: dotnet restore Pottmayer.Tars.slnx
+
+      - name: Build
+        run: dotnet build Pottmayer.Tars.slnx --no-restore --configuration Release
+
+      - name: Test
+        run: dotnet test Pottmayer.Tars.slnx --no-build --configuration Release --verbosity normal
+
+      - name: Pack
+        run: dotnet pack Pottmayer.Tars.slnx --no-build --configuration Release --output ./artifacts
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-packages
+          path: ./artifacts/*.nupkg
+          retention-days: 7
+
+      - name: Push to NuGet
+        if: ${{ inputs.push_to_nuget == 'true' }}
+        run: dotnet nuget push ./artifacts/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
