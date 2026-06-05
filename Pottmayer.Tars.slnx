@@ -6,6 +6,11 @@
     <Project Path="src/Caching/Pottmayer.Tars.Caching.Redis/Pottmayer.Tars.Caching.Redis.csproj" Id="70496df9-17d1-436e-abb7-8abf6f81a807" />
     <Project Path="src/Caching/Pottmayer.Tars.Caching.Core/Pottmayer.Tars.Caching.Core.csproj" Id="4c830547-3582-4ecc-83d0-2538be5e9ac2" />
   </Folder>
+  <Folder Name="/src/Communication/">
+    <Project Path="src/Communication/Pottmayer.Tars.Communication.Email.Abstractions/Pottmayer.Tars.Communication.Email.Abstractions.csproj" Id="c0a1b2c3-d4e5-4f6a-8b9c-0d1e2f3a4c01" />
+    <Project Path="src/Communication/Pottmayer.Tars.Communication.Email/Pottmayer.Tars.Communication.Email.csproj" Id="c0a1b2c3-d4e5-4f6a-8b9c-0d1e2f3a4c02" />
+    <Project Path="src/Communication/Pottmayer.Tars.Communication.Email.MailKit/Pottmayer.Tars.Communication.Email.MailKit.csproj" Id="c0a1b2c3-d4e5-4f6a-8b9c-0d1e2f3a4c03" />
+  </Folder>
   <Folder Name="/src/Core/">
     <Project Path="src/Core/Pottmayer.Tars.Core.Cqrs/Pottmayer.Tars.Core.Cqrs.csproj" Id="7eff268f-71cf-45e1-b4a4-2d6726e375ff" />
     <Project Path="src/Core/Pottmayer.Tars.Core.Ddd/Pottmayer.Tars.Core.Ddd.csproj" Id="119f929c-e28f-4c28-9a4f-5013a46baa65" />
@@ -49,6 +54,7 @@
     <Project Path="tests/Pottmayer.Tars.Core.Tests.Unit/Pottmayer.Tars.Core.Tests.Unit.csproj" />
     <Project Path="tests/Pottmayer.Tars.Caching.Tests.Unit/Pottmayer.Tars.Caching.Tests.Unit.csproj" />
     <Project Path="tests/Pottmayer.Tars.Messaging.Tests.Unit/Pottmayer.Tars.Messaging.Tests.Unit.csproj" />
+    <Project Path="tests/Pottmayer.Tars.Communication.Tests.Unit/Pottmayer.Tars.Communication.Tests.Unit.csproj" />
     <Project Path="tests/Pottmayer.Tars.Data.Tests.Unit/Pottmayer.Tars.Data.Tests.Unit.csproj" />
     <Project Path="tests/Pottmayer.Tars.Multitenancy.Tests.Unit/Pottmayer.Tars.Multitenancy.Tests.Unit.csproj" />
     <Project Path="tests/Pottmayer.Tars.Web.Tests.Unit/Pottmayer.Tars.Web.Tests.Unit.csproj" />

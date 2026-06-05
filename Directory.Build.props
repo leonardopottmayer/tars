@@ -54,6 +54,21 @@
         <Description>Redis caching provider for the Pottmayer.Tars framework.</Description>
       </PropertyGroup>
     </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Communication.Email.Abstractions'">
+      <PropertyGroup>
+        <Description>Transport-agnostic e-mail abstractions for the Pottmayer.Tars framework: IEmailSender contract, EmailMessage and delivery result.</Description>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Communication.Email'">
+      <PropertyGroup>
+        <Description>Base e-mail sending for the Pottmayer.Tars framework: logging (fake) IEmailSender and its DI registration. Swap-in seam for a real SMTP provider.</Description>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Communication.Email.MailKit'">
+      <PropertyGroup>
+        <Description>MailKit-backed SMTP e-mail provider for the Pottmayer.Tars framework: IEmailSender implementation, SMTP options and DI registration.</Description>
+      </PropertyGroup>
+    </When>
     <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Core.Cqrs'">
       <PropertyGroup>
         <Description>CQRS abstractions and behaviors for the Pottmayer.Tars framework.</Description>
