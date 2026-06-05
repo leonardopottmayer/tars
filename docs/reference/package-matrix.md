@@ -28,6 +28,21 @@ See [taxonomy.md](./taxonomy.md) for the complete definition of the levels and c
 | `Pottmayer.Tars.Caching.Memory` | Provider | Optional | provider over `IMemoryCache` |
 | `Pottmayer.Tars.Caching.Redis` | Provider | Optional | Redis provider and connection options |
 
+## Messaging
+
+| Project | Level | Classification | Role |
+|---|---|---|---|
+| `Pottmayer.Tars.Messaging.Abstractions` | Abstractions | Optional | integration messaging contracts: `IIntegrationEvent`, `IIntegrationEventBus`, `IIntegrationEventHandler<T>`, `IntegrationEventNameAttribute` |
+| `Pottmayer.Tars.Messaging` | Runtime | Optional | `InProcessIntegrationEventBus`, handler scanning, DI registration |
+
+## Communication
+
+| Project | Level | Classification | Role |
+|---|---|---|---|
+| `Pottmayer.Tars.Communication.Email.Abstractions` | Abstractions | Optional | e-mail contracts: `IEmailSender`, `EmailMessage`, `EmailDeliveryResult` |
+| `Pottmayer.Tars.Communication.Email` | Runtime | Optional | `LoggingEmailSender` (fake) and DI registration |
+| `Pottmayer.Tars.Communication.Email.MailKit` | Provider | Optional | SMTP provider over MailKit, `MailKitEmailOptions`, DI helpers |
+
 ## Data — Shared contracts
 
 | Project | Level | Classification | Role |
