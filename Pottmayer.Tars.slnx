@@ -21,6 +21,10 @@
     <Project Path="src/Data/Pottmayer.Tars.Data.Relational.Abstractions/Pottmayer.Tars.Data.Relational.Abstractions.csproj" Id="c1d2e3f4-a5b6-4c7d-8e9f-0a1b2c3d4e5f" />
     <Project Path="src/Data/Pottmayer.Tars.Data.Relational/Pottmayer.Tars.Data.Relational.csproj" Id="d2e3f4a5-b6c7-4d8e-9f0a-1b2c3d4e5f6a" />
   </Folder>
+  <Folder Name="/src/Messaging/">
+    <Project Path="src/Messaging/Pottmayer.Tars.Messaging.Abstractions/Pottmayer.Tars.Messaging.Abstractions.csproj" Id="b7e1a2c3-d4e5-4f6a-8b9c-0d1e2f3a4b50" />
+    <Project Path="src/Messaging/Pottmayer.Tars.Messaging/Pottmayer.Tars.Messaging.csproj" Id="b7e1a2c3-d4e5-4f6a-8b9c-0d1e2f3a4b51" />
+  </Folder>
   <Folder Name="/src/Multitenancy/">
     <Project Path="src/Multitenancy/Pottmayer.Tars.Multitenancy.Abstractions/Pottmayer.Tars.Multitenancy.Abstractions.csproj" Id="f1a2b3c4-d5e6-4f7a-8b9c-0d1e2f3a4b5c" />
     <Project Path="src/Multitenancy/Pottmayer.Tars.Multitenancy/Pottmayer.Tars.Multitenancy.csproj" Id="a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d" />
@@ -44,6 +48,7 @@
   <Folder Name="/tests/">
     <Project Path="tests/Pottmayer.Tars.Core.Tests.Unit/Pottmayer.Tars.Core.Tests.Unit.csproj" />
     <Project Path="tests/Pottmayer.Tars.Caching.Tests.Unit/Pottmayer.Tars.Caching.Tests.Unit.csproj" />
+    <Project Path="tests/Pottmayer.Tars.Messaging.Tests.Unit/Pottmayer.Tars.Messaging.Tests.Unit.csproj" />
     <Project Path="tests/Pottmayer.Tars.Data.Tests.Unit/Pottmayer.Tars.Data.Tests.Unit.csproj" />
     <Project Path="tests/Pottmayer.Tars.Multitenancy.Tests.Unit/Pottmayer.Tars.Multitenancy.Tests.Unit.csproj" />
     <Project Path="tests/Pottmayer.Tars.Web.Tests.Unit/Pottmayer.Tars.Web.Tests.Unit.csproj" />

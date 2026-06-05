@@ -64,6 +64,16 @@
         <Description>DDD building blocks such as entities, aggregate roots and domain event contracts for the Pottmayer.Tars framework.</Description>
       </PropertyGroup>
     </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Messaging.Abstractions'">
+      <PropertyGroup>
+        <Description>Integration messaging abstractions for the Pottmayer.Tars framework: integration event marker, event bus and handler contracts. Transport-agnostic (in-process or broker).</Description>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Messaging'">
+      <PropertyGroup>
+        <Description>In-process integration event bus for the Pottmayer.Tars framework: dispatches integration events to handlers in a fresh scope, plus DI registration and handler scanning. Swap-in seam for a broker-backed bus (RabbitMQ, Kafka, ...).</Description>
+      </PropertyGroup>
+    </When>
     <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Core.Mediator.Abstractions'">
       <PropertyGroup>
         <Description>Mediator abstractions and pipeline contracts for the Pottmayer.Tars framework.</Description>
