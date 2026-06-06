@@ -44,20 +44,20 @@ public class EmailSenderRegistrationTests
         var builder = Host.CreateApplicationBuilder();
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
-            ["Communication:Email:Smtp:Host"] = "smtp.pandora.local",
-            ["Communication:Email:Smtp:Port"] = "2525",
-            ["Communication:Email:Smtp:Username"] = "mailer",
-            ["Communication:Email:Smtp:FromAddress"] = "no-reply@pandora.local",
+            ["Tars:Communication:Email:Smtp:Host"] = "smtp.tars.local",
+            ["Tars:Communication:Email:Smtp:Port"] = "2525",
+            ["Tars:Communication:Email:Smtp:Username"] = "mailer",
+            ["Tars:Communication:Email:Smtp:FromAddress"] = "no-reply@tars.local",
         });
 
         builder.AddTarsMailKitEmailOptions();
         using var sp = builder.Services.BuildServiceProvider();
 
         var options = sp.GetRequiredService<IOptions<MailKitEmailOptions>>().Value;
-        options.Host.Should().Be("smtp.pandora.local");
+        options.Host.Should().Be("smtp.tars.local");
         options.Port.Should().Be(2525);
         options.Username.Should().Be("mailer");
-        options.FromAddress.Should().Be("no-reply@pandora.local");
+        options.FromAddress.Should().Be("no-reply@tars.local");
     }
 
     [Fact]
@@ -66,13 +66,13 @@ public class EmailSenderRegistrationTests
         var builder = Host.CreateApplicationBuilder();
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
-            ["Smtp:Host"] = "custom.pandora.local",
+            ["Smtp:Host"] = "custom.tars.local",
         });
 
         builder.AddTarsMailKitEmailOptions(sectionName: "Smtp");
         using var sp = builder.Services.BuildServiceProvider();
 
-        sp.GetRequiredService<IOptions<MailKitEmailOptions>>().Value.Host.Should().Be("custom.pandora.local");
+        sp.GetRequiredService<IOptions<MailKitEmailOptions>>().Value.Host.Should().Be("custom.tars.local");
     }
 
     [Fact]
@@ -81,13 +81,13 @@ public class EmailSenderRegistrationTests
         var builder = Host.CreateApplicationBuilder();
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
-            ["Communication:Email:Smtp:Host"] = "from-config.pandora.local",
+            ["Tars:Communication:Email:Smtp:Host"] = "from-config.tars.local",
         });
 
-        builder.AddTarsMailKitEmailOptions(configure: o => o.Host = "from-callback.pandora.local");
+        builder.AddTarsMailKitEmailOptions(configure: o => o.Host = "from-callback.tars.local");
         using var sp = builder.Services.BuildServiceProvider();
 
-        sp.GetRequiredService<IOptions<MailKitEmailOptions>>().Value.Host.Should().Be("from-callback.pandora.local");
+        sp.GetRequiredService<IOptions<MailKitEmailOptions>>().Value.Host.Should().Be("from-callback.tars.local");
     }
 }
 
@@ -98,7 +98,7 @@ public class MailKitEmailOptionsTests
     {
         var options = new MailKitEmailOptions();
 
-        MailKitEmailOptions.SectionName.Should().Be("Communication:Email:Smtp");
+        MailKitEmailOptions.SectionName.Should().Be("Tars:Communication:Email:Smtp");
         options.Port.Should().Be(587);
         options.UseStartTls.Should().BeTrue();
     }

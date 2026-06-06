@@ -12,7 +12,7 @@ This folder gathers the functional documentation of the `Pottmayer.Tars` framewo
 - [Caching](./caching/overview.md): abstractions, memory, redis, serializer, key builder
 - [Messaging](./messaging/overview.md): integration events, in-process event bus, handler scanning, broker-ready contracts
 - [Communication](./communication/overview.md): e-mail sending, logging fake and MailKit SMTP provider behind one contract
-  - [Configuration](./communication/configuration.md): `Communication:Email:Smtp`, MailKit options, local Mailpit
+  - [Configuration](./communication/configuration.md): `Tars:Communication:Email:Smtp`, MailKit options, local Mailpit
 - [Data](./data/overview.md): contracts, contexts, pipelines, unit of work, unified EF Core + Dapper, multi-database, domain events
   - [Configuration (Relational)](./data/configuration.md): appsettings, multi-database, multitenancy, custom resolver
   - [Contracts and UoW](./data/pipelines-and-uow.md): `IUnitOfWork`, `IDataContext`, repositories, `QueryParams`, domain events

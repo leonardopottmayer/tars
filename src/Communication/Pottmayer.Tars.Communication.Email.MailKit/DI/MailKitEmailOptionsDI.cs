@@ -10,7 +10,7 @@ public static class MailKitEmailOptionsDI
 {
     /// <summary>
     /// Binds <see cref="MailKitEmailOptions"/> from configuration (default section
-    /// <c>Communication:Email:Smtp</c>).
+    /// <c>Tars:Communication:Email:Smtp</c>).
     /// </summary>
     public static OptionsBuilder<MailKitEmailOptions> AddTarsMailKitEmailOptions(
         this IHostApplicationBuilder builder,

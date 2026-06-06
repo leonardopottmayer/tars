@@ -3,7 +3,7 @@ namespace Pottmayer.Tars.Communication.Email.MailKit.Options;
 /// <summary>SMTP configuration for <see cref="MailKitEmailSender"/>.</summary>
 public sealed class MailKitEmailOptions
 {
-    public const string SectionName = "Communication:Email:Smtp";
+    public const string SectionName = "Tars:Communication:Email:Smtp";
 
     public string Host { get; set; } = string.Empty;
     public int Port { get; set; } = 587;

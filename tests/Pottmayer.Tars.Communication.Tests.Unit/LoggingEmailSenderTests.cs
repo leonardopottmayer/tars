@@ -9,7 +9,7 @@ namespace Pottmayer.Tars.Communication.Tests.Unit;
 public class LoggingEmailSenderTests
 {
     private static EmailMessage Message()
-        => new(["to@pandora.local"], "Subject", "Body", IsHtml: false);
+        => new(["to@tars.local"], "Subject", "Body", IsHtml: false);
 
     [Fact]
     public async Task SendAsync_reports_the_logging_provider_and_a_message_id()
@@ -27,10 +27,10 @@ public class LoggingEmailSenderTests
     {
         var logger = new Mock<ILogger<LoggingEmailSender>>();
         var message = new EmailMessage(
-            To: ["a@pandora.local", "b@pandora.local"],
+            To: ["a@tars.local", "b@tars.local"],
             Subject: "Subject",
             Body: "Body",
-            Cc: ["cc@pandora.local"]);
+            Cc: ["cc@tars.local"]);
 
         var result = await new LoggingEmailSender(logger.Object).SendAsync(message);
 
@@ -40,9 +40,9 @@ public class LoggingEmailSenderTests
                 LogLevel.Information,
                 It.IsAny<EventId>(),
                 It.Is<It.IsAnyType>((v, _) =>
-                    v.ToString()!.Contains("a@pandora.local")
-                    && v.ToString()!.Contains("b@pandora.local")
-                    && v.ToString()!.Contains("cc@pandora.local")),
+                    v.ToString()!.Contains("a@tars.local")
+                    && v.ToString()!.Contains("b@tars.local")
+                    && v.ToString()!.Contains("cc@tars.local")),
                 It.IsAny<Exception?>(),
                 It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
             Times.Once);

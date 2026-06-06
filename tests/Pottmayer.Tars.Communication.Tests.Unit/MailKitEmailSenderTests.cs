@@ -10,34 +10,34 @@ public class MailKitEmailSenderTests
 {
     private static MailKitEmailOptions Settings() => new()
     {
-        Host = "smtp.pandora.local",
-        FromAddress = "no-reply@pandora.local",
-        FromName = "Pandora",
+        Host = "smtp.tars.local",
+        FromAddress = "no-reply@tars.local",
+        FromName = "Tars",
     };
 
     [Fact]
     public void BuildMimeMessage_falls_back_to_the_configured_sender_when_the_message_sets_none()
     {
-        var message = new EmailMessage(["to@pandora.local"], "Subject", "Body");
+        var message = new EmailMessage(["to@tars.local"], "Subject", "Body");
 
         var mime = MailKitEmailSender.BuildMimeMessage(message, Settings());
 
         var from = mime.From.Mailboxes.Single();
-        from.Address.Should().Be("no-reply@pandora.local");
-        from.Name.Should().Be("Pandora");
+        from.Address.Should().Be("no-reply@tars.local");
+        from.Name.Should().Be("Tars");
     }
 
     [Fact]
     public void BuildMimeMessage_prefers_the_message_sender_over_the_configured_default()
     {
         var message = new EmailMessage(
-            ["to@pandora.local"], "Subject", "Body",
-            FromAddress: "alerts@pandora.local", FromName: "Alerts");
+            ["to@tars.local"], "Subject", "Body",
+            FromAddress: "alerts@tars.local", FromName: "Alerts");
 
         var mime = MailKitEmailSender.BuildMimeMessage(message, Settings());
 
         var from = mime.From.Mailboxes.Single();
-        from.Address.Should().Be("alerts@pandora.local");
+        from.Address.Should().Be("alerts@tars.local");
         from.Name.Should().Be("Alerts");
     }
 
@@ -45,23 +45,23 @@ public class MailKitEmailSenderTests
     public void BuildMimeMessage_maps_all_recipients_and_cc_addresses()
     {
         var message = new EmailMessage(
-            To: ["a@pandora.local", "b@pandora.local"],
+            To: ["a@tars.local", "b@tars.local"],
             Subject: "Subject",
             Body: "Body",
-            Cc: ["cc@pandora.local"]);
+            Cc: ["cc@tars.local"]);
 
         var mime = MailKitEmailSender.BuildMimeMessage(message, Settings());
 
         mime.To.Mailboxes.Select(m => m.Address)
-            .Should().Equal("a@pandora.local", "b@pandora.local");
+            .Should().Equal("a@tars.local", "b@tars.local");
         mime.Cc.Mailboxes.Select(m => m.Address)
-            .Should().Equal("cc@pandora.local");
+            .Should().Equal("cc@tars.local");
     }
 
     [Fact]
     public void BuildMimeMessage_leaves_cc_empty_when_none_is_supplied()
     {
-        var message = new EmailMessage(["to@pandora.local"], "Subject", "Body");
+        var message = new EmailMessage(["to@tars.local"], "Subject", "Body");
 
         var mime = MailKitEmailSender.BuildMimeMessage(message, Settings());
 
@@ -71,7 +71,7 @@ public class MailKitEmailSenderTests
     [Fact]
     public void BuildMimeMessage_sets_subject_and_body()
     {
-        var message = new EmailMessage(["to@pandora.local"], "Welcome", "Hello there");
+        var message = new EmailMessage(["to@tars.local"], "Welcome", "Hello there");
 
         var mime = MailKitEmailSender.BuildMimeMessage(message, Settings());
 
@@ -84,7 +84,7 @@ public class MailKitEmailSenderTests
     [InlineData(false, "text/plain")]
     public void BuildMimeMessage_picks_the_body_content_type_from_IsHtml(bool isHtml, string expectedMimeType)
     {
-        var message = new EmailMessage(["to@pandora.local"], "Subject", "Body", IsHtml: isHtml);
+        var message = new EmailMessage(["to@tars.local"], "Subject", "Body", IsHtml: isHtml);
 
         var mime = MailKitEmailSender.BuildMimeMessage(message, Settings());
 

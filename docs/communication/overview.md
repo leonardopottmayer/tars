@@ -37,7 +37,7 @@ Writes the message to the log instead of delivering it. Default choice for dev a
 ### MailKit (SMTP) sender
 
 ```csharp
-builder.AddTarsMailKitEmailOptions();   // binds Communication:Email:Smtp
+builder.AddTarsMailKitEmailOptions();   // binds Tars:Communication:Email:Smtp
 builder.Services.AddTarsMailKitEmailSender();
 ```
 

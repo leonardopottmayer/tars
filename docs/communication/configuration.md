@@ -7,16 +7,18 @@ Only the MailKit provider reads configuration; the logging sender needs none.
 Section name:
 
 ```json
-"Communication": {
-  "Email": {
-    "Smtp": {
-      "Host": "localhost",
-      "Port": 587,
-      "UseStartTls": true,
-      "Username": "mailer",
-      "Password": "secret",
-      "FromAddress": "no-reply@my-app.local",
-      "FromName": "My App"
+"Tars": {
+  "Communication": {
+    "Email": {
+      "Smtp": {
+        "Host": "localhost",
+        "Port": 587,
+        "UseStartTls": true,
+        "Username": "mailer",
+        "Password": "secret",
+        "FromAddress": "no-reply@my-app.local",
+        "FromName": "My App"
+      }
     }
   }
 }
@@ -49,7 +51,7 @@ builder.AddTarsMailKitEmailOptions(
     configure: o => o.FromName = "My App");
 ```
 
-- `sectionName`: overrides the default `Communication:Email:Smtp`
+- `sectionName`: overrides the default `Tars:Communication:Email:Smtp`
 - `configure`: runs after binding, so it overrides values read from configuration
 
 ## Local development with Mailpit
@@ -58,15 +60,17 @@ A common dev setup points MailKit at a local [Mailpit](https://mailpit.axllent.o
 container (SMTP on `1025`, web UI on `8025`) with no authentication:
 
 ```json
-"Communication": {
-  "Email": {
-    "Smtp": {
-      "Host": "localhost",
-      "Port": 1025,
-      "UseStartTls": false,
-      "Username": "",
-      "FromAddress": "no-reply@my-app.local",
-      "FromName": "My App"
+"Tars": {
+  "Communication": {
+    "Email": {
+      "Smtp": {
+        "Host": "localhost",
+        "Port": 1025,
+        "UseStartTls": false,
+        "Username": "",
+        "FromAddress": "no-reply@my-app.local",
+        "FromName": "My App"
+      }
     }
   }
 }
