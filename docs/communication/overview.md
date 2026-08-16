@@ -5,13 +5,27 @@
 - `Pottmayer.Tars.Communication.Email.Abstractions`
 - `Pottmayer.Tars.Communication.Email`
 - `Pottmayer.Tars.Communication.Email.MailKit`
+- `Pottmayer.Tars.Communication.Telegram.Abstractions`
+- `Pottmayer.Tars.Communication.Telegram`
 
 ## What the module offers
+
+### E-mail
 
 - a single `IEmailSender` contract for sending e-mail
 - a logging fake sender for dev/tests (zero configuration)
 - a real SMTP provider over MailKit, behind the same contract
 - `EmailMessage` / `EmailDeliveryResult` value records
+
+### Telegram
+
+- an `ITelegramClient` contract over the Bot API: sending, inline keyboards, long polling, file
+  download and webhook management
+- normalized inbound models, and a `TelegramException` that says whether a failure is permanent
+- escaping, webhook secret validation and slash-command parsing helpers
+
+See [telegram.md](./telegram.md). Both channels are transport only — neither queues, retries or
+persists anything.
 
 ## The transport seam
 
@@ -98,6 +112,7 @@ accepted the message (`"logging"` or `"mailkit"`) and its message id, when avail
 - `IEmailSender`
 - `EmailMessage`
 - `EmailDeliveryResult`
+- `ITelegramClient` — see [telegram.md](./telegram.md) for the full surface
 
 ## Configuration
 

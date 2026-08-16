@@ -10,6 +10,8 @@
     <Project Path="src/Communication/Pottmayer.Tars.Communication.Email.Abstractions/Pottmayer.Tars.Communication.Email.Abstractions.csproj" Id="c0a1b2c3-d4e5-4f6a-8b9c-0d1e2f3a4c01" />
     <Project Path="src/Communication/Pottmayer.Tars.Communication.Email/Pottmayer.Tars.Communication.Email.csproj" Id="c0a1b2c3-d4e5-4f6a-8b9c-0d1e2f3a4c02" />
     <Project Path="src/Communication/Pottmayer.Tars.Communication.Email.MailKit/Pottmayer.Tars.Communication.Email.MailKit.csproj" Id="c0a1b2c3-d4e5-4f6a-8b9c-0d1e2f3a4c03" />
+    <Project Path="src/Communication/Pottmayer.Tars.Communication.Telegram.Abstractions/Pottmayer.Tars.Communication.Telegram.Abstractions.csproj" Id="c0a1b2c3-d4e5-4f6a-8b9c-0d1e2f3a4c04" />
+    <Project Path="src/Communication/Pottmayer.Tars.Communication.Telegram/Pottmayer.Tars.Communication.Telegram.csproj" Id="c0a1b2c3-d4e5-4f6a-8b9c-0d1e2f3a4c05" />
   </Folder>
   <Folder Name="/src/Core/">
     <Project Path="src/Core/Pottmayer.Tars.Core.Cqrs/Pottmayer.Tars.Core.Cqrs.csproj" Id="7eff268f-71cf-45e1-b4a4-2d6726e375ff" />

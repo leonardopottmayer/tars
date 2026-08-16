@@ -29,6 +29,8 @@
     <ProjectReference Include="..\..\src\Communication\Pottmayer.Tars.Communication.Email.Abstractions\Pottmayer.Tars.Communication.Email.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\Communication\Pottmayer.Tars.Communication.Email\Pottmayer.Tars.Communication.Email.csproj" />
     <ProjectReference Include="..\..\src\Communication\Pottmayer.Tars.Communication.Email.MailKit\Pottmayer.Tars.Communication.Email.MailKit.csproj" />
+    <ProjectReference Include="..\..\src\Communication\Pottmayer.Tars.Communication.Telegram.Abstractions\Pottmayer.Tars.Communication.Telegram.Abstractions.csproj" />
+    <ProjectReference Include="..\..\src\Communication\Pottmayer.Tars.Communication.Telegram\Pottmayer.Tars.Communication.Telegram.csproj" />
   </ItemGroup>
 
 </Project>

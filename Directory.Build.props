@@ -69,6 +69,16 @@
         <Description>MailKit-backed SMTP e-mail provider for the Pottmayer.Tars framework: IEmailSender implementation, SMTP options and DI registration.</Description>
       </PropertyGroup>
     </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Communication.Telegram.Abstractions'">
+      <PropertyGroup>
+        <Description>Telegram Bot API abstractions for the Pottmayer.Tars framework: ITelegramClient contract, message/update/inline-keyboard models, classified TelegramException, MarkdownV2 escaping and webhook secret validation.</Description>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Communication.Telegram'">
+      <PropertyGroup>
+        <Description>Telegram Bot API provider for the Pottmayer.Tars framework: HttpClient-backed ITelegramClient with sending, inline keyboards, long polling, file download, webhook management, options and DI registration.</Description>
+      </PropertyGroup>
+    </When>
     <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Core.Cqrs'">
       <PropertyGroup>
         <Description>CQRS abstractions and behaviors for the Pottmayer.Tars framework.</Description>
