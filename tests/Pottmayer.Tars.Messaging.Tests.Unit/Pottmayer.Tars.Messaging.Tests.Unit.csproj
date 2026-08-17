@@ -16,6 +16,7 @@
     </PackageReference>
     <PackageReference Include="FluentAssertions" Version="8.4.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.2" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.2" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
     <PackageReference Include="Moq" Version="4.20.72" />
@@ -29,6 +30,10 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Messaging\Pottmayer.Tars.Messaging.Abstractions\Pottmayer.Tars.Messaging.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\Messaging\Pottmayer.Tars.Messaging\Pottmayer.Tars.Messaging.csproj" />
+    <ProjectReference Include="..\..\src\Messaging\Pottmayer.Tars.Messaging.Broker\Pottmayer.Tars.Messaging.Broker.csproj" />
+    <ProjectReference Include="..\..\src\Messaging\Pottmayer.Tars.Messaging.MassTransit\Pottmayer.Tars.Messaging.MassTransit.csproj" />
+    <ProjectReference Include="..\..\src\Messaging\Pottmayer.Tars.Messaging.MassTransit.RabbitMq\Pottmayer.Tars.Messaging.MassTransit.RabbitMq.csproj" />
+    <ProjectReference Include="..\..\src\Messaging\Pottmayer.Tars.Messaging.MassTransit.Kafka\Pottmayer.Tars.Messaging.MassTransit.Kafka.csproj" />
   </ItemGroup>
 
 </Project>

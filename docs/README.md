@@ -11,6 +11,8 @@ This folder gathers the functional documentation of the `Pottmayer.Tars` framewo
   - [Localization](./core/localization.md): `IMessageProvider`, `IMessageSource`, `InMemoryMessageSource`, `.resx`, `IStringLocalizer`, `appsettings`
 - [Caching](./caching/overview.md): abstractions, memory, redis, serializer, key builder
 - [Messaging](./messaging/overview.md): integration events, in-process event bus, handler scanning, broker-ready contracts
+  - [Broker transports](./messaging/brokers.md): portable routing model, subscriptions, per-broker capability matrix, MassTransit over RabbitMQ and Kafka, reusable topology steps, transactional outbox
+  - [Configuration](./messaging/configuration.md): `Tars:Messaging:RabbitMq`, `Tars:Messaging:Kafka`, `Tars:Messaging:Broker`, binders and local development
 - [Communication](./communication/overview.md): e-mail sending, logging fake and MailKit SMTP provider behind one contract, plus the Telegram Bot API transport
   - [Telegram](./communication/telegram.md): `ITelegramClient`, inline keyboards, long polling vs webhook, permanent/transient failures, media download
   - [Configuration](./communication/configuration.md): `Tars:Communication:Email:Smtp`, MailKit options, local Mailpit, `Tars:Communication:Telegram`

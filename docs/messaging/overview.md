@@ -4,6 +4,12 @@
 
 - `Pottmayer.Tars.Messaging.Abstractions`
 - `Pottmayer.Tars.Messaging`
+- `Pottmayer.Tars.Messaging.Broker` — shared runtime for broker transports
+- `Pottmayer.Tars.Messaging.MassTransit` + `.RabbitMq` + `.Kafka` + `.EntityFrameworkCore`
+
+This document covers the in-process bus. For running the same contracts over a real broker —
+routing, subscriptions, the per-broker capability matrix and the outbox — see
+[brokers.md](./brokers.md).
 
 ## What the module offers
 
@@ -31,15 +37,20 @@ without touching producers or consumers.
 
 ## The transport seam
 
-`IIntegrationEventBus` hides the transport. Today the only implementation is
-`InProcessIntegrationEventBus`; when the system splits into services, this bus is the
-**only** type replaced by a broker-backed one (RabbitMQ, Kafka, ...). Producers and
-consumers do not change.
+`IIntegrationEventBus` hides the transport. `InProcessIntegrationEventBus` dispatches inside
+the process; a broker-backed bus is the **only** type swapped when the system splits into
+services. Producers and consumers do not change.
 
 With a broker, the consuming side re-dispatches the deserialized message to the local
 `IIntegrationEventHandler<T>` implementations (the "last mile"), and the broker routes by
 the logical `IntegrationEventName`, not by the .NET type — so two services can exchange an
 event without sharing the contract assembly.
+
+One behavioural difference is deliberate and worth knowing before you swap: the in-process
+bus **logs and swallows** a handler failure, because the producer has already committed and
+there is nothing downstream to retry. A broker-backed bus **propagates** it, so the
+transport's retry and dead-letter machinery can act. See
+[brokers.md](./brokers.md#failure-behaviour).
 
 ## Minimal registration
 

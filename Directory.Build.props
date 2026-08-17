@@ -99,6 +99,31 @@
         <Description>In-process integration event bus for the Pottmayer.Tars framework: dispatches integration events to handlers in a fresh scope, plus DI registration and handler scanning. Swap-in seam for a broker-backed bus (RabbitMQ, Kafka, ...).</Description>
       </PropertyGroup>
     </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Messaging.Broker'">
+      <PropertyGroup>
+        <Description>Shared broker runtime for the Pottmayer.Tars framework: integration event name-to-type registry, portable route and subscription model (broadcast, keyed, wildcard), broker capability declaration and the last-mile dispatcher. Provider-agnostic.</Description>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Messaging.MassTransit'">
+      <PropertyGroup>
+        <Description>MassTransit-backed integration event bus for the Pottmayer.Tars framework: publishing, the relay consumer that re-dispatches to IIntegrationEventHandler, and the logical entity name formatter. Transport-agnostic within MassTransit.</Description>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Messaging.MassTransit.RabbitMq'">
+      <PropertyGroup>
+        <Description>RabbitMQ transport for the Pottmayer.Tars MassTransit provider: exchange topology per event (fanout for broadcast, topic/direct/headers for routed), queue bindings from the portable subscription model, routing key application, retry and prefetch options, and DI registration.</Description>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Messaging.MassTransit.Kafka'">
+      <PropertyGroup>
+        <Description>Kafka transport for the Pottmayer.Tars MassTransit provider: topic per event type, producer and topic-endpoint registration through the MassTransit rider, consumer group and offset options, and DI registration. Broadcast delivery only — Kafka cannot filter on a per-message routing key.</Description>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Messaging.MassTransit.EntityFrameworkCore'">
+      <PropertyGroup>
+        <Description>Transactional outbox for the Pottmayer.Tars MassTransit provider, backed by MassTransit's own EF Core outbox: one UseEntityFrameworkOutbox call that works for every broker, with the bus outbox always enabled so the feature is never configured-but-inert.</Description>
+      </PropertyGroup>
+    </When>
     <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Core.Mediator.Abstractions'">
       <PropertyGroup>
         <Description>Mediator abstractions and pipeline contracts for the Pottmayer.Tars framework.</Description>

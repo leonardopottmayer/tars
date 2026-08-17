@@ -34,6 +34,11 @@ See [taxonomy.md](./taxonomy.md) for the complete definition of the levels and c
 |---|---|---|---|
 | `Pottmayer.Tars.Messaging.Abstractions` | Abstractions | Optional | integration messaging contracts: `IIntegrationEvent`, `IIntegrationEventBus`, `IIntegrationEventHandler<T>`, `IntegrationEventNameAttribute` |
 | `Pottmayer.Tars.Messaging` | Runtime | Optional | `InProcessIntegrationEventBus`, handler scanning, DI registration |
+| `Pottmayer.Tars.Messaging.Broker` | Runtime | Optional | shared broker runtime: name-to-type registry, portable route and subscription model, `BrokerCapabilities`, last-mile dispatcher |
+| `Pottmayer.Tars.Messaging.MassTransit` | Provider | Optional | MassTransit-backed bus, relay consumer, logical entity name formatter, `TarsMassTransitOptions` |
+| `Pottmayer.Tars.Messaging.MassTransit.RabbitMq` | Provider | Optional | RabbitMQ transport: exchange topology, queue bindings, routing key application, `TarsRabbitMqOptions`, DI helpers |
+| `Pottmayer.Tars.Messaging.MassTransit.Kafka` | Provider | Optional | Kafka transport over the MassTransit rider: producer and topic endpoint per event type, `TarsKafkaOptions`, DI helpers |
+| `Pottmayer.Tars.Messaging.MassTransit.EntityFrameworkCore` | Provider | Optional | transactional outbox over MassTransit's own EF Core outbox, for every broker |
 
 ## Communication
 
@@ -42,6 +47,8 @@ See [taxonomy.md](./taxonomy.md) for the complete definition of the levels and c
 | `Pottmayer.Tars.Communication.Email.Abstractions` | Abstractions | Optional | e-mail contracts: `IEmailSender`, `EmailMessage`, `EmailDeliveryResult` |
 | `Pottmayer.Tars.Communication.Email` | Runtime | Optional | `LoggingEmailSender` (fake) and DI registration |
 | `Pottmayer.Tars.Communication.Email.MailKit` | Provider | Optional | SMTP provider over MailKit, `MailKitEmailOptions`, DI helpers |
+| `Pottmayer.Tars.Communication.Telegram.Abstractions` | Abstractions | Optional | Telegram Bot API contracts: `ITelegramClient`, message/update/inline-keyboard models, `TelegramException`, escaping and webhook helpers |
+| `Pottmayer.Tars.Communication.Telegram` | Provider | Optional | Bot API implementation over `HttpClient`: sending, long polling, file download, webhook management, `TelegramOptions`, DI helpers |
 
 ## Data — Shared contracts
 

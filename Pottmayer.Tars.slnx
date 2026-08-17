@@ -31,6 +31,11 @@
   <Folder Name="/src/Messaging/">
     <Project Path="src/Messaging/Pottmayer.Tars.Messaging.Abstractions/Pottmayer.Tars.Messaging.Abstractions.csproj" Id="b7e1a2c3-d4e5-4f6a-8b9c-0d1e2f3a4b50" />
     <Project Path="src/Messaging/Pottmayer.Tars.Messaging/Pottmayer.Tars.Messaging.csproj" Id="b7e1a2c3-d4e5-4f6a-8b9c-0d1e2f3a4b51" />
+    <Project Path="src/Messaging/Pottmayer.Tars.Messaging.Broker/Pottmayer.Tars.Messaging.Broker.csproj" Id="b7e1a2c3-d4e5-4f6a-8b9c-0d1e2f3a4b52" />
+    <Project Path="src/Messaging/Pottmayer.Tars.Messaging.MassTransit/Pottmayer.Tars.Messaging.MassTransit.csproj" Id="b7e1a2c3-d4e5-4f6a-8b9c-0d1e2f3a4b53" />
+    <Project Path="src/Messaging/Pottmayer.Tars.Messaging.MassTransit.RabbitMq/Pottmayer.Tars.Messaging.MassTransit.RabbitMq.csproj" Id="b7e1a2c3-d4e5-4f6a-8b9c-0d1e2f3a4b54" />
+    <Project Path="src/Messaging/Pottmayer.Tars.Messaging.MassTransit.Kafka/Pottmayer.Tars.Messaging.MassTransit.Kafka.csproj" Id="b7e1a2c3-d4e5-4f6a-8b9c-0d1e2f3a4b55" />
+    <Project Path="src/Messaging/Pottmayer.Tars.Messaging.MassTransit.EntityFrameworkCore/Pottmayer.Tars.Messaging.MassTransit.EntityFrameworkCore.csproj" Id="b7e1a2c3-d4e5-4f6a-8b9c-0d1e2f3a4b56" />
   </Folder>
   <Folder Name="/src/Multitenancy/">
     <Project Path="src/Multitenancy/Pottmayer.Tars.Multitenancy.Abstractions/Pottmayer.Tars.Multitenancy.Abstractions.csproj" Id="f1a2b3c4-d5e6-4f7a-8b9c-0d1e2f3a4b5c" />
