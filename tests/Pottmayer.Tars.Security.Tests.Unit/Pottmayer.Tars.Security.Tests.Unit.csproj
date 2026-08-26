@@ -33,6 +33,8 @@
     <ProjectReference Include="..\..\src\Security\Pottmayer.Tars.Security.Identity.Abstractions\Pottmayer.Tars.Security.Identity.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\Security\Pottmayer.Tars.Security.Identity\Pottmayer.Tars.Security.Identity.csproj" />
     <ProjectReference Include="..\..\src\Security\Pottmayer.Tars.Security.Identity.AspNetCore\Pottmayer.Tars.Security.Identity.AspNetCore.csproj" />
+    <ProjectReference Include="..\..\src\Security\Pottmayer.Tars.Security.DataProtection.Abstractions\Pottmayer.Tars.Security.DataProtection.Abstractions.csproj" />
+    <ProjectReference Include="..\..\src\Security\Pottmayer.Tars.Security.DataProtection\Pottmayer.Tars.Security.DataProtection.csproj" />
   </ItemGroup>
 
 </Project>
