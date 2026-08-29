@@ -37,6 +37,12 @@
     <Project Path="src/Messaging/Pottmayer.Tars.Messaging.MassTransit.Kafka/Pottmayer.Tars.Messaging.MassTransit.Kafka.csproj" Id="b7e1a2c3-d4e5-4f6a-8b9c-0d1e2f3a4b55" />
     <Project Path="src/Messaging/Pottmayer.Tars.Messaging.MassTransit.EntityFrameworkCore/Pottmayer.Tars.Messaging.MassTransit.EntityFrameworkCore.csproj" Id="b7e1a2c3-d4e5-4f6a-8b9c-0d1e2f3a4b56" />
   </Folder>
+  <Folder Name="/src/Observability/">
+    <Project Path="src/Observability/Pottmayer.Tars.Observability.Abstractions/Pottmayer.Tars.Observability.Abstractions.csproj" />
+    <Project Path="src/Observability/Pottmayer.Tars.Observability/Pottmayer.Tars.Observability.csproj" />
+    <Project Path="src/Observability/Pottmayer.Tars.Observability.Serilog/Pottmayer.Tars.Observability.Serilog.csproj" />
+    <Project Path="src/Observability/Pottmayer.Tars.Observability.AspNetCore/Pottmayer.Tars.Observability.AspNetCore.csproj" />
+  </Folder>
   <Folder Name="/src/Multitenancy/">
     <Project Path="src/Multitenancy/Pottmayer.Tars.Multitenancy.Abstractions/Pottmayer.Tars.Multitenancy.Abstractions.csproj" Id="f1a2b3c4-d5e6-4f7a-8b9c-0d1e2f3a4b5c" />
     <Project Path="src/Multitenancy/Pottmayer.Tars.Multitenancy/Pottmayer.Tars.Multitenancy.csproj" Id="a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d" />
@@ -69,5 +75,6 @@
     <Project Path="tests/Pottmayer.Tars.Web.Tests.Unit/Pottmayer.Tars.Web.Tests.Unit.csproj" />
     <Project Path="tests/Pottmayer.Tars.Security.Tests.Unit/Pottmayer.Tars.Security.Tests.Unit.csproj" />
     <Project Path="tests/Pottmayer.Tars.UserContext.Tests.Unit/Pottmayer.Tars.UserContext.Tests.Unit.csproj" />
+    <Project Path="tests/Pottmayer.Tars.Observability.Tests.Unit/Pottmayer.Tars.Observability.Tests.Unit.csproj" />
   </Folder>
 </Solution>

@@ -84,6 +84,15 @@ See [taxonomy.md](./taxonomy.md) for the complete definition of the levels and c
 | `Pottmayer.Tars.Multitenancy` | Runtime | Optional | resolution pipeline, agnostic resolvers, in-memory catalog, store, per-tenant execution |
 | `Pottmayer.Tars.Multitenancy.AspNetCore` | Host Integration | Optional | middleware and HTTP resolvers (`header`, `subdomain`) |
 
+## Observability
+
+| Project | Level | Classification | Role |
+|---|---|---|---|
+| `Pottmayer.Tars.Observability.Abstractions` | Abstractions | Optional | shared vocabulary: `TarsTelemetry` (source/meter naming), `TarsCorrelation` (header/property names) |
+| `Pottmayer.Tars.Observability` | Runtime | Optional | options + granular DI for the OpenTelemetry pipeline (traces, metrics, logs) and native `ILogger` logging over OTLP |
+| `Pottmayer.Tars.Observability.Serilog` | Provider | Optional | opt-in Serilog logging provider: console + OTLP sink, alternative to native logging |
+| `Pottmayer.Tars.Observability.AspNetCore` | Host Integration | Optional | ASP.NET Core / HttpClient instrumentation and the correlation-id middleware |
+
 ## Web
 
 | Project | Level | Classification | Role |

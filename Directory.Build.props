@@ -214,6 +214,26 @@
         <Description>ASP.NET Core adapter for Pottmayer.Tars UserContext: HttpContext-based principal accessor and its DI registration.</Description>
       </PropertyGroup>
     </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Observability.Abstractions'">
+      <PropertyGroup>
+        <Description>Observability abstractions for the Pottmayer.Tars framework: shared telemetry naming conventions and correlation-id constants, with no dependencies so any building block can emit signals against them.</Description>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Observability'">
+      <PropertyGroup>
+        <Description>Observability foundation for the Pottmayer.Tars framework: OpenTelemetry traces, metrics and logs over OTLP, .NET runtime metrics, and provider-agnostic ILogger-based logging, plus options and granular DI wiring.</Description>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Observability.Serilog'">
+      <PropertyGroup>
+        <Description>Pluggable Serilog logging provider for Pottmayer.Tars observability: registers Serilog as the ILogger front-end with a console and an OTLP sink carrying trace correlation. Opt-in alternative to the core's native logging.</Description>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Observability.AspNetCore'">
+      <PropertyGroup>
+        <Description>ASP.NET Core adapter for Pottmayer.Tars observability: ASP.NET Core and HttpClient instrumentation registration and the correlation-id middleware.</Description>
+      </PropertyGroup>
+    </When>
     <Otherwise>
       <PropertyGroup>
         <Description>Reusable building blocks for the Pottmayer.Tars framework.</Description>

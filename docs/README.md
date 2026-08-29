@@ -29,6 +29,9 @@ This folder gathers the functional documentation of the `Pottmayer.Tars` framewo
   - [Data isolation](./multitenancy/data-isolation.md): `ITenantConnectionStringProvider`, `ITenantSchemaProvider`, strategies
   - [Configuration](./multitenancy/configuration.md): appsettings, full DI, scenarios
   - [Data, Multitenancy and Multi-Database](./data/multitenancy-and-multi-database.md): how to combine tenant resolution with data resolution, multiple databases and transactions
+- [Observability](./observability/overview.md): OpenTelemetry traces/metrics/logs over OTLP, native `ILogger` or Serilog, correlation id
+  - [Configuration](./observability/configuration.md): `Tars:Observability`, the canonical composition order, every `AddTars*` method
+  - [Logging](./observability/logging.md): native `ILogger` vs the Serilog provider, correlation across both
 - [Web](./web/overview.md): HTTP envelopes, error mapping, exception filter, wrapping and pagination
   - [HTTP packages and configuration](./web/http.md): DI, appsettings, per-scenario composition
   - [HTTP Error Mapping](./web/error-mapping.md): `IHttpErrorMapper`, `DefaultHttpErrorMapper`, `TarsExceptionFilter`
