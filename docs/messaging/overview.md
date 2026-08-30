@@ -125,6 +125,11 @@ public sealed class AccountActivationRequestedHandler(INotificationEnqueuer enqu
   at-least-once delivery with retry, that belongs in the consumer (e.g. a durable queue), not
   in the bus.
 
+> Publishing after commit and swallowing failures is fire-and-forget: a crash between the commit and
+> the publish, or a throwing handler, loses the event with nothing to retry it — a **dual-write** gap.
+> To make publishing transactional (the event written in the producer's own transaction and delivered
+> by a background relay) without adopting a broker, see the [transactional outbox](./outbox.md).
+
 ## Main contracts
 
 - `IIntegrationEvent`

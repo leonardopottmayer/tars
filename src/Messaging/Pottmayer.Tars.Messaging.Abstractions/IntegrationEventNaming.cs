@@ -38,6 +38,22 @@ public static class IntegrationEventNaming
         where TIntegrationEvent : IIntegrationEvent
         => For(typeof(TIntegrationEvent));
 
+    /// <summary>
+    /// Returns <see cref="IntegrationEventNameAttribute.Version"/> when the type declares it, and
+    /// <c>1</c> otherwise. This is the payload schema version a durable transport records so a consumer
+    /// can resolve the right shape before deserializing.
+    /// </summary>
+    public static int VersionFor(Type eventType)
+    {
+        ArgumentNullException.ThrowIfNull(eventType);
+        return eventType.GetCustomAttribute<IntegrationEventNameAttribute>(inherit: false)?.Version ?? 1;
+    }
+
+    /// <inheritdoc cref="VersionFor(Type)"/>
+    public static int VersionFor<TIntegrationEvent>()
+        where TIntegrationEvent : IIntegrationEvent
+        => VersionFor(typeof(TIntegrationEvent));
+
     /// <summary>True when the type declares an explicit name rather than falling back to convention.</summary>
     public static bool IsExplicit(Type eventType)
     {

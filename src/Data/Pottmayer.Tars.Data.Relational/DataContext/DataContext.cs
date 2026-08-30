@@ -68,14 +68,26 @@ public sealed class DataContext : IDataContext
     public async Task CommitAsync(CancellationToken cancellationToken = default)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
-        await _dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
+        // Domain events are dispatched BEFORE the state is persisted, not after — for two reasons.
+        //
+        // Correctness: SaveChanges flips every tracked entry to Unchanged, so collecting domain events
+        // afterwards (as an earlier version did) would find nothing on the change tracker and silently
+        // drop them. They have to be read while the entries are still Added/Modified/Deleted.
+        //
+        // Atomicity (the point of doing it here): a handler that reacts to a domain event by publishing
+        // an integration event through an outbox-backed bus writes that outbox row into THIS context.
+        // The single SaveChanges below then persists the aggregate's state change and the outbox row in
+        // one transaction — the fact and its announcement commit together, or neither does. A handler
+        // that throws propagates out before SaveChanges, so the whole unit of work is aborted.
         if (_domainEventDispatcher is not null)
         {
             var events = CollectAllDomainEvents();
             if (events.Count > 0)
                 await _domainEventDispatcher.DispatchAsync(events, cancellationToken).ConfigureAwait(false);
         }
+
+        await _dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
 
     private IReadOnlyList<object> CollectAllDomainEvents()

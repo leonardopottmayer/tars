@@ -1,7 +1,7 @@
 <Project>
   <PropertyGroup>
-    <Version>0.0.7</Version>
-    <PackageVersion>0.0.7</PackageVersion>
+    <Version>0.0.8</Version>
+    <PackageVersion>0.0.8</PackageVersion>
     <AssemblyVersion>$(Version).0</AssemblyVersion>
     <FileVersion>$(Version).0</FileVersion>
     <InformationalVersion>$(Version)</InformationalVersion>
@@ -122,6 +122,11 @@
     <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Messaging.MassTransit.EntityFrameworkCore'">
       <PropertyGroup>
         <Description>Transactional outbox for the Pottmayer.Tars MassTransit provider, backed by MassTransit's own EF Core outbox: one UseEntityFrameworkOutbox call that works for every broker, with the bus outbox always enabled so the feature is never configured-but-inert.</Description>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Messaging.EntityFrameworkCore'">
+      <PropertyGroup>
+        <Description>Transactional in-process outbox for the Pottmayer.Tars framework, backed by EF Core: an outbox-backed integration event bus and a domain-event translation seam that write the OutboxMessage row in the producer's own transaction, plus a background relay that drains it to the local handlers with retry, dead-lettering and at-least-once delivery. Closes the dual-write gap without a broker.</Description>
       </PropertyGroup>
     </When>
     <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Core.Mediator.Abstractions'">

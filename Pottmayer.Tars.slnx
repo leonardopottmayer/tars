@@ -36,6 +36,7 @@
     <Project Path="src/Messaging/Pottmayer.Tars.Messaging.MassTransit.RabbitMq/Pottmayer.Tars.Messaging.MassTransit.RabbitMq.csproj" Id="b7e1a2c3-d4e5-4f6a-8b9c-0d1e2f3a4b54" />
     <Project Path="src/Messaging/Pottmayer.Tars.Messaging.MassTransit.Kafka/Pottmayer.Tars.Messaging.MassTransit.Kafka.csproj" Id="b7e1a2c3-d4e5-4f6a-8b9c-0d1e2f3a4b55" />
     <Project Path="src/Messaging/Pottmayer.Tars.Messaging.MassTransit.EntityFrameworkCore/Pottmayer.Tars.Messaging.MassTransit.EntityFrameworkCore.csproj" Id="b7e1a2c3-d4e5-4f6a-8b9c-0d1e2f3a4b56" />
+    <Project Path="src/Messaging/Pottmayer.Tars.Messaging.EntityFrameworkCore/Pottmayer.Tars.Messaging.EntityFrameworkCore.csproj" Id="b7e1a2c3-d4e5-4f6a-8b9c-0d1e2f3a4b57" />
   </Folder>
   <Folder Name="/src/Observability/">
     <Project Path="src/Observability/Pottmayer.Tars.Observability.Abstractions/Pottmayer.Tars.Observability.Abstractions.csproj" />

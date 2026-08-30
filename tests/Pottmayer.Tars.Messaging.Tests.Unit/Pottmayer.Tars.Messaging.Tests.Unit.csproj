@@ -34,6 +34,7 @@
     <ProjectReference Include="..\..\src\Messaging\Pottmayer.Tars.Messaging.MassTransit\Pottmayer.Tars.Messaging.MassTransit.csproj" />
     <ProjectReference Include="..\..\src\Messaging\Pottmayer.Tars.Messaging.MassTransit.RabbitMq\Pottmayer.Tars.Messaging.MassTransit.RabbitMq.csproj" />
     <ProjectReference Include="..\..\src\Messaging\Pottmayer.Tars.Messaging.MassTransit.Kafka\Pottmayer.Tars.Messaging.MassTransit.Kafka.csproj" />
+    <ProjectReference Include="..\..\src\Messaging\Pottmayer.Tars.Messaging.EntityFrameworkCore\Pottmayer.Tars.Messaging.EntityFrameworkCore.csproj" />
   </ItemGroup>
 
 </Project>

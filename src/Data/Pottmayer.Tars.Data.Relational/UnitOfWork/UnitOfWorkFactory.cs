@@ -7,13 +7,15 @@ namespace Pottmayer.Tars.Data.Relational.UnitOfWork;
 internal sealed class UnitOfWorkFactory : IUnitOfWorkFactory
 {
     private readonly IDataContextFactory _factory;
+    private readonly IDataContextAccessor _accessor;
 
-    public UnitOfWorkFactory(IDataContextFactory factory)
+    public UnitOfWorkFactory(IDataContextFactory factory, IDataContextAccessor accessor)
     {
         _factory = factory ?? throw new ArgumentNullException(nameof(factory));
+        _accessor = accessor ?? throw new ArgumentNullException(nameof(accessor));
     }
 
-    public IUnitOfWork Create(string databaseKey) => new UnitOfWork(databaseKey, _factory);
+    public IUnitOfWork Create(string databaseKey) => new UnitOfWork(databaseKey, _factory, _accessor);
 
     public async Task ExecuteAsync(
         string databaseKey,
