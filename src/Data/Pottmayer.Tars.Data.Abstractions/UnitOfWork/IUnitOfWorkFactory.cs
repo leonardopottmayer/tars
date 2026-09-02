@@ -3,6 +3,7 @@ using Pottmayer.Tars.Data.Abstractions.Keys;
 
 namespace Pottmayer.Tars.Data.Abstractions.UnitOfWork;
 
+/// <summary>Creates <see cref="IUnitOfWork"/> instances per database key, or runs work within one directly.</summary>
 public interface IUnitOfWorkFactory
 {
     /// <summary>

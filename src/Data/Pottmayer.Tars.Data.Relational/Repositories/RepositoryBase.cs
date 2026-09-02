@@ -17,6 +17,9 @@ public abstract class RepositoryBase
 {
     private readonly RelationalDataContext _context;
 
+    /// <summary>Resolves and captures the ambient data context for this repository.</summary>
+    /// <param name="accessor">Accessor providing the ambient data context.</param>
+    /// <exception cref="InvalidOperationException">No ambient data context is present.</exception>
     protected RepositoryBase(IDataContextAccessor accessor)
     {
         _context = (accessor ?? throw new ArgumentNullException(nameof(accessor))).Current as RelationalDataContext
@@ -30,6 +33,8 @@ public abstract class RepositoryBase
     /// <summary>Shared database connection for Dapper queries in the same transaction.</summary>
     protected IDbConnection Connection => _context.Connection;
 
+    /// <summary>Registers domain events from an aggregate modified outside EF's change tracking (e.g. via Dapper).</summary>
+    /// <param name="aggregate">The aggregate whose pending domain events should be collected.</param>
     protected void CollectDomainEvents(IHasDomainEvents aggregate)
         => _context.CollectDomainEvents(aggregate);
 }

@@ -1,5 +1,6 @@
 namespace Pottmayer.Tars.Data.Abstractions.UnitOfWork;
 
+/// <summary>Options controlling how a unit of work executes delegate-based work.</summary>
 public sealed class UnitOfWorkOptions
 {
     /// <summary>When true (default), <c>CommitAsync</c> is called automatically after the delegate succeeds.</summary>

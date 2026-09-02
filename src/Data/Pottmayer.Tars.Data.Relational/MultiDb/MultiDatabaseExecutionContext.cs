@@ -3,6 +3,9 @@ using Pottmayer.Tars.Data.Relational.Abstractions.MultiDb;
 
 namespace Pottmayer.Tars.Data.Relational.MultiDb;
 
+/// <summary>
+/// Holds one <see cref="IUnitOfWork"/> per participating database for a coordinated multi-database operation.
+/// </summary>
 internal sealed class MultiDatabaseExecutionContext : IMultiDatabaseExecutionContext
 {
     private readonly Dictionary<string, IUnitOfWork> _units;

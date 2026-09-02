@@ -4,6 +4,7 @@ using Pottmayer.Tars.Data.Relational.Abstractions.DataContext;
 
 namespace Pottmayer.Tars.Data.Relational.UnitOfWork;
 
+/// <summary>Default <see cref="IUnitOfWorkFactory"/> that creates <see cref="UnitOfWork"/> instances per database key.</summary>
 internal sealed class UnitOfWorkFactory : IUnitOfWorkFactory
 {
     private readonly IDataContextFactory _factory;

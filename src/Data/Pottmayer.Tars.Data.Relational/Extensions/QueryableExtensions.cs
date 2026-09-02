@@ -11,6 +11,15 @@ namespace Pottmayer.Tars.Data.Relational.Extensions;
 /// </summary>
 public static class QueryableExtensions
 {
+    /// <summary>
+    /// Applies the predicate, ordering and paging from <paramref name="queryParams"/> and materializes the
+    /// result, including the total count before paging.
+    /// </summary>
+    /// <typeparam name="TEntity">The queried entity type.</typeparam>
+    /// <param name="source">The source queryable.</param>
+    /// <param name="queryParams">The typed query parameters, or null to return all items.</param>
+    /// <param name="cancellationToken">Token used to cancel the operation.</param>
+    /// <returns>The page of items plus the total match count.</returns>
     public static async Task<DataQueryResult<TEntity>> ToQueryResultAsync<TEntity>(
         this IQueryable<TEntity> source,
         DataQueryParams<TEntity>? queryParams,
@@ -39,6 +48,12 @@ public static class QueryableExtensions
         return new DataQueryResult<TEntity> { Items = items, TotalCount = totalCount };
     }
 
+    /// <summary>Orders the queryable by a property named at runtime.</summary>
+    /// <typeparam name="T">The element type.</typeparam>
+    /// <param name="source">The source queryable.</param>
+    /// <param name="propertyName">Name of the property to order by.</param>
+    /// <param name="ascending">Whether to order ascending.</param>
+    /// <returns>The ordered queryable.</returns>
     public static IOrderedQueryable<T> OrderByProperty<T>(this IQueryable<T> source, string propertyName, bool ascending)
     {
         var (param, access) = PropertyAccess(typeof(T), propertyName);
@@ -49,6 +64,12 @@ public static class QueryableExtensions
         return (IOrderedQueryable<T>)source.Provider.CreateQuery<T>(call);
     }
 
+    /// <summary>Adds a secondary ordering to the queryable by a property named at runtime.</summary>
+    /// <typeparam name="T">The element type.</typeparam>
+    /// <param name="source">The already-ordered queryable.</param>
+    /// <param name="propertyName">Name of the property to order by.</param>
+    /// <param name="ascending">Whether to order ascending.</param>
+    /// <returns>The ordered queryable.</returns>
     public static IOrderedQueryable<T> ThenByProperty<T>(this IOrderedQueryable<T> source, string propertyName, bool ascending)
     {
         var (param, access) = PropertyAccess(typeof(T), propertyName);
@@ -59,6 +80,7 @@ public static class QueryableExtensions
         return (IOrderedQueryable<T>)source.Provider.CreateQuery<T>(call);
     }
 
+    /// <summary>Builds the parameter and member-access expressions for a property named at runtime.</summary>
     private static (ParameterExpression, MemberExpression) PropertyAccess(Type entityType, string name)
     {
         var param = Expression.Parameter(entityType, "x");
@@ -67,6 +89,7 @@ public static class QueryableExtensions
         return (param, Expression.Property(param, prop));
     }
 
+    /// <summary>Finds a public instance property by name (case-insensitive), walking the base types.</summary>
     private static PropertyInfo? GetProperty(Type type, string name)
     {
         const BindingFlags flags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase | BindingFlags.DeclaredOnly;

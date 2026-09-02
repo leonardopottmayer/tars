@@ -22,6 +22,7 @@ public sealed class DataContext : IDataContext
     private readonly bool _isAmbientOwner;
     private bool _disposed;
 
+    /// <summary>Key identifying the logical database this context is bound to.</summary>
     public string DatabaseKey { get; }
 
     /// <summary>The underlying EF Core DbContext (for repository use only).</summary>
@@ -30,6 +31,7 @@ public sealed class DataContext : IDataContext
     /// <summary>The database connection shared with EF — use for Dapper queries in the same transaction.</summary>
     public IDbConnection Connection => _dbContext.Database.GetDbConnection();
 
+    /// <inheritdoc/>
     public IRepositoryResolver Resolver => _resolver;
 
     internal DataContext(
@@ -52,12 +54,14 @@ public sealed class DataContext : IDataContext
             accessor.SetCurrent(databaseKey, this);
     }
 
+    /// <inheritdoc/>
     public TRepository AcquireRepository<TRepository>() where TRepository : class, IRepository
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
         return _resolver.ResolveRepository<TRepository>();
     }
 
+    /// <inheritdoc/>
     public void CollectDomainEvents(IHasDomainEvents aggregate)
     {
         ArgumentNullException.ThrowIfNull(aggregate);
@@ -65,6 +69,7 @@ public sealed class DataContext : IDataContext
             _manualDomainEvents.Add(evt);
     }
 
+    /// <inheritdoc/>
     public async Task CommitAsync(CancellationToken cancellationToken = default)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
@@ -90,6 +95,7 @@ public sealed class DataContext : IDataContext
         await _dbContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
 
+    /// <summary>Drains domain events from tracked (Added/Modified/Deleted) aggregates and the manual buffer.</summary>
     private IReadOnlyList<object> CollectAllDomainEvents()
     {
         var events = new List<object>();
@@ -107,6 +113,7 @@ public sealed class DataContext : IDataContext
         return events;
     }
 
+    /// <inheritdoc/>
     public async ValueTask DisposeAsync()
     {
         if (_disposed) return;

@@ -13,6 +13,15 @@ public static class QueryParamsExtensions
 {
     private static readonly CultureInfo Culture = CultureInfo.InvariantCulture;
 
+    /// <summary>
+    /// Converts <paramref name="queryParams"/> into typed <see cref="DataQueryParams{TEntity}"/>, honoring the
+    /// <paramref name="allowedPropertyNames"/> whitelist for filters and sorting. Fields not in the whitelist
+    /// are ignored.
+    /// </summary>
+    /// <typeparam name="TEntity">The queried entity type.</typeparam>
+    /// <param name="queryParams">The source query parameters, or null.</param>
+    /// <param name="allowedPropertyNames">Whitelist of property names allowed in filters and sorts.</param>
+    /// <returns>The built typed parameters, or null when <paramref name="queryParams"/> is null.</returns>
     public static DataQueryParams<TEntity>? ToDataQueryParams<TEntity>(
         this QueryParams? queryParams,
         IReadOnlySet<string> allowedPropertyNames)
@@ -69,6 +78,7 @@ public static class QueryParamsExtensions
         };
     }
 
+    /// <summary>Builds the filter expression for a single <see cref="FilterSpec"/> against a property.</summary>
     private static Expression? BuildExpression(ParameterExpression param, PropertyInfo prop, FilterSpec spec)
     {
         var access = Expression.Property(param, prop);
@@ -91,6 +101,7 @@ public static class QueryParamsExtensions
         };
     }
 
+    /// <summary>Builds a binary comparison expression, handling null and value-type constraints.</summary>
     private static Expression? BuildBinary(MemberExpression access, object? value, Type propType,
         Func<Expression, Expression, BinaryExpression> op)
     {
@@ -102,6 +113,7 @@ public static class QueryParamsExtensions
         return op(access, Expression.Constant(value, propType));
     }
 
+    /// <summary>Builds a string method call (Contains/StartsWith/EndsWith) for string properties.</summary>
     private static Expression? BuildStringMethod(MemberExpression access, string? value, Type propType, string methodName)
     {
         if (propType != typeof(string) || string.IsNullOrEmpty(value)) return null;
@@ -109,6 +121,7 @@ public static class QueryParamsExtensions
         return Expression.Call(access, method, Expression.Constant(value));
     }
 
+    /// <summary>Builds an OR-of-equals expression for an <see cref="FilterOperator.In"/> filter.</summary>
     private static Expression? BuildIn(ParameterExpression param, PropertyInfo prop, FilterSpec spec, Type propType)
     {
         var items = new List<object?>();
@@ -145,6 +158,7 @@ public static class QueryParamsExtensions
         return expr;
     }
 
+    /// <summary>Finds a public instance property by name (case-insensitive), walking the base types.</summary>
     private static PropertyInfo? GetProperty(Type type, string name)
     {
         const BindingFlags flags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase | BindingFlags.DeclaredOnly;
@@ -156,6 +170,7 @@ public static class QueryParamsExtensions
         return null;
     }
 
+    /// <summary>Parses a raw filter value into the property's target type, returning null when it can't.</summary>
     private static object? ParseValue(object? value, Type targetType)
     {
         if (value is null)

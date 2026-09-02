@@ -11,9 +11,20 @@ namespace Pottmayer.Tars.Data.Abstractions.DataContext;
 /// </summary>
 public interface IDataContextAccessor
 {
+    /// <summary>The ambient non-keyed data context for the current async flow, if any.</summary>
     IDataContext? Current { get; }
+
+    /// <summary>Sets (or clears, when null) the ambient non-keyed data context.</summary>
+    /// <param name="context">The context to make current, or null to clear it.</param>
     void SetCurrent(IDataContext? context);
 
+    /// <summary>Gets the ambient data context tracked under <paramref name="databaseKey"/>, if any.</summary>
+    /// <param name="databaseKey">The database key identifying the context.</param>
+    /// <returns>The current context for the key, or null when none is set.</returns>
     IDataContext? GetCurrent(string databaseKey);
+
+    /// <summary>Sets (or clears, when null) the ambient data context for <paramref name="databaseKey"/>.</summary>
+    /// <param name="databaseKey">The database key identifying the context.</param>
+    /// <param name="context">The context to make current, or null to clear it.</param>
     void SetCurrent(string databaseKey, IDataContext? context);
 }

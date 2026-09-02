@@ -7,5 +7,7 @@ namespace Pottmayer.Tars.Data.Relational;
 /// </summary>
 public abstract class RelationalDbContext : DbContext
 {
+    /// <summary>Initializes the context with the given EF Core options.</summary>
+    /// <param name="options">The DbContext options.</param>
     protected RelationalDbContext(DbContextOptions options) : base(options) { }
 }

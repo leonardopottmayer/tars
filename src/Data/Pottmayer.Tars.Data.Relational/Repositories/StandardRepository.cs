@@ -15,10 +15,14 @@ namespace Pottmayer.Tars.Data.Relational.Repositories;
 /// Fields not in the whitelist are silently ignored — protecting against arbitrary filter injection.
 /// </para>
 /// </summary>
+/// <typeparam name="TEntity">The entity type managed by the repository.</typeparam>
+/// <typeparam name="TKey">The entity's key type.</typeparam>
 public class StandardRepository<TEntity, TKey> : RepositoryBase, IStandardRepository<TEntity, TKey>
     where TEntity : class
     where TKey : notnull
 {
+    /// <summary>Initializes the repository over the ambient data context.</summary>
+    /// <param name="accessor">Accessor providing the ambient data context.</param>
     public StandardRepository(IDataContextAccessor accessor) : base(accessor) { }
 
     /// <summary>
@@ -28,10 +32,12 @@ public class StandardRepository<TEntity, TKey> : RepositoryBase, IStandardReposi
     protected virtual IReadOnlySet<string> AllowedQueryFields { get; } =
         new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
+    /// <summary>The EF Core <see cref="DbSet{TEntity}"/> for this entity.</summary>
     protected DbSet<TEntity> Set => DbContext.Set<TEntity>();
 
     // ── Queryable ──
 
+    /// <inheritdoc/>
     public virtual IQueryable<TEntity> Queryable(Expression<Func<TEntity, bool>>? predicate = null)
     {
         var q = Set.AsQueryable();
@@ -40,17 +46,20 @@ public class StandardRepository<TEntity, TKey> : RepositoryBase, IStandardReposi
 
     // ── Get ──
 
+    /// <inheritdoc/>
     public virtual async Task<IEnumerable<TEntity>> GetAsync(
         Expression<Func<TEntity, bool>>? predicate = null, CancellationToken ct = default)
     {
         return await Queryable(predicate).ToListAsync(ct).ConfigureAwait(false);
     }
 
+    /// <inheritdoc/>
     public virtual async Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken ct = default)
     {
         return await Set.AsNoTracking().ToListAsync(ct).ConfigureAwait(false);
     }
 
+    /// <inheritdoc/>
     public virtual async Task<TEntity?> GetByIdAsync(TKey id, CancellationToken ct = default)
     {
         return await Set.FindAsync([id], ct).ConfigureAwait(false);
@@ -58,6 +67,7 @@ public class StandardRepository<TEntity, TKey> : RepositoryBase, IStandardReposi
 
     // ── Add ──
 
+    /// <inheritdoc/>
     public virtual async Task<TEntity> AddAsync(TEntity entity, CancellationToken ct = default)
     {
         ArgumentNullException.ThrowIfNull(entity);
@@ -65,6 +75,7 @@ public class StandardRepository<TEntity, TKey> : RepositoryBase, IStandardReposi
         return entry.Entity;
     }
 
+    /// <inheritdoc/>
     public virtual async Task AddRangeAsync(IEnumerable<TEntity> entities, CancellationToken ct = default)
     {
         ArgumentNullException.ThrowIfNull(entities);
@@ -73,12 +84,14 @@ public class StandardRepository<TEntity, TKey> : RepositoryBase, IStandardReposi
 
     // ── Update ──
 
+    /// <inheritdoc/>
     public virtual Task<TEntity> UpdateAsync(TEntity entity, CancellationToken ct = default)
     {
         ArgumentNullException.ThrowIfNull(entity);
         return Task.FromResult(Set.Update(entity).Entity);
     }
 
+    /// <inheritdoc/>
     public virtual Task UpdateRangeAsync(IEnumerable<TEntity> entities, CancellationToken ct = default)
     {
         ArgumentNullException.ThrowIfNull(entities);
@@ -88,6 +101,7 @@ public class StandardRepository<TEntity, TKey> : RepositoryBase, IStandardReposi
 
     // ── Remove ──
 
+    /// <inheritdoc/>
     public virtual async Task<TEntity?> RemoveByKeyAsync(TKey key, CancellationToken ct = default)
     {
         var entity = await Set.FindAsync([key], ct).ConfigureAwait(false);
@@ -95,12 +109,14 @@ public class StandardRepository<TEntity, TKey> : RepositoryBase, IStandardReposi
         return Set.Remove(entity).Entity;
     }
 
+    /// <inheritdoc/>
     public virtual Task<TEntity> RemoveAsync(TEntity entity, CancellationToken ct = default)
     {
         ArgumentNullException.ThrowIfNull(entity);
         return Task.FromResult(Set.Remove(entity).Entity);
     }
 
+    /// <inheritdoc/>
     public virtual Task RemoveRangeAsync(IEnumerable<TEntity> entities, CancellationToken ct = default)
     {
         ArgumentNullException.ThrowIfNull(entities);
@@ -110,23 +126,27 @@ public class StandardRepository<TEntity, TKey> : RepositoryBase, IStandardReposi
 
     // ── Exists / Count / Any ──
 
+    /// <inheritdoc/>
     public virtual async Task<bool> ExistsKeyAsync(TKey key, CancellationToken ct = default)
     {
         return await Set.FindAsync([key], ct).ConfigureAwait(false) is not null;
     }
 
+    /// <inheritdoc/>
     public virtual async Task<bool> ExistsAsync(Expression<Func<TEntity, bool>>? predicate = null, CancellationToken ct = default)
     {
         var q = predicate is null ? Set.AsQueryable() : Set.Where(predicate);
         return await q.AnyAsync(ct).ConfigureAwait(false);
     }
 
+    /// <inheritdoc/>
     public virtual async Task<int> CountAsync(Expression<Func<TEntity, bool>>? predicate = null, CancellationToken ct = default)
     {
         var q = predicate is null ? Set.AsQueryable() : Set.Where(predicate);
         return await q.CountAsync(ct).ConfigureAwait(false);
     }
 
+    /// <inheritdoc/>
     public virtual async Task<bool> AnyAsync(Expression<Func<TEntity, bool>>? predicate = null, CancellationToken ct = default)
     {
         var q = predicate is null ? Set.AsQueryable() : Set.Where(predicate);
@@ -135,6 +155,7 @@ public class StandardRepository<TEntity, TKey> : RepositoryBase, IStandardReposi
 
     // ── First ──
 
+    /// <inheritdoc/>
     public virtual async Task<TEntity?> FirstOrDefaultAsync(Expression<Func<TEntity, bool>>? predicate = null, CancellationToken ct = default)
     {
         var q = predicate is null ? Set.AsQueryable() : Set.Where(predicate);
@@ -143,6 +164,7 @@ public class StandardRepository<TEntity, TKey> : RepositoryBase, IStandardReposi
 
     // ── Paged ──
 
+    /// <inheritdoc/>
     public virtual async Task<IEnumerable<TEntity>> GetPagedAsync(
         int skip, int take, Expression<Func<TEntity, bool>>? predicate = null, CancellationToken ct = default)
     {
@@ -152,6 +174,7 @@ public class StandardRepository<TEntity, TKey> : RepositoryBase, IStandardReposi
 
     // ── Dynamic query ──
 
+    /// <inheritdoc/>
     public virtual async Task<DataQueryResult<TEntity>> ExecuteQueryAsync(QueryParams? queryParams = null, CancellationToken ct = default)
     {
         var dataParams = queryParams?.ToDataQueryParams<TEntity>(AllowedQueryFields);

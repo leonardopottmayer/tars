@@ -12,10 +12,13 @@ public sealed class DataContextAccessor : IDataContextAccessor
     private readonly AsyncLocal<IDataContext?> _current = new();
     private readonly AsyncLocal<Dictionary<string, IDataContext?>?> _keyed = new();
 
+    /// <inheritdoc/>
     public IDataContext? Current => _current.Value;
 
+    /// <inheritdoc/>
     public void SetCurrent(IDataContext? context) => _current.Value = context;
 
+    /// <inheritdoc/>
     public IDataContext? GetCurrent(string databaseKey)
     {
         ArgumentException.ThrowIfNullOrEmpty(databaseKey);
@@ -23,6 +26,7 @@ public sealed class DataContextAccessor : IDataContextAccessor
         return dict is not null && dict.TryGetValue(databaseKey, out var ctx) ? ctx : null;
     }
 
+    /// <inheritdoc/>
     public void SetCurrent(string databaseKey, IDataContext? context)
     {
         ArgumentException.ThrowIfNullOrEmpty(databaseKey);

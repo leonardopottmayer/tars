@@ -16,11 +16,14 @@ public sealed class ConfigurationDataConnectionResolver : IDataConnectionResolve
 {
     private readonly IConfiguration _configuration;
 
+    /// <summary>Creates the resolver over the application configuration.</summary>
+    /// <param name="configuration">The configuration to read connections from.</param>
     public ConfigurationDataConnectionResolver(IConfiguration configuration)
     {
         _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
     }
 
+    /// <inheritdoc/>
     public Task<IDataConnectionDescriptor?> ResolveAsync(
         DataConnectionResolutionContext context,
         CancellationToken cancellationToken = default)
@@ -56,6 +59,7 @@ public sealed class ConfigurationDataConnectionResolver : IDataConnectionResolve
         return Task.FromResult<IDataConnectionDescriptor?>(null);
     }
 
+    /// <summary>Builds a descriptor from a configuration section, parsing the provider and tenant scoping.</summary>
     private static DataConnectionDescriptor Build(
         string key, string cs, IConfiguration section,
         string? tenantKey = null, bool isTenantScoped = false)
