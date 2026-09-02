@@ -112,12 +112,22 @@ public interface ITenantStore
 
 ```csharp
 // Program.cs
-builder.Services.AddTarsMultitenancy();
+using Pottmayer.Tars.Multitenancy.DI;
+
+// 1. Register the ambient context services.
+builder.Services.AddTarsTenantContextAccessor();
+builder.Services.AddTarsTenantContextFactory();
+
+// 2. Configure the resolution pipeline.
 builder.Services.AddTarsTenantResolution(options =>
 {
     options.AddResolver(new HeaderTenantResolver("X-Tenant-Key"));
 });
 ```
+
+The calls are listed in their recommended order, but their order does not affect resolution because
+the runtime services are factory-resolved. Every registration uses `TryAdd`, so register a custom
+implementation before the corresponding Tars method when it must take precedence.
 
 For complete scenarios with all options, see [configuration.md](./configuration.md).
 

@@ -18,6 +18,7 @@ public sealed class HeaderTenantResolver : ITenantResolver
         _headerName = headerName;
     }
 
+    /// <inheritdoc/>
     public ValueTask<TenantResolutionResult> ResolveAsync(
         TenantResolutionRequest request,
         CancellationToken cancellationToken = default)

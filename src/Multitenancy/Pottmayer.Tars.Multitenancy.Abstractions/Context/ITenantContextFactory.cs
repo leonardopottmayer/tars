@@ -7,5 +7,8 @@ namespace Pottmayer.Tars.Multitenancy.Abstractions.Context;
 /// </summary>
 public interface ITenantContextFactory
 {
+    /// <summary>Creates a tenant context from a resolution result.</summary>
+    /// <param name="resolutionResult">The tenant resolution result.</param>
+    /// <returns>The corresponding tenant context.</returns>
     ITenantContext Create(TenantResolutionResult resolutionResult);
 }

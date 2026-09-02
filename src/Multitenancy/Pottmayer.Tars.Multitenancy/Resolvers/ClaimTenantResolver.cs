@@ -17,6 +17,7 @@ public sealed class ClaimTenantResolver : ITenantResolver
         _claimType = claimType;
     }
 
+    /// <inheritdoc/>
     public ValueTask<TenantResolutionResult> ResolveAsync(
         TenantResolutionRequest request,
         CancellationToken cancellationToken = default)

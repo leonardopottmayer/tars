@@ -9,6 +9,7 @@ namespace Pottmayer.Tars.Multitenancy.AspNetCore.Resolvers;
 /// </summary>
 public sealed class SubdomainTenantResolver : ITenantResolver
 {
+    /// <inheritdoc/>
     public ValueTask<TenantResolutionResult> ResolveAsync(
         TenantResolutionRequest request,
         CancellationToken cancellationToken = default)

@@ -5,6 +5,7 @@ using Pottmayer.Tars.Multitenancy.Abstractions.Execution;
 using Pottmayer.Tars.Multitenancy.Abstractions.Resolvers;
 using Pottmayer.Tars.Multitenancy.Catalog;
 using Pottmayer.Tars.Multitenancy.Context;
+using Pottmayer.Tars.Multitenancy.DI;
 using Pottmayer.Tars.Multitenancy.Execution;
 using Pottmayer.Tars.Multitenancy.Resolvers;
 
@@ -12,6 +13,30 @@ namespace Pottmayer.Tars.Multitenancy.Tests.Unit;
 
 public class PipelineAndExecutionTests
 {
+    [Fact]
+    public async Task Granular_registrations_resolve_multitenancy_services()
+    {
+        var services = new ServiceCollection();
+        services.AddTarsTenantContextAccessor();
+        services.AddTarsTenantContextFactory();
+        services.AddTarsTenantExecutionScopeFactory();
+        services.AddTarsTenantExecutionRunner();
+        services.AddTarsTenantResolution(configuration => configuration.AddResolver(new StaticTenantResolver("acme")));
+
+        await using var provider = services.BuildServiceProvider();
+        await using var scope = provider.CreateAsyncScope();
+
+        provider.GetRequiredService<ITenantContextAccessor>().Should().NotBeNull();
+        provider.GetRequiredService<ITenantContextFactory>().Should().NotBeNull();
+        provider.GetRequiredService<ITenantExecutionScopeFactory>().Should().NotBeNull();
+        scope.ServiceProvider.GetRequiredService<ITenantExecutionRunner>().Should().NotBeNull();
+
+        var result = await provider.GetRequiredService<ITenantResolverPipeline>()
+            .ResolveAsync(new TenantResolutionRequest());
+
+        result.TenantKey.Should().Be("acme");
+    }
+
     [Fact]
     public async Task Pipeline_returns_first_resolved_result()
     {

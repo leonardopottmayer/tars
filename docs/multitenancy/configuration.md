@@ -5,12 +5,22 @@
 The absolute minimum for the tenant context to work:
 
 ```csharp
-builder.Services.AddTarsMultitenancy();
+using Pottmayer.Tars.Multitenancy.DI;
+
+// 1. Register the ambient context services.
+builder.Services.AddTarsTenantContextAccessor();
+builder.Services.AddTarsTenantContextFactory();
+
+// 2. Configure the resolution pipeline.
 builder.Services.AddTarsTenantResolution(options =>
 {
     options.AddResolver(new StaticTenantResolver("acme"));
 });
 ```
+
+The calls are shown in their recommended order, but order does not affect resolution because the
+runtime services are factory-resolved. The registration methods use `TryAdd`; register a custom
+implementation before its Tars registration when the custom implementation must win.
 
 ---
 
@@ -18,7 +28,8 @@ builder.Services.AddTarsTenantResolution(options =>
 
 ```csharp
 // Program.cs
-builder.Services.AddTarsMultitenancy();
+builder.Services.AddTarsTenantContextAccessor();
+builder.Services.AddTarsTenantContextFactory();
 builder.Services.AddTarsHeaderTenantResolver("X-Tenant-Key");
 builder.Services.AddTarsTenantResolution(options =>
 {
@@ -74,7 +85,8 @@ public sealed class ConfigurationTenantCatalog : ITenantCatalog
 
 ```csharp
 // Program.cs
-builder.Services.AddTarsMultitenancy();
+builder.Services.AddTarsTenantContextAccessor();
+builder.Services.AddTarsTenantContextFactory();
 builder.Services.AddTarsSubdomainTenantResolver();
 builder.Services.AddTarsTenantResolution(options =>
 {
@@ -103,7 +115,8 @@ app.Run();
 
 ```csharp
 // Program.cs
-builder.Services.AddTarsMultitenancy();
+builder.Services.AddTarsTenantContextAccessor();
+builder.Services.AddTarsTenantContextFactory();
 builder.Services.AddTarsTenantStore<DatabaseTenantStore>();
 builder.Services.AddTarsTenantCatalog<DatabaseTenantCatalog>();
 
@@ -191,7 +204,8 @@ public class TenantSyncWorker : BackgroundService
 
 ```csharp
 // Program.cs
-builder.Services.AddTarsMultitenancy();
+builder.Services.AddTarsTenantContextAccessor();
+builder.Services.AddTarsTenantExecutionRunner();
 builder.Services.AddTarsTenantCatalog<ConfigurationTenantCatalog>();
 builder.Services.Configure<TenantSyncOptions>(builder.Configuration.GetSection("TenantSync"));
 builder.Services.AddHostedService<TenantSyncWorker>();
@@ -216,7 +230,8 @@ builder.Services.AddScoped<ISyncService, SyncService>();
 
 ```csharp
 // Program.cs
-builder.Services.AddTarsMultitenancy();
+builder.Services.AddTarsTenantContextAccessor();
+builder.Services.AddTarsTenantContextFactory();
 builder.Services.AddTarsHeaderTenantResolver("X-Tenant-Key");
 builder.Services.AddTarsTenantResolution(options =>
 {
@@ -251,7 +266,8 @@ app.Run();
 
 ```csharp
 // Program.cs
-builder.Services.AddTarsMultitenancy();
+builder.Services.AddTarsTenantContextAccessor();
+builder.Services.AddTarsTenantContextFactory();
 builder.Services.AddTarsHeaderTenantResolver("X-Tenant-Key");
 builder.Services.AddTarsTenantResolution(options =>
 {
@@ -277,7 +293,10 @@ app.Run();
 
 | Method | Package | Description |
 |---|---|---|
-| `AddTarsMultitenancy()` | `Multitenancy` | Registers the accessor, factory, scope factory and runner |
+| `AddTarsTenantContextAccessor()` | `Multitenancy` | Registers the ambient tenant context accessor |
+| `AddTarsTenantContextFactory()` | `Multitenancy` | Registers the factory that creates contexts from resolution results |
+| `AddTarsTenantExecutionScopeFactory()` | `Multitenancy` | Registers the ambient tenant execution scope factory |
+| `AddTarsTenantExecutionRunner()` | `Multitenancy` | Registers the scoped per-tenant execution runner |
 | `AddTarsTenantResolution(options => ...)` | `Multitenancy` | Registers the pipeline with the configured resolvers |
 | `AddTarsInMemoryTenantCatalog(keys)` | `Multitenancy` | In-memory catalog with a fixed list of keys |
 | `AddTarsTenantCatalog<T>()` | `Multitenancy` | Custom catalog |
@@ -292,7 +311,7 @@ app.Run();
 
 ```csharp
 // DO NOT use — forbidden aggregator
-services.AddTarsMultitenancyCore();
+services.AddTarsMultitenancy();
 ```
 
 Registration is always composed by calling the individual methods above.

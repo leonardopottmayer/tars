@@ -7,6 +7,10 @@ namespace Pottmayer.Tars.Multitenancy.Abstractions.Resolvers;
 /// </summary>
 public interface ITenantResolver
 {
+    /// <summary>Attempts to resolve the current tenant.</summary>
+    /// <param name="request">The context available to the resolver.</param>
+    /// <param name="cancellationToken">A token that cancels the operation.</param>
+    /// <returns>The resolution result.</returns>
     ValueTask<TenantResolutionResult> ResolveAsync(
         TenantResolutionRequest request,
         CancellationToken cancellationToken = default);

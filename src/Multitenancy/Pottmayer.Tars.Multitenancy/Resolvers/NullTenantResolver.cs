@@ -7,6 +7,7 @@ namespace Pottmayer.Tars.Multitenancy.Resolvers;
 /// </summary>
 public sealed class NullTenantResolver : ITenantResolver
 {
+    /// <inheritdoc/>
     public ValueTask<TenantResolutionResult> ResolveAsync(
         TenantResolutionRequest request,
         CancellationToken cancellationToken = default)

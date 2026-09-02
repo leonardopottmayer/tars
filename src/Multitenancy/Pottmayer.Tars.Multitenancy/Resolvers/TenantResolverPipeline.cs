@@ -15,6 +15,7 @@ public sealed class TenantResolverPipeline : ITenantResolverPipeline
         _resolvers = (resolvers ?? throw new ArgumentNullException(nameof(resolvers))).ToList();
     }
 
+    /// <inheritdoc/>
     public async ValueTask<TenantResolutionResult> ResolveAsync(
         TenantResolutionRequest request,
         CancellationToken cancellationToken = default)

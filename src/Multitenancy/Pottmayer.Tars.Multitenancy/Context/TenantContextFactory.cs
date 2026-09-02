@@ -9,6 +9,7 @@ namespace Pottmayer.Tars.Multitenancy.Context;
 /// </summary>
 public sealed class TenantContextFactory : ITenantContextFactory
 {
+    /// <inheritdoc/>
     public ITenantContext Create(TenantResolutionResult resolutionResult)
     {
         ArgumentNullException.ThrowIfNull(resolutionResult);

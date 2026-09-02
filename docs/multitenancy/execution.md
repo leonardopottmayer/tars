@@ -15,7 +15,7 @@ Runs work inside an isolated DI scope per tenant. For each tenant it:
 3. Runs the delegate
 4. Restores the previous context and disposes the scope
 
-Registered as `Scoped` by `AddTarsMultitenancy()`.
+Registered as `Scoped` by `AddTarsTenantExecutionRunner()`.
 
 ### Run for a specific tenant
 
@@ -175,7 +175,8 @@ Worker registration:
 
 ```csharp
 builder.Services.AddHostedService<TenantSyncWorker>();
-builder.Services.AddTarsMultitenancy();
+builder.Services.AddTarsTenantContextAccessor();
+builder.Services.AddTarsTenantExecutionRunner();
 builder.Services.AddTarsInMemoryTenantCatalog(["acme", "globex"]);
 ```
 

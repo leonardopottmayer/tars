@@ -81,7 +81,8 @@ builder.Services.AddTarsTenantResolution(options =>
 
 ```csharp
 // Program.cs
-builder.Services.AddTarsMultitenancy();
+builder.Services.AddTarsTenantContextAccessor();
+builder.Services.AddTarsTenantContextFactory();
 builder.Services.AddTarsHeaderTenantResolver("X-Tenant-Key");
 builder.Services.AddTarsTenantResolution(options =>
 {
@@ -94,7 +95,8 @@ app.UseTarsTenantResolution();
 ### Public app — subdomain as primary, header as fallback (admin/tests)
 
 ```csharp
-builder.Services.AddTarsMultitenancy();
+builder.Services.AddTarsTenantContextAccessor();
+builder.Services.AddTarsTenantContextFactory();
 builder.Services.AddTarsSubdomainTenantResolver();
 builder.Services.AddTarsHeaderTenantResolver("X-Tenant-Key");
 builder.Services.AddTarsTenantResolution(options =>
@@ -109,7 +111,8 @@ app.UseTarsTenantResolution();
 ### SaaS with login — JWT claim as primary
 
 ```csharp
-builder.Services.AddTarsMultitenancy();
+builder.Services.AddTarsTenantContextAccessor();
+builder.Services.AddTarsTenantContextFactory();
 builder.Services.AddTarsHeaderTenantResolver("X-Tenant-Key");
 builder.Services.AddTarsTenantResolution(options =>
 {

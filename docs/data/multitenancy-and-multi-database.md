@@ -263,7 +263,8 @@ services.AddTarsDataRepositoriesFromAssemblies(typeof(AppAssemblyMarker).Assembl
 Tenant resolution is pluggable and composed of resolvers in order. The framework does not assume that the tenant identity always comes from a subdomain, header, claim or HTTP.
 
 ```csharp
-builder.Services.AddTarsMultitenancy();
+builder.Services.AddTarsTenantContextAccessor();
+builder.Services.AddTarsTenantContextFactory();
 builder.Services.AddTarsHeaderTenantResolver("X-Tenant-Key");
 builder.Services.AddTarsTenantResolution(options =>
 {
@@ -426,7 +427,8 @@ Replaces the per-tenant block with a template (see §5.3). Ideal when databases 
 ### 9.5 HTTP with a tenant header
 
 ```csharp
-builder.Services.AddTarsMultitenancy();
+builder.Services.AddTarsTenantContextAccessor();
+builder.Services.AddTarsTenantContextFactory();
 builder.Services.AddTarsHeaderTenantResolver("X-Tenant-Key");
 builder.Services.AddTarsTenantResolution(o => o.AddResolver<HeaderTenantResolver>());
 // + data infrastructure + AddTarsData<T>("primary", ...)

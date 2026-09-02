@@ -132,7 +132,8 @@ builder.Services.AddTarsMemoryCacheProvider();
 If the application is multi-tenant:
 
 ```csharp
-builder.Services.AddTarsMultitenancy();
+builder.Services.AddTarsTenantContextAccessor();
+builder.Services.AddTarsTenantContextFactory();
 builder.Services.AddTarsTenantResolution(options =>
 {
     options.AddResolver(new HeaderTenantResolver("X-Tenant-Key"));

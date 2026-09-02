@@ -17,6 +17,7 @@ public sealed class StaticTenantResolver : ITenantResolver
         _tenantKey = tenantKey;
     }
 
+    /// <inheritdoc/>
     public ValueTask<TenantResolutionResult> ResolveAsync(
         TenantResolutionRequest request,
         CancellationToken cancellationToken = default)

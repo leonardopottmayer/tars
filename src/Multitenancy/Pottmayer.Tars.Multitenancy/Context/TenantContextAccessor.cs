@@ -10,8 +10,10 @@ public sealed class TenantContextAccessor : ITenantContextAccessor
 {
     private readonly AsyncLocal<ITenantContext?> _current = new();
 
+    /// <inheritdoc/>
     public ITenantContext? Current => _current.Value;
 
+    /// <inheritdoc/>
     public void SetCurrent(ITenantContext? context)
     {
         _current.Value = context;
