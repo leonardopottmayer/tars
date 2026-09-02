@@ -1,10 +1,6 @@
 using FluentAssertions;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Options;
-using Moq;
-using Pottmayer.Tars.Caching.Abstractions;
-using Pottmayer.Tars.Caching.Core;
-using Pottmayer.Tars.Caching.Core.Options;
+using Pottmayer.Tars.Caching;
 using Pottmayer.Tars.Caching.Memory;
 
 namespace Pottmayer.Tars.Caching.Tests.Unit;
@@ -13,9 +9,7 @@ public class MemoryCacheStoreTests
 {
     private static MemoryCacheStore Create()
     {
-        var monitor = new Mock<IOptionsMonitor<CacheOptions>>();
-        monitor.SetupGet(m => m.CurrentValue).Returns(new CacheOptions { KeyPrefix = "t", KeySeparator = ":" });
-        var keys = new DefaultCacheKeyBuilder(monitor.Object);
+        var keys = new DefaultCacheKeyBuilder(new TestCachingOptions { KeyPrefix = "t", KeySeparator = ":" });
         return new MemoryCacheStore(new MemoryCache(new MemoryCacheOptions()), keys);
     }
 

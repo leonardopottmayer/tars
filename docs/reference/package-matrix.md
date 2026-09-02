@@ -24,9 +24,9 @@ See [taxonomy.md](./taxonomy.md) for the complete definition of the levels and c
 | Project | Level | Classification | Role |
 |---|---|---|---|
 | `Pottmayer.Tars.Caching.Abstractions` | Abstractions | Optional | contracts (`ICacheStore`, `ICacheSerializer`, `ICacheKeyBuilder`) |
-| `Pottmayer.Tars.Caching.Core` | Runtime | Optional | default JSON serializer, default key builder, `CacheOptions` |
-| `Pottmayer.Tars.Caching.Memory` | Provider | Optional | provider over `IMemoryCache` |
-| `Pottmayer.Tars.Caching.Redis` | Provider | Optional | Redis provider and connection options |
+| `Pottmayer.Tars.Caching` | Runtime | Optional | default JSON serializer, default key builder, abstract `CachingOptions` base |
+| `Pottmayer.Tars.Caching.Memory` | Provider | Optional | provider over `IMemoryCache`, `MemoryCachingOptions` |
+| `Pottmayer.Tars.Caching.Redis` | Provider | Optional | Redis provider, `RedisCachingOptions` (connection + shared settings) |
 
 ## Messaging
 

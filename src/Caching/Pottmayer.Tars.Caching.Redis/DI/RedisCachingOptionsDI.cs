@@ -6,21 +6,33 @@ using Pottmayer.Tars.Caching.Redis.Options;
 
 namespace Pottmayer.Tars.Caching.Redis.DI
 {
+    /// <summary>
+    /// Registration helper that binds <see cref="Options.RedisCachingOptions"/> from configuration.
+    /// </summary>
     public static class RedisCachingOptionsDI
     {
-        public static OptionsBuilder<RedisCacheOptions> AddTarsRedisCachingOptions(
+        /// <summary>
+        /// Binds <see cref="RedisCachingOptions"/> from configuration (default section
+        /// <see cref="RedisCachingOptions.SectionName"/>, i.e. <c>Tars:Caching:Redis</c>) and validates it on
+        /// application start.
+        /// </summary>
+        /// <param name="builder">The host application builder whose configuration and services are used.</param>
+        /// <param name="sectionName">Configuration section to bind. Defaults to <see cref="RedisCachingOptions.SectionName"/>.</param>
+        /// <param name="configure">Optional code-based overrides applied after binding.</param>
+        /// <returns>The <see cref="OptionsBuilder{TOptions}"/> for further configuration.</returns>
+        public static OptionsBuilder<RedisCachingOptions> AddTarsRedisCachingOptions(
             this IHostApplicationBuilder builder,
             string? sectionName = null,
-            Action<RedisCacheOptions>? configure = null)
+            Action<RedisCachingOptions>? configure = null)
         {
-            sectionName ??= RedisCacheOptions.SectionName;
+            sectionName ??= RedisCachingOptions.SectionName;
 
             var section = builder.Configuration.GetSection(sectionName);
 
             var ob = builder.Services
-                .AddOptions<RedisCacheOptions>()
+                .AddOptions<RedisCachingOptions>()
                 .Bind(section)
-                .Validate(RedisCacheOptionsValidation.Validate, RedisCacheOptions.ValidationErrorMessage)
+                .Validate(RedisCachingOptionsValidation.Validate, RedisCachingOptions.ValidationErrorMessage)
                 .ValidateOnStart();
 
             if (configure is not null)

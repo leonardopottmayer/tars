@@ -1,13 +1,21 @@
+using Pottmayer.Tars.Caching.Options;
 using StackExchange.Redis;
 
 namespace Pottmayer.Tars.Caching.Redis.Options
 {
-    public sealed class RedisCacheOptions
+    /// <summary>
+    /// Options for the Redis caching provider, bound from configuration. Extends <see cref="CachingOptions"/>
+    /// with the connection string and StackExchange.Redis tuning, and projects them into a
+    /// <see cref="ConfigurationOptions"/> via <see cref="ToConfigurationOptions"/>.
+    /// </summary>
+    public sealed class RedisCachingOptions : CachingOptions
     {
+        /// <summary>Default configuration section these options bind from (<c>Tars:Caching:Redis</c>).</summary>
         public const string SectionName = "Tars:Caching:Redis";
 
+        /// <summary>Message reported when validation fails on application start.</summary>
         public const string ValidationErrorMessage =
-            "Invalid RedisCacheOptions. ConnectionString is required; Database must be >= 0 when provided; timeouts/KeepAlive must be positive.";
+            "Invalid RedisCachingOptions. ConnectionString is required; Database must be >= 0 when provided; timeouts/KeepAlive must be positive.";
 
         /// <summary>
         /// Redis connection string (e.g. "localhost:6379,password=...,ssl=True,abortConnect=False").
@@ -29,18 +37,32 @@ namespace Pottmayer.Tars.Caching.Redis.Options
         /// </summary>
         public bool AbortOnConnectFail { get; init; } = false;
 
+        /// <summary>Number of connection retry attempts on initial connect.</summary>
         public int ConnectRetry { get; init; } = 3;
 
+        /// <summary>Timeout for establishing the connection to Redis.</summary>
         public TimeSpan ConnectTimeout { get; init; } = TimeSpan.FromSeconds(5);
 
+        /// <summary>Timeout for synchronous Redis operations.</summary>
         public TimeSpan SyncTimeout { get; init; } = TimeSpan.FromSeconds(5);
 
+        /// <summary>Interval between keep-alive pings that hold the connection open.</summary>
         public TimeSpan KeepAlive { get; init; } = TimeSpan.FromSeconds(60);
 
+        /// <summary>Allows admin (potentially dangerous) operations on the connection, e.g. server commands.</summary>
         public bool AllowAdmin { get; init; } = false;
 
-        public bool IsValid()
+        /// <summary>
+        /// Returns <c>true</c> when the options are internally consistent: the shared caching checks pass
+        /// (see <see cref="CachingOptions.IsValid"/>), a connection string is present, the database index
+        /// (when set) is non-negative, retry count is non-negative and all timeouts and keep-alive are
+        /// strictly positive.
+        /// </summary>
+        public override bool IsValid()
         {
+            if (!base.IsValid())
+                return false;
+
             if (string.IsNullOrWhiteSpace(ConnectionString))
                 return false;
 
@@ -62,6 +84,11 @@ namespace Pottmayer.Tars.Caching.Redis.Options
             return true;
         }
 
+        /// <summary>
+        /// Builds the StackExchange.Redis <see cref="ConfigurationOptions"/> from these options, parsing the
+        /// connection string and applying the configured retry, timeout, keep-alive, client name and database.
+        /// </summary>
+        /// <returns>The configured <see cref="ConfigurationOptions"/> used to connect the multiplexer.</returns>
         public ConfigurationOptions ToConfigurationOptions()
         {
             var cfg = ConfigurationOptions.Parse(ConnectionString, ignoreUnknown: true);

@@ -1,11 +1,17 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Pottmayer.Tars.Caching.Abstractions;
-using Pottmayer.Tars.Caching.Core.Options;
+using Pottmayer.Tars.Caching.Redis.Options;
 using StackExchange.Redis;
 
 namespace Pottmayer.Tars.Caching.Redis
 {
+    /// <summary>
+    /// Redis-backed <see cref="ICacheStore"/> using StackExchange.Redis. Each entry is stored as a Redis hash
+    /// holding the serialized payload plus optional absolute-deadline and sliding-expiration metadata, so both
+    /// expiration modes are honored (sliding TTL is renewed on read). Read failures are logged and treated as
+    /// cache misses rather than surfaced to the caller.
+    /// </summary>
     public sealed class RedisCacheStore : ICacheStore
     {
         private static readonly RedisValue[] HashFields =
@@ -18,14 +24,22 @@ namespace Pottmayer.Tars.Caching.Redis
         private readonly IDatabase _db;
         private readonly ICacheKeyBuilder _keys;
         private readonly ICacheSerializer _serializer;
-        private readonly IOptionsMonitor<CacheOptions> _cacheOptionsMonitor;
+        private readonly IOptionsMonitor<RedisCachingOptions> _cacheOptionsMonitor;
         private readonly ILogger<RedisCacheStore> _logger;
 
+        /// <summary>
+        /// Creates the store over the given Redis database, key builder, serializer and caching options.
+        /// </summary>
+        /// <param name="db">The Redis database to operate on.</param>
+        /// <param name="keys">Builder that namespaces logical keys into storage keys.</param>
+        /// <param name="serializer">Serializer used for entry payloads.</param>
+        /// <param name="cacheOptionsMonitor">Caching options, watched for the default expiration.</param>
+        /// <param name="logger">Logger for best-effort/failed Redis operations.</param>
         public RedisCacheStore(
             IDatabase db,
             ICacheKeyBuilder keys,
             ICacheSerializer serializer,
-            IOptionsMonitor<CacheOptions> cacheOptionsMonitor,
+            IOptionsMonitor<RedisCachingOptions> cacheOptionsMonitor,
             ILogger<RedisCacheStore> logger)
         {
             _db = db ?? throw new ArgumentNullException(nameof(db));
@@ -35,6 +49,7 @@ namespace Pottmayer.Tars.Caching.Redis
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
+        /// <inheritdoc/>
         public async ValueTask SetAsync<T>(string key, T value, CacheEntryOptions? options = null, CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
@@ -72,15 +87,18 @@ namespace Pottmayer.Tars.Caching.Redis
             }
         }
 
+        /// <inheritdoc/>
         public async ValueTask<T?> GetAsync<T>(string key, CancellationToken ct = default)
         {
             var result = await TryGetInternalAsync<T>(key, ct).ConfigureAwait(false);
             return result.Found ? result.Value : default;
         }
 
+        /// <inheritdoc/>
         public ValueTask<CacheGetResult<T>> TryGetAsync<T>(string key, CancellationToken ct = default)
             => TryGetInternalAsync<T>(key, ct);
 
+        /// <inheritdoc/>
         public async ValueTask RemoveAsync(string key, CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
@@ -88,6 +106,7 @@ namespace Pottmayer.Tars.Caching.Redis
             await _db.KeyDeleteAsync(k).ConfigureAwait(false);
         }
 
+        /// <inheritdoc/>
         public async ValueTask<bool> ExistsAsync(string key, CancellationToken ct = default)
         {
             ct.ThrowIfCancellationRequested();
@@ -95,6 +114,7 @@ namespace Pottmayer.Tars.Caching.Redis
             return await _db.KeyExistsAsync(k).ConfigureAwait(false);
         }
 
+        /// <inheritdoc/>
         public async ValueTask<T> GetOrSetAsync<T>(
             string key,
             Func<CancellationToken, Task<T>> factory,
@@ -110,6 +130,11 @@ namespace Pottmayer.Tars.Caching.Redis
             return value;
         }
 
+        /// <summary>
+        /// Core read path: fetches the hash, enforces absolute and sliding expiration (deleting expired keys
+        /// and renewing sliding TTL on hit), deserializes the payload, and treats any Redis or deserialization
+        /// failure as a miss.
+        /// </summary>
         private async ValueTask<CacheGetResult<T>> TryGetInternalAsync<T>(string key, CancellationToken ct)
         {
             ct.ThrowIfCancellationRequested();
@@ -173,6 +198,10 @@ namespace Pottmayer.Tars.Caching.Redis
             return new CacheGetResult<T>(true, typed);
         }
 
+        /// <summary>
+        /// Resolves the absolute TTL and its UTC deadline ticks from the entry options, falling back to the
+        /// configured default. Returns <c>(null, null)</c> when no positive absolute expiration applies.
+        /// </summary>
         private (TimeSpan? ttl, long? deadlineUtcTicks) ResolveAbsoluteExpiration(DateTimeOffset now, CacheEntryOptions? options)
         {
             var ttl = options?.AbsoluteExpirationRelativeToNow ?? _cacheOptionsMonitor.CurrentValue.DefaultAbsoluteExpirationRelativeToNow;
@@ -186,6 +215,10 @@ namespace Pottmayer.Tars.Caching.Redis
             return (ttl, deadline.UtcTicks);
         }
 
+        /// <summary>
+        /// Resolves the sliding expiration in milliseconds from the entry options, or <c>null</c> when none
+        /// (or non-positive) is set.
+        /// </summary>
         private static int? ResolveSlidingExpirationMs(CacheEntryOptions? options)
         {
             if (options?.SlidingExpiration is null)
@@ -198,6 +231,10 @@ namespace Pottmayer.Tars.Caching.Redis
             return ms;
         }
 
+        /// <summary>
+        /// Computes the TTL to apply on write as the smaller of the absolute and sliding windows, or
+        /// <c>null</c> when neither is set.
+        /// </summary>
         private static TimeSpan? ResolveInitialTtl(TimeSpan? absoluteTtl, int? slidingMs)
         {
             if (absoluteTtl is null && slidingMs is null)
@@ -214,6 +251,10 @@ namespace Pottmayer.Tars.Caching.Redis
             return absoluteTtl.Value <= sliding.Value ? absoluteTtl : sliding;
         }
 
+        /// <summary>
+        /// Computes the renewed TTL on access: the sliding window, capped by any remaining time until the
+        /// absolute deadline. Returns <see cref="TimeSpan.Zero"/> when the absolute deadline has passed.
+        /// </summary>
         private static TimeSpan? ComputeSlidingTtl(DateTimeOffset now, long? absoluteDeadlineUtcTicks, TimeSpan sliding)
         {
             if (absoluteDeadlineUtcTicks is null)
@@ -227,18 +268,24 @@ namespace Pottmayer.Tars.Caching.Redis
             return remaining <= sliding ? remaining : sliding;
         }
 
+        /// <summary>Reads a nullable <see cref="long"/> from a Redis hash field, mapping a null field to <c>null</c>.</summary>
         private static long? TryReadInt64(RedisValue value)
         {
             if (value.IsNull) return null;
             return (long)value;
         }
 
+        /// <summary>Reads a nullable <see cref="int"/> from a Redis hash field, mapping a null field to <c>null</c>.</summary>
         private static int? TryReadInt32(RedisValue value)
         {
             if (value.IsNull) return null;
             return (int)value;
         }
 
+        /// <summary>
+        /// Observes a best-effort background Redis operation, logging a warning if it faults without
+        /// propagating the failure to the caller.
+        /// </summary>
         private void FireAndForget(Task task, RedisKey key, string operation)
         {
             task.ContinueWith(
@@ -248,6 +295,7 @@ namespace Pottmayer.Tars.Caching.Redis
                 TaskScheduler.Default);
         }
 
+        /// <summary>Redis hash field names for the stored payload and expiration metadata.</summary>
         private static class RedisHashFields
         {
             public static readonly RedisValue Value = "v";

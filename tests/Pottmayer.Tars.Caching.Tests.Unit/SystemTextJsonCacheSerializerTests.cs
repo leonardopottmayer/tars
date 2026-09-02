@@ -1,5 +1,5 @@
 using FluentAssertions;
-using Pottmayer.Tars.Caching.Core;
+using Pottmayer.Tars.Caching;
 
 namespace Pottmayer.Tars.Caching.Tests.Unit;
 

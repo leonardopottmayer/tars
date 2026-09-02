@@ -1,12 +1,12 @@
-namespace Pottmayer.Tars.Caching.Core.Options
+namespace Pottmayer.Tars.Caching.Options
 {
-    public sealed class CacheOptions
+    /// <summary>
+    /// What every caching provider shares, whatever store sits underneath: the key-building inputs and the
+    /// fallback expiration. Concrete providers extend this with their own connection/tuning settings and
+    /// their own configuration section.
+    /// </summary>
+    public abstract class CachingOptions
     {
-        public const string SectionName = "Tars:Caching";
-
-        public const string ValidationErrorMessage =
-            "Invalid CacheOptions. KeyPrefix/KeySeparator are required and DefaultAbsoluteExpirationRelativeToNow must be positive when provided.";
-
         /// <summary>
         /// Prefix used by the default key builder (e.g. "tars", "my-service", "prod:service").
         /// </summary>
@@ -23,7 +23,12 @@ namespace Pottmayer.Tars.Caching.Core.Options
         /// </summary>
         public TimeSpan? DefaultAbsoluteExpirationRelativeToNow { get; init; } = null;
 
-        public bool IsValid()
+        /// <summary>
+        /// Returns <c>true</c> when the shared options are internally consistent: key prefix and separator
+        /// are non-blank and the default expiration, when set, is strictly positive. Providers override this
+        /// to add their own checks, calling <c>base.IsValid()</c> first.
+        /// </summary>
+        public virtual bool IsValid()
         {
             if (string.IsNullOrWhiteSpace(KeyPrefix))
                 return false;

@@ -14,7 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Pottmayer.Tars.Caching.Abstractions\Pottmayer.Tars.Caching.Abstractions.csproj" />
-    <ProjectReference Include="..\Pottmayer.Tars.Caching.Core\Pottmayer.Tars.Caching.Core.csproj" />
+    <ProjectReference Include="..\Pottmayer.Tars.Caching\Pottmayer.Tars.Caching.csproj" />
   </ItemGroup>
 
 </Project>

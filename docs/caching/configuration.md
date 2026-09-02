@@ -1,33 +1,45 @@
 # Caching Configuration
 
-## `CacheOptions`
+Each provider binds its **own** section and carries the shared caching settings (from the abstract
+`CachingOptions` base) alongside any provider-specific settings.
 
-Section name:
+## Shared settings (`CachingOptions` base)
 
-```json
-"Tars": {
-  "Caching": {
-    "KeyPrefix": "my-app",
-    "KeySeparator": ":",
-    "DefaultAbsoluteExpirationRelativeToNow": "00:10:00"
-  }
-}
-```
-
-Fields:
+Present in every provider section:
 
 - `KeyPrefix`: prefix used by the default key builder. Default: `tars-cache`
 - `KeySeparator`: separator. Default: `:`
 - `DefaultAbsoluteExpirationRelativeToNow`: default TTL used when the call does not provide an expiration
 
-## `RedisCacheOptions`
+## `MemoryCachingOptions`
 
-Section name:
+Section name `Tars:Caching:Memory`:
+
+```json
+"Tars": {
+  "Caching": {
+    "Memory": {
+      "KeyPrefix": "my-app",
+      "KeySeparator": ":",
+      "DefaultAbsoluteExpirationRelativeToNow": "00:10:00"
+    }
+  }
+}
+```
+
+The in-memory provider adds no settings of its own beyond the shared ones.
+
+## `RedisCachingOptions`
+
+Section name `Tars:Caching:Redis` (shared settings plus the Redis connection):
 
 ```json
 "Tars": {
   "Caching": {
     "Redis": {
+      "KeyPrefix": "my-app",
+      "KeySeparator": ":",
+      "DefaultAbsoluteExpirationRelativeToNow": "00:10:00",
       "ConnectionString": "localhost:6379,abortConnect=False",
       "Database": 0,
       "ClientName": "my-service",
@@ -42,7 +54,7 @@ Section name:
 }
 ```
 
-Relevant fields:
+Redis-specific fields:
 
 - `ConnectionString`: required
 - `Database`: logical database; `null` uses the client default

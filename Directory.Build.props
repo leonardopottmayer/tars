@@ -39,7 +39,7 @@
         <Description>Abstractions for the Pottmayer.Tars caching stack, including cache service, serialization, key building and entry options.</Description>
       </PropertyGroup>
     </When>
-    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Caching.Core'">
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Caching'">
       <PropertyGroup>
         <Description>Core caching services and default implementations for the Pottmayer.Tars framework.</Description>
       </PropertyGroup>

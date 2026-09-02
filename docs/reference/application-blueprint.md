@@ -119,9 +119,8 @@ builder.Services.AddControllers(options =>
 ### 7. Caching
 
 ```csharp
-builder.AddTarsCachingOptions();
-builder.Services.AddTarsCacheKeyBuilder();
-builder.Services.AddTarsCacheSerializer();
+builder.AddTarsMemoryCachingOptions();
+builder.Services.AddTarsCacheKeyBuilder<MemoryCachingOptions>();
 builder.Services.AddMemoryCache();
 builder.Services.AddTarsMemoryCacheProvider();
 ```
