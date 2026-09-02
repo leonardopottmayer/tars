@@ -13,7 +13,7 @@ namespace Pottmayer.Tars.Messaging.MassTransit.Kafka.DI;
 /// <summary>
 /// Service collection extensions for configuring the MassTransit Kafka messaging provider.
 /// </summary>
-public static class MassTransitKafkaServicesDI
+public static class MassTransitKafkaMessagingServicesDI
 {
     /// <summary>
     /// Registers the Kafka-backed <see cref="IIntegrationEventBus"/>, scoped.

@@ -16,11 +16,11 @@ public static class MessagingServicesDI
     /// </summary>
     public static IServiceCollection AddTarsInProcessIntegrationEventBus(
         this IServiceCollection services,
-        Action<IntegrationEventBusOptions>? configure = null)
+        Action<IntegrationEventBusConfiguration>? configure = null)
     {
         services.TryAddSingleton<IIntegrationEventBus, InProcessIntegrationEventBus>();
 
-        var options = new IntegrationEventBusOptions();
+        var options = new IntegrationEventBusConfiguration();
         configure?.Invoke(options);
 
         foreach (var (assembly, lifetime) in options.HandlerAssemblies)

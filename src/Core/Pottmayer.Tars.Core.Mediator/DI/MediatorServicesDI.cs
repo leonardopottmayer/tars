@@ -17,13 +17,13 @@ namespace Pottmayer.Tars.Core.Mediator.DI
         /// <returns>The same <paramref name="services"/> for chaining.</returns>
         public static IServiceCollection AddTarsMediator(
             this IServiceCollection services,
-            Action<MediatorOptions>? configure = null)
+            Action<MediatorConfiguration>? configure = null)
         {
             services.TryAddScoped<IMediator, Mediator>();
             services.TryAddScoped<ISender>(sp => sp.GetRequiredService<IMediator>());
             services.TryAddScoped<IPublisher>(sp => sp.GetRequiredService<IMediator>());
 
-            var options = new MediatorOptions();
+            var options = new MediatorConfiguration();
             configure?.Invoke(options);
 
             foreach (var (assembly, lifetime) in options.HandlerAssemblies)

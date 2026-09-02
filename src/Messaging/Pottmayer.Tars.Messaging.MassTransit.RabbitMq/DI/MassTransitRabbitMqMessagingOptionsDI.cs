@@ -9,7 +9,7 @@ namespace Pottmayer.Tars.Messaging.MassTransit.RabbitMq.DI;
 /// <summary>
 /// Registration helpers for binding and configuring <see cref="MassTransitRabbitMqMessagingOptions"/>.
 /// </summary>
-public static class MassTransitRabbitMqOptionsDI
+public static class MassTransitRabbitMqMessagingOptionsDI
 {
     /// <summary>
     /// Binds <see cref="MassTransitRabbitMqMessagingOptions"/> from configuration (default section

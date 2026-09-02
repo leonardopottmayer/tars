@@ -7,7 +7,7 @@ namespace Pottmayer.Tars.Messaging.DI;
 /// Options for registering the in-process integration event bus: which assemblies to scan for
 /// <see cref="Abstractions.IIntegrationEventHandler{T}"/> implementations.
 /// </summary>
-public sealed class IntegrationEventBusOptions
+public sealed class IntegrationEventBusConfiguration
 {
     private readonly List<(Assembly Assembly, ServiceLifetime Lifetime)> _handlerAssemblies = [];
 
@@ -20,7 +20,7 @@ public sealed class IntegrationEventBusOptions
     /// <param name="assembly">The assembly to scan for handler implementations.</param>
     /// <param name="lifetime">The service lifetime the discovered handlers are registered with.</param>
     /// <returns>The same options instance, for chaining.</returns>
-    public IntegrationEventBusOptions RegisterHandlersFromAssembly(
+    public IntegrationEventBusConfiguration RegisterHandlersFromAssembly(
         Assembly assembly, ServiceLifetime lifetime = ServiceLifetime.Scoped)
     {
         _handlerAssemblies.Add((assembly, lifetime));
@@ -34,7 +34,7 @@ public sealed class IntegrationEventBusOptions
     /// <param name="lifetime">The service lifetime the discovered handlers are registered with.</param>
     /// <param name="assemblies">The assemblies to scan for handler implementations.</param>
     /// <returns>The same options instance, for chaining.</returns>
-    public IntegrationEventBusOptions RegisterHandlersFromAssemblies(
+    public IntegrationEventBusConfiguration RegisterHandlersFromAssemblies(
         ServiceLifetime lifetime = ServiceLifetime.Scoped, params Assembly[] assemblies)
     {
         foreach (var assembly in assemblies)

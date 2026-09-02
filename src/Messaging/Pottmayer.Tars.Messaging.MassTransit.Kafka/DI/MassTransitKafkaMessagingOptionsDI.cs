@@ -9,7 +9,7 @@ namespace Pottmayer.Tars.Messaging.MassTransit.Kafka.DI;
 /// <summary>
 /// Registration helpers for binding and configuring <see cref="MassTransitKafkaMessagingOptions"/>.
 /// </summary>
-public static class MassTransitKafkaOptionsDI
+public static class MassTransitKafkaMessagingOptionsDI
 {
     /// <summary>
     /// Binds <see cref="MassTransitKafkaMessagingOptions"/> from configuration (default section

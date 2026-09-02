@@ -13,7 +13,7 @@ namespace Pottmayer.Tars.Messaging.MassTransit.RabbitMq.DI;
 /// <summary>
 /// Service collection extensions for configuring the MassTransit RabbitMQ messaging provider.
 /// </summary>
-public static class MassTransitRabbitMqServicesDI
+public static class MassTransitRabbitMqMessagingServicesDI
 {
     /// <summary>
     /// Registers the MassTransit-backed <see cref="IIntegrationEventBus"/>, scoped.
