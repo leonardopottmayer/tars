@@ -21,7 +21,9 @@ public static class TelegramOptionsDI
 
         var ob = builder.Services
             .AddOptions<TelegramOptions>()
-            .Bind(builder.Configuration.GetSection(sectionName));
+            .Bind(builder.Configuration.GetSection(sectionName))
+            .Validate(TelegramOptionsValidation.Validate, TelegramOptions.ValidationErrorMessage)
+            .ValidateOnStart();
 
         if (configure is not null)
             ob.Configure(configure);

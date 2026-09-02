@@ -7,5 +7,9 @@ namespace Pottmayer.Tars.Communication.Email.Abstractions;
 /// </summary>
 public interface IEmailSender
 {
+    /// <summary>Delivers <paramref name="message"/> through the underlying transport.</summary>
+    /// <param name="message">The e-mail to send.</param>
+    /// <param name="cancellationToken">Token used to cancel the delivery.</param>
+    /// <returns>The delivery outcome, including the accepting provider and its message id, if any.</returns>
     Task<EmailDeliveryResult> SendAsync(EmailMessage message, CancellationToken cancellationToken = default);
 }

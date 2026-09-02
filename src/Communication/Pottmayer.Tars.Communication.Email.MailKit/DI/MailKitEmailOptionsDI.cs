@@ -21,7 +21,9 @@ public static class MailKitEmailOptionsDI
 
         var ob = builder.Services
             .AddOptions<MailKitEmailOptions>()
-            .Bind(builder.Configuration.GetSection(sectionName));
+            .Bind(builder.Configuration.GetSection(sectionName))
+            .Validate(MailKitEmailOptionsValidation.Validate, MailKitEmailOptions.ValidationErrorMessage)
+            .ValidateOnStart();
 
         if (configure is not null)
             ob.Configure(configure);
