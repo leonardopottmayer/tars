@@ -21,4 +21,6 @@ public sealed class AuthenticationResult
 /// <summary>
 /// A single claim name/value pair.
 /// </summary>
+/// <param name="Type">The claim type.</param>
+/// <param name="Value">The claim value.</param>
 public sealed record ClaimData(string Type, string Value);

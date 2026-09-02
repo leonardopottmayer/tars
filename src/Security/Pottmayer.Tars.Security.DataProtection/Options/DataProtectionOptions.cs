@@ -11,6 +11,11 @@ public sealed class DataProtectionOptions
     public const string SectionName = "Tars:Security:DataProtection";
 
     /// <summary>
+    /// Validation error message used when options validation fails.
+    /// </summary>
+    public const string ValidationErrorMessage = "Invalid DataProtectionOptions.";
+
+    /// <summary>
     /// Available keys, by version label. Each value is a base64-encoded 256-bit (32-byte) key.
     /// The label is what gets stamped into the ciphertext, so it must be stable for a key's lifetime.
     /// </summary>

@@ -12,8 +12,8 @@ public class RefreshTokenServiceTests
 {
     private static RefreshTokenService Create(RefreshTokenOptions refresh)
     {
-        var monitor = new Mock<IOptionsMonitor<IdentityOptions>>();
-        monitor.SetupGet(m => m.CurrentValue).Returns(new IdentityOptions { RefreshToken = refresh });
+        var monitor = new Mock<IOptionsMonitor<SecurityIdentityOptions>>();
+        monitor.SetupGet(m => m.CurrentValue).Returns(new SecurityIdentityOptions { RefreshToken = refresh });
         return new RefreshTokenService(new InMemoryRefreshTokenStore(), monitor.Object);
     }
 

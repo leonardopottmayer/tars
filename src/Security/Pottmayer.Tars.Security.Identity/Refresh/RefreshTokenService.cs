@@ -14,12 +14,12 @@ namespace Pottmayer.Tars.Security.Identity.Refresh;
 public sealed class RefreshTokenService : IRefreshTokenService
 {
     private readonly IRefreshTokenStore _store;
-    private readonly IOptionsMonitor<IdentityOptions> _optionsMonitor;
+    private readonly IOptionsMonitor<SecurityIdentityOptions> _optionsMonitor;
 
     private const int TokenByteLength = 32;
     private const int IdByteLength = 16;
 
-    public RefreshTokenService(IRefreshTokenStore store, IOptionsMonitor<IdentityOptions> optionsMonitor)
+    public RefreshTokenService(IRefreshTokenStore store, IOptionsMonitor<SecurityIdentityOptions> optionsMonitor)
     {
         _store = store ?? throw new ArgumentNullException(nameof(store));
         _optionsMonitor = optionsMonitor ?? throw new ArgumentNullException(nameof(optionsMonitor));

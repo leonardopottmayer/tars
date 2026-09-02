@@ -16,14 +16,14 @@ public sealed class CompositeTokenReader : ITokenInputReader
     private readonly ITokenInputReader _headerReader;
     private readonly ITokenInputReader _cookieReader;
     private readonly TokenDeliveryPolicy _policy;
-    private readonly IOptionsMonitor<IdentityOptions> _identityOptionsMonitor;
+    private readonly IOptionsMonitor<SecurityIdentityOptions> _identityOptionsMonitor;
     private readonly IOptionsMonitor<IdentityAspNetCoreOptions> _identityAspNetCoreOptionsMonitor;
 
     public CompositeTokenReader(
         HeaderTokenReader headerReader,
         CookieTokenReader cookieReader,
         TokenDeliveryPolicy policy,
-        IOptionsMonitor<IdentityOptions> identityOptionsMonitor,
+        IOptionsMonitor<SecurityIdentityOptions> identityOptionsMonitor,
         IOptionsMonitor<IdentityAspNetCoreOptions> identityAspNetCoreOptionsMonitor)
     {
         _headerReader = headerReader ?? throw new ArgumentNullException(nameof(headerReader));

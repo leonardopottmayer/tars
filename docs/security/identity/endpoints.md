@@ -213,7 +213,7 @@ app.MapPost("/auth/login", async (
     [FromServices] IRefreshTokenService refreshService,
     [FromServices] ITokenOutputWriter outputWriter,
     [FromServices] TokenDeliveryPolicy policy,
-    [FromServices] IOptionsMonitor<IdentityOptions> identityOptions,
+    [FromServices] IOptionsMonitor<SecurityIdentityOptions> identityOptions,
     [FromServices] IOptionsMonitor<IdentityAspNetCoreOptions> aspNetCoreOptions,
     HttpContext context,
     CancellationToken cancellationToken) =>

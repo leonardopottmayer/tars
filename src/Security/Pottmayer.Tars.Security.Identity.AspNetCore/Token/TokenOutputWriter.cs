@@ -82,7 +82,7 @@ internal sealed class TokenOutputWriter : ITokenOutputWriter
             Path = cookieOpts.Path,
             HttpOnly = cookieOpts.HttpOnly,
             Secure = cookieOpts.SecurePolicy,
-            SameSite = (TokenCookieSameSiteMode)cookieOpts.SameSite,
+            SameSite = cookieOpts.SameSite,
             ExpiresAt = expires
         });
     }

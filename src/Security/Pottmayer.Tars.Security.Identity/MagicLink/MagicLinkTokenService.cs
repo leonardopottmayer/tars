@@ -13,11 +13,11 @@ namespace Pottmayer.Tars.Security.Identity.MagicLink;
 public sealed class MagicLinkTokenService : IMagicLinkTokenService
 {
     private readonly IMagicLinkTokenStore _store;
-    private readonly IOptionsMonitor<IdentityOptions> _optionsMonitor;
+    private readonly IOptionsMonitor<SecurityIdentityOptions> _optionsMonitor;
 
     private const int TokenByteLength = 32;
 
-    public MagicLinkTokenService(IMagicLinkTokenStore store, IOptionsMonitor<IdentityOptions> optionsMonitor)
+    public MagicLinkTokenService(IMagicLinkTokenStore store, IOptionsMonitor<SecurityIdentityOptions> optionsMonitor)
     {
         _store = store ?? throw new ArgumentNullException(nameof(store));
         _optionsMonitor = optionsMonitor ?? throw new ArgumentNullException(nameof(optionsMonitor));

@@ -12,13 +12,13 @@ public class JwtTokenTests
 {
     private const string SigningKey = "this-is-a-very-long-signing-key-for-hmac-sha256-tests-0123456789";
 
-    private static IOptionsMonitor<IdentityOptions> Options(IdentityOptions? options = null)
+    private static IOptionsMonitor<SecurityIdentityOptions> Options(SecurityIdentityOptions? options = null)
     {
-        options ??= new IdentityOptions
+        options ??= new SecurityIdentityOptions
         {
             Jwt = new JwtOptions { SigningKey = SigningKey, Issuer = "tars-test", Audience = "tars-test" },
         };
-        var monitor = new Mock<IOptionsMonitor<IdentityOptions>>();
+        var monitor = new Mock<IOptionsMonitor<SecurityIdentityOptions>>();
         monitor.SetupGet(m => m.CurrentValue).Returns(options);
         return monitor.Object;
     }
@@ -54,7 +54,7 @@ public class JwtTokenTests
     {
         var issued = await new JwtTokenIssuer(Options()).IssueAsync(Auth());
 
-        var otherValidator = new JwtTokenValidator(Options(new IdentityOptions
+        var otherValidator = new JwtTokenValidator(Options(new SecurityIdentityOptions
         {
             Jwt = new JwtOptions { SigningKey = "a-completely-different-signing-key-0123456789-abcdefghij", Issuer = "tars-test", Audience = "tars-test" },
         }));
@@ -85,7 +85,7 @@ public class JwtTokenTests
     [Fact]
     public async Task Issuing_without_signing_key_throws()
     {
-        var issuer = new JwtTokenIssuer(Options(new IdentityOptions { Jwt = new JwtOptions { SigningKey = "" } }));
+        var issuer = new JwtTokenIssuer(Options(new SecurityIdentityOptions { Jwt = new JwtOptions { SigningKey = "" } }));
 
         var act = async () => await issuer.IssueAsync(Auth());
 

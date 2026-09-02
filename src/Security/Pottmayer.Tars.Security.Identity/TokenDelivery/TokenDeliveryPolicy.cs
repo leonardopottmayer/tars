@@ -10,9 +10,9 @@ namespace Pottmayer.Tars.Security.Identity.TokenDelivery;
 /// </summary>
 public sealed class TokenDeliveryPolicy
 {
-    private readonly IOptionsMonitor<IdentityOptions> _optionsMonitor;
+    private readonly IOptionsMonitor<SecurityIdentityOptions> _optionsMonitor;
 
-    public TokenDeliveryPolicy(IOptionsMonitor<IdentityOptions> optionsMonitor)
+    public TokenDeliveryPolicy(IOptionsMonitor<SecurityIdentityOptions> optionsMonitor)
     {
         _optionsMonitor = optionsMonitor ?? throw new ArgumentNullException(nameof(optionsMonitor));
     }

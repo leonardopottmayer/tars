@@ -59,7 +59,12 @@ public interface IRefreshTokenStore
 /// </summary>
 public sealed class RefreshTokenPayload
 {
+    /// <summary>The user identifier (subject) the token was issued for.</summary>
     public required string Subject { get; init; }
+
+    /// <summary>The claims associated with the token.</summary>
     public required IReadOnlyList<ClaimData> Claims { get; init; }
+
+    /// <summary>Optional metadata stored alongside the token.</summary>
     public IReadOnlyDictionary<string, object?>? Metadata { get; init; }
 }

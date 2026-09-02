@@ -14,10 +14,10 @@ namespace Pottmayer.Tars.Security.Identity.Jwt;
 /// </summary>
 public sealed class JwtTokenValidator : ITokenValidator
 {
-    private readonly IOptionsMonitor<IdentityOptions> _optionsMonitor;
+    private readonly IOptionsMonitor<SecurityIdentityOptions> _optionsMonitor;
     private readonly ITokenRevocationService? _revocationService;
 
-    public JwtTokenValidator(IOptionsMonitor<IdentityOptions> optionsMonitor, ITokenRevocationService? revocationService = null)
+    public JwtTokenValidator(IOptionsMonitor<SecurityIdentityOptions> optionsMonitor, ITokenRevocationService? revocationService = null)
     {
         _optionsMonitor = optionsMonitor ?? throw new ArgumentNullException(nameof(optionsMonitor));
         _revocationService = revocationService;

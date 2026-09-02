@@ -9,7 +9,7 @@ namespace Pottmayer.Tars.Security.Identity.AspNetCore.Token;
 internal static class TokenDeliveryAspNetCoreResolver
 {
     public static TokenDeliveryMode ResolveEffectiveMode(
-        IdentityOptions identityOptions,
+        SecurityIdentityOptions identityOptions,
         IdentityAspNetCoreOptions aspNetCoreOptions,
         TokenDeliveryPolicy policy,
         bool hasAuthorizationHeader,

@@ -3,11 +3,13 @@ namespace Pottmayer.Tars.Security.Identity.Options;
 /// <summary>
 /// Root options for Tars Identity. Validation in hosting layer.
 /// </summary>
-public sealed class IdentityOptions
+public sealed class SecurityIdentityOptions
 {
+    /// <summary>Default configuration section name for <see cref="SecurityIdentityOptions"/>.</summary>
     public const string SectionName = "Tars:Security:Identity";
 
-    public const string ValidationErrorMessage = "Invalid IdentityOptions.";
+    /// <summary>Validation error message used when options validation fails.</summary>
+    public const string ValidationErrorMessage = "Invalid SecurityIdentityOptions.";
 
     /// <summary>JWT issuance and validation settings.</summary>
     public JwtOptions Jwt { get; init; } = new();

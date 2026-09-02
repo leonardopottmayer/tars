@@ -7,7 +7,10 @@ using Pottmayer.Tars.Security.Identity.AspNetCore.Token;
 
 namespace Pottmayer.Tars.Security.Identity.AspNetCore.DI;
 
-public static class IdentityAspNetCoreDI
+/// <summary>
+/// Service registrations for the ASP.NET Core host adapter of the Identity module.
+/// </summary>
+public static class IdentityAspNetCoreServicesDI
 {
     /// <summary>
     /// Registers all ASP.NET Core token transport services: header reader, cookie reader,
@@ -24,7 +27,7 @@ public static class IdentityAspNetCoreDI
 
     /// <summary>
     /// Registers the <see cref="ConfigureJwtBearerFromIdentityOptions"/> that bridges
-    /// <see cref="Identity.Options.IdentityOptions"/> into JwtBearerOptions.
+    /// <see cref="Identity.Options.SecurityIdentityOptions"/> into JwtBearerOptions.
     /// </summary>
     public static IServiceCollection AddTarsIdentityAspNetCoreJwtBearer(this IServiceCollection services)
     {
@@ -32,12 +35,14 @@ public static class IdentityAspNetCoreDI
         return services;
     }
 
+    /// <summary>Registers <see cref="HeaderTokenReader"/> as a singleton.</summary>
     public static IServiceCollection AddTarsIdentityHeaderTokenReader(this IServiceCollection services)
     {
         services.TryAddSingleton<HeaderTokenReader>();
         return services;
     }
 
+    /// <summary>Registers <see cref="CookieTokenReader"/> as a singleton.</summary>
     public static IServiceCollection AddTarsIdentityCookieTokenReader(this IServiceCollection services)
     {
         services.TryAddSingleton<CookieTokenReader>();
@@ -57,12 +62,14 @@ public static class IdentityAspNetCoreDI
         return services;
     }
 
+    /// <summary>Registers <see cref="TokenOutputWriter"/> as the singleton <see cref="ITokenOutputWriter"/>.</summary>
     public static IServiceCollection AddTarsIdentityTokenOutputWriter(this IServiceCollection services)
     {
         services.TryAddSingleton<ITokenOutputWriter, TokenOutputWriter>();
         return services;
     }
 
+    /// <summary>Registers <see cref="ConfigureJwtBearerFromIdentityOptions"/> as an <see cref="IConfigureOptions{TOptions}"/> for <c>JwtBearerOptions</c>.</summary>
     public static IServiceCollection AddTarsIdentityJwtBearerOptionsConfiguration(this IServiceCollection services)
     {
         services.AddSingleton<IConfigureOptions<JwtBearerOptions>, ConfigureJwtBearerFromIdentityOptions>();

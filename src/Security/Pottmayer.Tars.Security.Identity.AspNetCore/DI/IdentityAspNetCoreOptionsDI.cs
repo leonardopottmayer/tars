@@ -6,9 +6,19 @@ using Pottmayer.Tars.Security.Identity.AspNetCore.Options;
 
 namespace Pottmayer.Tars.Security.Identity.AspNetCore.DI;
 
+/// <summary>
+/// Registers and binds <see cref="IdentityAspNetCoreOptions"/> from configuration.
+/// </summary>
 public static class IdentityAspNetCoreOptionsDI
 {
-    public static IHostApplicationBuilder AddTarsIdentityAspNetCoreOptions(
+    /// <summary>
+    /// Binds <see cref="IdentityAspNetCoreOptions"/> from the given (or default) configuration section and validates it on start.
+    /// </summary>
+    /// <param name="builder">The host application builder.</param>
+    /// <param name="sectionName">The configuration section name; defaults to <see cref="IdentityAspNetCoreOptions.SectionName"/>.</param>
+    /// <param name="configure">Optional programmatic overrides applied after binding.</param>
+    /// <returns>The options builder, for further chaining.</returns>
+    public static OptionsBuilder<IdentityAspNetCoreOptions> AddTarsIdentityAspNetCoreOptions(
         this IHostApplicationBuilder builder,
         string? sectionName = null,
         Action<IdentityAspNetCoreOptions>? configure = null)
@@ -26,6 +36,6 @@ public static class IdentityAspNetCoreOptionsDI
         if (configure is not null)
             ob.Configure(configure);
 
-        return builder;
+        return ob;
     }
 }

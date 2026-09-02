@@ -23,10 +23,15 @@ using System.Security.Claims;
 
 namespace Pottmayer.Tars.Security.Identity.AspNetCore.Endpoints;
 
+/// <summary>
+/// Minimal API endpoints for the built-in Identity authentication flows.
+/// </summary>
 public static class IdentityEndpoints
 {
+    /// <summary>Default base path all endpoint paths are relative to.</summary>
     public const string DefaultBasePath = IdentityEndpointsOptions.DefaultBasePath;
 
+    /// <summary>Resolves the current endpoint route options from the app's service provider.</summary>
     private static IdentityEndpointsOptions GetEndpointsOptions(IEndpointRouteBuilder app)
     {
         var optionsMonitor = app.ServiceProvider.GetRequiredService<IOptionsMonitor<IdentityAspNetCoreOptions>>();
@@ -56,6 +61,7 @@ public static class IdentityEndpoints
         return app;
     }
 
+    /// <summary>Maps the password sign-in endpoint.</summary>
     public static IEndpointRouteBuilder MapTarsIdentitySignInPasswordEndpoint(this IEndpointRouteBuilder app)
     {
         var e = GetEndpointsOptions(app);
@@ -66,6 +72,7 @@ public static class IdentityEndpoints
         return app;
     }
 
+    /// <summary>Maps the magic link request endpoint.</summary>
     public static IEndpointRouteBuilder MapTarsIdentityRequestMagicLinkEndpoint(this IEndpointRouteBuilder app)
     {
         var e = GetEndpointsOptions(app);
@@ -76,6 +83,7 @@ public static class IdentityEndpoints
         return app;
     }
 
+    /// <summary>Maps the magic link consumption endpoint.</summary>
     public static IEndpointRouteBuilder MapTarsIdentityConsumeMagicLinkEndpoint(this IEndpointRouteBuilder app)
     {
         var e = GetEndpointsOptions(app);
@@ -86,6 +94,7 @@ public static class IdentityEndpoints
         return app;
     }
 
+    /// <summary>Maps the API key sign-in endpoint.</summary>
     public static IEndpointRouteBuilder MapTarsIdentitySignInApiKeyEndpoint(this IEndpointRouteBuilder app)
     {
         var e = GetEndpointsOptions(app);
@@ -96,6 +105,7 @@ public static class IdentityEndpoints
         return app;
     }
 
+    /// <summary>Maps the token refresh endpoint.</summary>
     public static IEndpointRouteBuilder MapTarsIdentityRefreshEndpoint(this IEndpointRouteBuilder app)
     {
         var e = GetEndpointsOptions(app);
@@ -106,6 +116,7 @@ public static class IdentityEndpoints
         return app;
     }
 
+    /// <summary>Maps the sign-out endpoint.</summary>
     public static IEndpointRouteBuilder MapTarsIdentitySignOutEndpoint(this IEndpointRouteBuilder app)
     {
         var e = GetEndpointsOptions(app);
@@ -116,6 +127,7 @@ public static class IdentityEndpoints
         return app;
     }
 
+    /// <summary>Maps the OAuth challenge (sign-in start) endpoint.</summary>
     public static IEndpointRouteBuilder MapTarsIdentityOAuthChallengeEndpoint(this IEndpointRouteBuilder app)
     {
         var e = GetEndpointsOptions(app);
@@ -126,6 +138,7 @@ public static class IdentityEndpoints
         return app;
     }
 
+    /// <summary>Maps the OAuth callback endpoint.</summary>
     public static IEndpointRouteBuilder MapTarsIdentityOAuthCallbackEndpoint(this IEndpointRouteBuilder app)
     {
         var e = GetEndpointsOptions(app);
@@ -135,6 +148,7 @@ public static class IdentityEndpoints
         return app;
     }
 
+    /// <summary>Handler: starts an OAuth challenge for the given provider.</summary>
     private static IResult OAuthChallenge(
         string provider,
         HttpContext context,
@@ -152,6 +166,7 @@ public static class IdentityEndpoints
         return Results.Challenge(properties, [provider]);
     }
 
+    /// <summary>Handler: completes an OAuth sign-in and issues tokens.</summary>
     private static async Task<IResult> OAuthCallback(
         HttpContext context,
         [FromServices] IOAuthUserLinker linker,
@@ -159,7 +174,7 @@ public static class IdentityEndpoints
         [FromServices] IRefreshTokenService refreshService,
         [FromServices] ITokenOutputWriter outputWriter,
         [FromServices] TokenDeliveryPolicy policy,
-        [FromServices] IOptionsMonitor<IdentityOptions> optionsMonitor,
+        [FromServices] IOptionsMonitor<SecurityIdentityOptions> optionsMonitor,
         [FromServices] IOptionsMonitor<IdentityAspNetCoreOptions> aspNetCoreOptionsMonitor,
         CancellationToken cancellationToken)
     {
@@ -192,6 +207,7 @@ public static class IdentityEndpoints
             cancellationToken: cancellationToken).ConfigureAwait(false);
     }
 
+    /// <summary>Handler: authenticates a username/password credential and issues tokens.</summary>
     private static async Task<IResult> SignInPassword(
         [FromBody] PasswordSignInRequest? request,
         HttpContext context,
@@ -200,7 +216,7 @@ public static class IdentityEndpoints
         [FromServices] IRefreshTokenService refreshService,
         [FromServices] ITokenOutputWriter outputWriter,
         [FromServices] TokenDeliveryPolicy policy,
-        [FromServices] IOptionsMonitor<IdentityOptions> optionsMonitor,
+        [FromServices] IOptionsMonitor<SecurityIdentityOptions> optionsMonitor,
         [FromServices] IOptionsMonitor<IdentityAspNetCoreOptions> aspNetCoreOptionsMonitor,
         CancellationToken cancellationToken)
     {
@@ -229,11 +245,12 @@ public static class IdentityEndpoints
             cancellationToken: cancellationToken).ConfigureAwait(false);
     }
 
+    /// <summary>Handler: issues a magic link token and sends it to the target.</summary>
     private static async Task<IResult> RequestMagicLink(
         [FromBody] MagicLinkRequestRequest? request,
         [FromServices] IMagicLinkSender sender,
         [FromServices] IMagicLinkTokenService magicLinkService,
-        [FromServices] IOptionsMonitor<IdentityOptions> optionsMonitor,
+        [FromServices] IOptionsMonitor<SecurityIdentityOptions> optionsMonitor,
         [FromServices] IOptionsMonitor<IdentityAspNetCoreOptions> aspNetCoreOptionsMonitor,
         CancellationToken cancellationToken)
     {
@@ -257,6 +274,7 @@ public static class IdentityEndpoints
         return Results.Ok(new { message = "Magic link sent.", expiresAt = issueResult.ExpiresAt });
     }
 
+    /// <summary>Handler: consumes a magic link token and issues tokens.</summary>
     private static async Task<IResult> ConsumeMagicLink(
         [FromBody] MagicLinkConsumeRequest? body,
         [FromQuery] string? token,
@@ -267,7 +285,7 @@ public static class IdentityEndpoints
         [FromServices] IRefreshTokenService refreshService,
         [FromServices] ITokenOutputWriter outputWriter,
         [FromServices] TokenDeliveryPolicy policy,
-        [FromServices] IOptionsMonitor<IdentityOptions> optionsMonitor,
+        [FromServices] IOptionsMonitor<SecurityIdentityOptions> optionsMonitor,
         [FromServices] IOptionsMonitor<IdentityAspNetCoreOptions> aspNetCoreOptionsMonitor,
         CancellationToken cancellationToken)
     {
@@ -295,6 +313,7 @@ public static class IdentityEndpoints
             cancellationToken: cancellationToken).ConfigureAwait(false);
     }
 
+    /// <summary>Handler: authenticates an API key and issues tokens.</summary>
     private static async Task<IResult> SignInApiKey(
         HttpContext context,
         [FromServices] IApiKeyAuthenticator authenticator,
@@ -302,7 +321,7 @@ public static class IdentityEndpoints
         [FromServices] IRefreshTokenService refreshService,
         [FromServices] ITokenOutputWriter outputWriter,
         [FromServices] TokenDeliveryPolicy policy,
-        [FromServices] IOptionsMonitor<IdentityOptions> optionsMonitor,
+        [FromServices] IOptionsMonitor<SecurityIdentityOptions> optionsMonitor,
         [FromServices] IOptionsMonitor<IdentityAspNetCoreOptions> aspNetCoreOptionsMonitor,
         CancellationToken cancellationToken)
     {
@@ -331,6 +350,7 @@ public static class IdentityEndpoints
             cancellationToken: cancellationToken).ConfigureAwait(false);
     }
 
+    /// <summary>Handler: consumes a refresh token and issues new tokens.</summary>
     private static async Task<IResult> Refresh(
         HttpContext context,
         [FromServices] IRefreshAuthorizationHandler? refreshHandler,
@@ -339,7 +359,7 @@ public static class IdentityEndpoints
         [FromServices] ITokenInputReader reader,
         [FromServices] ITokenOutputWriter outputWriter,
         [FromServices] TokenDeliveryPolicy policy,
-        [FromServices] IOptionsMonitor<IdentityOptions> optionsMonitor,
+        [FromServices] IOptionsMonitor<SecurityIdentityOptions> optionsMonitor,
         [FromServices] IOptionsMonitor<IdentityAspNetCoreOptions> aspNetCoreOptionsMonitor,
         CancellationToken cancellationToken)
     {
@@ -383,13 +403,14 @@ public static class IdentityEndpoints
             cancellationToken).ConfigureAwait(false);
     }
 
+    /// <summary>Handler: revokes the caller's refresh token/session and clears auth cookies.</summary>
     private static async Task<IResult> SignOut(
         HttpContext context,
         [FromServices] IRefreshTokenService refreshService,
         [FromServices] ITokenRevocationService? revocationService,
         [FromServices] ISignOutHandler? signOutHandler,
         [FromServices] ITokenInputReader reader,
-        [FromServices] IOptionsMonitor<IdentityOptions> optionsMonitor,
+        [FromServices] IOptionsMonitor<SecurityIdentityOptions> optionsMonitor,
         [FromServices] IOptionsMonitor<IdentityAspNetCoreOptions> aspNetCoreOptionsMonitor,
         CancellationToken cancellationToken)
     {
@@ -427,6 +448,7 @@ public static class IdentityEndpoints
         return Results.Ok(new { message = "Signed out." });
     }
 
+    /// <summary>Issues access/refresh tokens for an authentication result and writes them via the resolved delivery mode.</summary>
     private static async Task<IResult> IssueTokensAsync(
         HttpContext context,
         AuthenticationResult result,
@@ -434,7 +456,7 @@ public static class IdentityEndpoints
         IRefreshTokenService refreshService,
         ITokenOutputWriter outputWriter,
         TokenDeliveryPolicy policy,
-        IdentityOptions options,
+        SecurityIdentityOptions options,
         IdentityAspNetCoreOptions aspNetCoreOptions,
         bool issueRefreshToken = true,
         CancellationToken cancellationToken = default)
@@ -482,6 +504,7 @@ public static class IdentityEndpoints
         return Results.Ok(new { message = "Signed in.", expiresAt = issued.ExpiresAt });
     }
 
+    /// <summary>Builds the magic link URL by appending the token as a query parameter.</summary>
     private static string BuildMagicLinkUrl(MagicLinkAspNetCoreOptions options, string token)
     {
         var separator = options.BaseUrl.Contains('?') ? "&" : "?";

@@ -7,10 +7,16 @@ using Pottmayer.Tars.Security.Identity.Abstractions.Contracts;
 
 namespace Pottmayer.Tars.Security.Identity.AspNetCore.Authentication;
 
+/// <summary>
+/// Authenticates requests via an API key read from a header or query parameter.
+/// </summary>
 public sealed class ApiKeyAuthenticationHandler : AuthenticationHandler<ApiKeyAuthenticationOptions>
 {
     private readonly IApiKeyValidator _validator;
 
+    /// <summary>
+    /// Creates a new handler.
+    /// </summary>
     public ApiKeyAuthenticationHandler(
         IOptionsMonitor<ApiKeyAuthenticationOptions> options,
         ILoggerFactory logger,
@@ -41,6 +47,7 @@ public sealed class ApiKeyAuthenticationHandler : AuthenticationHandler<ApiKeyAu
         return AuthenticateResult.Success(ticket);
     }
 
+    /// <summary>Reads the API key from the configured header, falling back to the configured query parameter.</summary>
     private string? GetApiKey()
     {
         var headerName = Options.HeaderName;
@@ -53,8 +60,14 @@ public sealed class ApiKeyAuthenticationHandler : AuthenticationHandler<ApiKeyAu
     }
 }
 
+/// <summary>
+/// Options for <see cref="ApiKeyAuthenticationHandler"/>.
+/// </summary>
 public sealed class ApiKeyAuthenticationOptions : AuthenticationSchemeOptions
 {
+    /// <summary>The HTTP header the API key is read from.</summary>
     public string HeaderName { get; set; } = "X-Api-Key";
+
+    /// <summary>An optional query string parameter the API key may also be read from.</summary>
     public string? QueryParameterName { get; set; }
 }

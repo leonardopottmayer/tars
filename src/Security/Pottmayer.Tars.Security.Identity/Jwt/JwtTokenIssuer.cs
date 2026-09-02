@@ -14,10 +14,10 @@ namespace Pottmayer.Tars.Security.Identity.Jwt;
 /// </summary>
 public sealed class JwtTokenIssuer : ITokenIssuer
 {
-    private readonly IOptionsMonitor<IdentityOptions> _optionsMonitor;
+    private readonly IOptionsMonitor<SecurityIdentityOptions> _optionsMonitor;
     private readonly JwtSecurityTokenHandler _handler = new();
 
-    public JwtTokenIssuer(IOptionsMonitor<IdentityOptions> optionsMonitor)
+    public JwtTokenIssuer(IOptionsMonitor<SecurityIdentityOptions> optionsMonitor)
     {
         _optionsMonitor = optionsMonitor ?? throw new ArgumentNullException(nameof(optionsMonitor));
     }

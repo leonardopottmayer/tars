@@ -9,6 +9,13 @@ namespace Pottmayer.Tars.Security.Identity.Abstractions.Transport;
 /// </summary>
 public interface ITokenOutputWriter
 {
+    /// <summary>
+    /// Writes the token response to the given context using the effective delivery mode.
+    /// </summary>
+    /// <param name="context">The outbound response context to write to.</param>
+    /// <param name="tokenResponse">The tokens and metadata to deliver.</param>
+    /// <param name="effectiveMode">The delivery mode to use (cookie, header, hybrid, or body).</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     Task WriteAsync(
         TokenWriteContext context,
         TokenResponse tokenResponse,

@@ -1,8 +1,16 @@
 namespace Pottmayer.Tars.Security.Identity.Options;
 
+/// <summary>
+/// Validates <see cref="SecurityIdentityOptions"/>.
+/// </summary>
 internal static class IdentityOptionsValidation
 {
-    public static bool Validate(IdentityOptions options)
+    /// <summary>
+    /// Validates the given options.
+    /// </summary>
+    /// <param name="options">The options to validate.</param>
+    /// <returns>True if valid; otherwise false.</returns>
+    public static bool Validate(SecurityIdentityOptions options)
     {
         if (options is null)
             return false;

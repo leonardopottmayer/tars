@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Pottmayer.Tars.Security.DataProtection.Abstractions;
 
 namespace Pottmayer.Tars.Security.DataProtection.DI;
@@ -15,7 +16,7 @@ public static class DataProtectionServicesDI
     /// </remarks>
     public static IServiceCollection AddTarsSecretProtector(this IServiceCollection services)
     {
-        services.AddSingleton<ISecretProtector, AesGcmSecretProtector>();
+        services.TryAddSingleton<ISecretProtector, AesGcmSecretProtector>();
         return services;
     }
 }

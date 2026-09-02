@@ -6,12 +6,15 @@ namespace Pottmayer.Tars.Security.Identity.Abstractions.Transport;
 /// </summary>
 public sealed class TokenWriteContext
 {
+    /// <summary>Response headers to set, keyed case-insensitively.</summary>
     public IDictionary<string, string> ResponseHeaders { get; init; } =
         new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
+    /// <summary>Cookies to append to the response.</summary>
     public IList<TokenCookieWriteModel> CookiesToAppend { get; init; } =
         new List<TokenCookieWriteModel>();
 
+    /// <summary>Names of cookies to delete from the response.</summary>
     public IList<string> CookiesToDelete { get; init; } =
         new List<string>();
 

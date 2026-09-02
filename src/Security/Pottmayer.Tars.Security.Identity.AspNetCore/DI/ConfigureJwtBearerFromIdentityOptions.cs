@@ -10,11 +10,11 @@ namespace Pottmayer.Tars.Security.Identity.AspNetCore.DI;
 
 internal sealed class ConfigureJwtBearerFromIdentityOptions : IConfigureNamedOptions<JwtBearerOptions>
 {
-    private readonly IOptionsMonitor<IdentityOptions> _identityOptionsMonitor;
+    private readonly IOptionsMonitor<SecurityIdentityOptions> _identityOptionsMonitor;
     private readonly IOptionsMonitor<IdentityAspNetCoreOptions> _identityAspNetCoreOptionsMonitor;
 
     public ConfigureJwtBearerFromIdentityOptions(
-        IOptionsMonitor<IdentityOptions> identityOptionsMonitor,
+        IOptionsMonitor<SecurityIdentityOptions> identityOptionsMonitor,
         IOptionsMonitor<IdentityAspNetCoreOptions> identityAspNetCoreOptionsMonitor)
     {
         _identityOptionsMonitor = identityOptionsMonitor ?? throw new ArgumentNullException(nameof(identityOptionsMonitor));

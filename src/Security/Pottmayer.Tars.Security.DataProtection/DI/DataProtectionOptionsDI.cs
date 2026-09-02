@@ -21,7 +21,9 @@ public static class DataProtectionOptionsDI
 
         var ob = builder.Services
             .AddOptions<DataProtectionOptions>()
-            .Bind(builder.Configuration.GetSection(sectionName));
+            .Bind(builder.Configuration.GetSection(sectionName))
+            .Validate(DataProtectionOptionsValidation.Validate, DataProtectionOptions.ValidationErrorMessage)
+            .ValidateOnStart();
 
         if (configure is not null)
             ob.Configure(configure);
