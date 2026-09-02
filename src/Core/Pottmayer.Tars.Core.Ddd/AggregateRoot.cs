@@ -13,7 +13,11 @@ public abstract class AggregateRoot<TKey> : Entity<TKey>, IHasDomainEvents where
     /// </summary>
     public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
 
+    /// <summary>Initializes a new aggregate without setting its identifier.</summary>
     protected AggregateRoot() { }
+
+    /// <summary>Initializes a new aggregate with the given identifier.</summary>
+    /// <param name="id">The aggregate's identifier.</param>
     protected AggregateRoot(TKey id) : base(id) { }
 
     /// <summary>

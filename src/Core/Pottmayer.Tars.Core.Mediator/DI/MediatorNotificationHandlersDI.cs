@@ -4,8 +4,14 @@ using System.Reflection;
 
 namespace Pottmayer.Tars.Core.Mediator.DI
 {
+    /// <summary>Registration helpers for notification handlers.</summary>
     public static class MediatorNotificationHandlersDI
     {
+        /// <summary>Scans an assembly and registers every <see cref="INotificationHandler{TNotification}"/> found.</summary>
+        /// <param name="services">The service collection to register into.</param>
+        /// <param name="assembly">The assembly to scan.</param>
+        /// <param name="lifetime">Lifetime applied to the registrations.</param>
+        /// <returns>The same <paramref name="services"/> for chaining.</returns>
         public static IServiceCollection AddNotificationHandlersFromAssembly(
             this IServiceCollection services,
             Assembly assembly,
@@ -15,12 +21,17 @@ namespace Pottmayer.Tars.Core.Mediator.DI
                 services,
                 assembly,
                 typeof(INotificationHandler<>),
-                lifetime,
-                isOpenGenericInterface: true);
+                lifetime);
 
             return services;
         }
 
+        /// <summary>Registers a single notification handler for a specific notification type.</summary>
+        /// <typeparam name="TNotification">The notification type handled.</typeparam>
+        /// <typeparam name="THandler">The handler implementation.</typeparam>
+        /// <param name="services">The service collection to register into.</param>
+        /// <param name="lifetime">Lifetime applied to the registration.</param>
+        /// <returns>The same <paramref name="services"/> for chaining.</returns>
         public static IServiceCollection AddNotificationHandler<TNotification, THandler>(
             this IServiceCollection services,
             ServiceLifetime lifetime = ServiceLifetime.Scoped)

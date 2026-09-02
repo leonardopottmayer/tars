@@ -141,7 +141,9 @@ var message = _messages.Get("app.orders.not_found", fallback: "Order not found."
 Good for ASP.NET Core hosts that already use `IStringLocalizer`.
 
 ```csharp
-builder.AddTarsLocalizationAspNetCore();
+builder.AddTarsLocalizationAspNetCoreOptions();
+builder.Services.AddTarsLocalization();
+builder.Services.AddTarsAspNetCoreStringLocalization();
 builder.Services.AddTarsStringLocalizerSource<SharedResource>();
 ```
 
@@ -177,21 +179,28 @@ Important:
 ### ASP.NET Core
 
 ```csharp
-builder.AddTarsLocalizationAspNetCore();
+builder.AddTarsLocalizationAspNetCoreOptions();
+builder.Services.AddTarsLocalization();
+builder.Services.AddTarsAspNetCoreStringLocalization();
 builder.Services.AddTarsStringLocalizerSource<SharedResource>();
 
 var app = builder.Build();
 app.UseTarsLocalization();
 ```
 
+There is no all-in-one method: register each piece separately. Everything is factory-resolved and
+registered with `TryAdd`, so call order does not affect resolution (register your own override first to
+win); message sources are the exception — the provider queries them in registration order.
+
 Methods:
 
 | Method | Role |
 |---|---|
-| `AddTarsLocalizationAspNetCore(...)` | registers options, `AddTarsLocalization()` and `AddLocalization()` |
-| `AddTarsLocalizationAspNetCoreOptions(...)` | binds/validates options without registering the rest |
-| `AddTarsStringLocalizerSource<TResource>()` | creates a source based on `IStringLocalizer` |
-| `UseTarsLocalization()` | applies `RequestLocalizationMiddleware` |
+| `AddTarsLocalizationAspNetCoreOptions(...)` | required — binds/validates options (`Tars:Localization`) |
+| `AddTarsLocalization()` | required — registers `IMessageProvider` (core package) |
+| `AddTarsAspNetCoreStringLocalization()` | optional — registers `IStringLocalizerFactory`; needed only for `.resx` sources |
+| `AddTarsStringLocalizerSource<TResource>()` | optional, repeatable — adds a source based on `IStringLocalizer` |
+| `UseTarsLocalization()` | required — applies `RequestLocalizationMiddleware` |
 
 ## appsettings
 
@@ -281,7 +290,9 @@ public sealed class SharedResource { }
 Registration:
 
 ```csharp
-builder.AddTarsLocalizationAspNetCore();
+builder.AddTarsLocalizationAspNetCoreOptions();
+builder.Services.AddTarsLocalization();
+builder.Services.AddTarsAspNetCoreStringLocalization();
 builder.Services.AddTarsStringLocalizerSource<MyApp.Resources.SharedResource>();
 
 var app = builder.Build();
@@ -382,6 +393,6 @@ builder.Services.AddTarsDefaultHttpErrorMapper();
 ## Common pitfalls
 
 - Registering `AddTarsLocalization()` and forgetting to add sources: in this case everything falls back to `fallback`.
-- Assuming `AddTarsLocalizationAspNetCore()` registers resources automatically: it registers the host and the middleware, not your application keys.
+- Assuming `AddTarsStringLocalizerSource<TResource>()` registers your resources automatically: it wires the `IStringLocalizer`-backed host, not your application keys.
 - Using `Error.Message` with already-fixed text and expecting automatic translation in `Web.Http`: if the text is already filled in, the default mapper uses that text.
 - Forgetting `app.UseTarsLocalization()` in the HTTP pipeline: the current culture will not be adjusted per request.

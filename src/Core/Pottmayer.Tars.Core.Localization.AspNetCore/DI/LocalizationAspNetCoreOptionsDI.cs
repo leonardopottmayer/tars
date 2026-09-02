@@ -5,8 +5,17 @@ using Pottmayer.Tars.Core.Localization.AspNetCore.Options;
 
 namespace Pottmayer.Tars.Core.Localization.AspNetCore.DI;
 
+/// <summary>Registration helper that binds and validates <see cref="LocalizationAspNetCoreOptions"/>.</summary>
 public static class LocalizationAspNetCoreOptionsDI
 {
+    /// <summary>
+    /// Binds <see cref="LocalizationAspNetCoreOptions"/> from configuration (default section
+    /// <see cref="LocalizationAspNetCoreOptions.SectionName"/>) and validates it on application start.
+    /// </summary>
+    /// <param name="builder">The host application builder whose configuration and services are used.</param>
+    /// <param name="sectionName">Configuration section to bind; defaults to <see cref="LocalizationAspNetCoreOptions.SectionName"/>.</param>
+    /// <param name="configure">Optional code-based overrides applied after binding.</param>
+    /// <returns>The <see cref="OptionsBuilder{TOptions}"/> for further configuration.</returns>
     public static OptionsBuilder<LocalizationAspNetCoreOptions> AddTarsLocalizationAspNetCoreOptions(
         this IHostApplicationBuilder builder,
         string? sectionName = null,

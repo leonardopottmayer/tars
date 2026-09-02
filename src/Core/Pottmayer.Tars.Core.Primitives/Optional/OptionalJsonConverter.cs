@@ -9,6 +9,7 @@ namespace Pottmayer.Tars.Core.Primitives;
 /// </summary>
 public sealed class OptionalJsonConverter<T> : JsonConverter<Optional<T>>
 {
+    /// <inheritdoc/>
     public override Optional<T> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         if (reader.TokenType == JsonTokenType.Null)
@@ -18,6 +19,7 @@ public sealed class OptionalJsonConverter<T> : JsonConverter<Optional<T>>
         return Optional<T>.Some(value);
     }
 
+    /// <inheritdoc/>
     public override void Write(Utf8JsonWriter writer, Optional<T> value, JsonSerializerOptions options)
     {
         if (!value.IsPresent)

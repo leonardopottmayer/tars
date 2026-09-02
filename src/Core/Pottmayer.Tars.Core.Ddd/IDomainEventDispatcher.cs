@@ -7,5 +7,9 @@ namespace Pottmayer.Tars.Core.Ddd;
 /// </summary>
 public interface IDomainEventDispatcher
 {
+    /// <summary>Dispatches the given domain events to their handlers.</summary>
+    /// <param name="domainEvents">The domain events to dispatch.</param>
+    /// <param name="cancellationToken">Token used to cancel dispatching.</param>
+    /// <returns>A task that completes when all events have been dispatched.</returns>
     Task DispatchAsync(IReadOnlyCollection<object> domainEvents, CancellationToken cancellationToken = default);
 }

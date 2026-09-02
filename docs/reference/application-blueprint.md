@@ -65,7 +65,9 @@ builder.Services.AddTarsCqrsExceptionMappingBehavior();
 Localize framework and application messages:
 
 ```csharp
-builder.AddTarsLocalizationAspNetCore();
+builder.AddTarsLocalizationAspNetCoreOptions();
+builder.Services.AddTarsLocalization();
+builder.Services.AddTarsAspNetCoreStringLocalization();
 builder.Services.AddTarsStringLocalizerSource<MyApp.Resources.SharedResource>();
 ```
 
@@ -149,10 +151,12 @@ app.UseTarsTenantResolution();
 ```csharp
 var builder = WebApplication.CreateBuilder(args);
 
-builder.AddTarsLocalizationAspNetCore();
+builder.AddTarsLocalizationAspNetCoreOptions();
 builder.AddTarsWebHttpOptions();
 builder.AddTarsWebHttpAspNetCoreOptions();
 
+builder.Services.AddTarsLocalization();
+builder.Services.AddTarsAspNetCoreStringLocalization();
 builder.Services.AddTarsStringLocalizerSource<MyApp.Resources.SharedResource>();
 builder.Services.AddTarsDefaultHttpErrorMapper();
 builder.Services.AddTarsDefaultWrapDecisionService();

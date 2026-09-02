@@ -1,15 +1,14 @@
 namespace Pottmayer.Tars.Core.Localization.AspNetCore.Options;
 
-public static class LocalizationAspNetCoreOptionsValidation
+/// <summary>
+/// Validation entry point for <see cref="LocalizationAspNetCoreOptions"/>, wired into the options pipeline by
+/// <c>AddTarsLocalizationAspNetCoreOptions</c> and run on application start.
+/// </summary>
+internal static class LocalizationAspNetCoreOptionsValidation
 {
+    /// <summary>Validates the bound <see cref="LocalizationAspNetCoreOptions"/> instance.</summary>
+    /// <param name="options">The options instance to validate.</param>
+    /// <returns><c>true</c> when non-null and <see cref="LocalizationAspNetCoreOptions.IsValid"/>; otherwise <c>false</c>.</returns>
     public static bool Validate(LocalizationAspNetCoreOptions options)
-    {
-        if (string.IsNullOrWhiteSpace(options.DefaultCulture))
-            return false;
-
-        if (options.SupportedCultures is null || options.SupportedCultures.Count == 0)
-            return false;
-
-        return true;
-    }
+        => options is not null && options.IsValid();
 }

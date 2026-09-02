@@ -9,6 +9,7 @@ namespace Pottmayer.Tars.Core.Cqrs.Queries;
 public interface IQuery<TResult> : IRequest<Result<TResult>>
     where TResult : notnull
 {
+    /// <summary>Behavioral options attached to this query.</summary>
     IQueryOptions QueryOptions { get; init; }
 }
 
@@ -19,5 +20,6 @@ public interface IQuery<TInput, TResult> : IQuery<TResult>
     where TInput : notnull
     where TResult : notnull
 {
+    /// <summary>The query's input payload.</summary>
     TInput Input { get; }
 }

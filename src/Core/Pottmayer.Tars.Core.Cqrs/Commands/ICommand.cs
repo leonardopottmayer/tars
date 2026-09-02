@@ -9,6 +9,7 @@ namespace Pottmayer.Tars.Core.Cqrs.Commands;
 public interface ICommand<TResult> : IRequest<Result<TResult>>
     where TResult : notnull
 {
+    /// <summary>Behavioral options attached to this command.</summary>
     ICommandOptions CommandOptions { get; set; }
 }
 
@@ -19,5 +20,6 @@ public interface ICommand<TInput, TResult> : ICommand<TResult>
     where TInput : notnull
     where TResult : notnull
 {
+    /// <summary>The command's input payload.</summary>
     TInput Input { get; }
 }

@@ -27,6 +27,9 @@ public readonly struct Optional<T>
     /// <summary>Value present (property was sent; value may be null).</summary>
     public static Optional<T> Some(T? value) => new(true, value);
 
+    /// <summary>Deconstructs into presence and value components.</summary>
+    /// <param name="isPresent">Receives whether the value was present.</param>
+    /// <param name="value">Receives the value (default when absent).</param>
     public void Deconstruct(out bool isPresent, out T? value)
     {
         isPresent = _isPresent;

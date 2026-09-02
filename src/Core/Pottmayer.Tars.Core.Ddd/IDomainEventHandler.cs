@@ -23,5 +23,9 @@ namespace Pottmayer.Tars.Core.Ddd;
 public interface IDomainEventHandler<in TDomainEvent>
     where TDomainEvent : IDomainEvent
 {
+    /// <summary>Handles the raised domain event.</summary>
+    /// <param name="domainEvent">The domain event to handle.</param>
+    /// <param name="cancellationToken">Token used to cancel handling.</param>
+    /// <returns>A task that completes when the event has been handled.</returns>
     Task HandleAsync(TDomainEvent domainEvent, CancellationToken cancellationToken = default);
 }

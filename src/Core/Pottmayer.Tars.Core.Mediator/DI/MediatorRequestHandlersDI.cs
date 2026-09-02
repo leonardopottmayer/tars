@@ -4,8 +4,14 @@ using System.Reflection;
 
 namespace Pottmayer.Tars.Core.Mediator.DI
 {
+    /// <summary>Registration helpers for request handlers.</summary>
     public static class MediatorRequestHandlersDI
     {
+        /// <summary>Scans an assembly and registers every <see cref="IRequestHandler{TRequest,TResponse}"/> found.</summary>
+        /// <param name="services">The service collection to register into.</param>
+        /// <param name="assembly">The assembly to scan.</param>
+        /// <param name="lifetime">Lifetime applied to the registrations.</param>
+        /// <returns>The same <paramref name="services"/> for chaining.</returns>
         public static IServiceCollection AddRequestHandlersFromAssembly(
             this IServiceCollection services,
             Assembly assembly,
@@ -15,12 +21,18 @@ namespace Pottmayer.Tars.Core.Mediator.DI
                 services,
                 assembly,
                 typeof(IRequestHandler<,>),
-                lifetime,
-                isOpenGenericInterface: true);
+                lifetime);
 
             return services;
         }
 
+        /// <summary>Registers a single request handler for a specific request/response pair.</summary>
+        /// <typeparam name="TRequest">The request type handled.</typeparam>
+        /// <typeparam name="TResponse">The response type produced.</typeparam>
+        /// <typeparam name="THandler">The handler implementation.</typeparam>
+        /// <param name="services">The service collection to register into.</param>
+        /// <param name="lifetime">Lifetime applied to the registration.</param>
+        /// <returns>The same <paramref name="services"/> for chaining.</returns>
         public static IServiceCollection AddRequestHandler<TRequest, TResponse, THandler>(
             this IServiceCollection services,
             ServiceLifetime lifetime = ServiceLifetime.Scoped)

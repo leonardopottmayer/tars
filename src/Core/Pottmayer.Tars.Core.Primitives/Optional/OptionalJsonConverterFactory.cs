@@ -9,6 +9,7 @@ namespace Pottmayer.Tars.Core.Primitives;
 /// </summary>
 public sealed class OptionalJsonConverterFactory : JsonConverterFactory
 {
+    /// <inheritdoc/>
     public override bool CanConvert(Type typeToConvert)
     {
         if (!typeToConvert.IsGenericType)
@@ -17,6 +18,7 @@ public sealed class OptionalJsonConverterFactory : JsonConverterFactory
         return typeToConvert.GetGenericTypeDefinition() == typeof(Optional<>);
     }
 
+    /// <inheritdoc/>
     public override JsonConverter? CreateConverter(Type typeToConvert, JsonSerializerOptions options)
     {
         var inner = typeToConvert.GetGenericArguments()[0];

@@ -38,6 +38,10 @@ public sealed class Mediator : IMediator
         return await (ValueTask<TResponse>)result!;
     }
 
+    /// <summary>
+    /// Runs the full request pipeline for the concrete request type: pre-processors, behaviors (outermost
+    /// first), the handler, then post-processors.
+    /// </summary>
     private static async ValueTask<TResponse> SendCore<TRequest, TResponse>(
         IServiceProvider serviceProvider,
         IRequest<TResponse> request,
