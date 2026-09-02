@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Pottmayer.Tars.Caching.Memory.Options;
-using Pottmayer.Tars.Caching.Options;
 
 namespace Pottmayer.Tars.Caching.Memory.DI
 {
@@ -33,7 +32,7 @@ namespace Pottmayer.Tars.Caching.Memory.DI
             var ob = builder.Services
                 .AddOptions<MemoryCachingOptions>()
                 .Bind(section)
-                .Validate(CachingOptionsValidation.Validate, MemoryCachingOptions.ValidationErrorMessage)
+                .Validate(MemoryCachingOptionsValidation.Validate, MemoryCachingOptions.ValidationErrorMessage)
                 .ValidateOnStart();
 
             if (configure is not null)
