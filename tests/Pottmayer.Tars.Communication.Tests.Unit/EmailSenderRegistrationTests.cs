@@ -67,6 +67,7 @@ public class EmailSenderRegistrationTests
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["Smtp:Host"] = "custom.tars.local",
+            ["Smtp:FromAddress"] = "no-reply@tars.local",
         });
 
         builder.AddTarsMailKitEmailOptions(sectionName: "Smtp");
@@ -82,6 +83,7 @@ public class EmailSenderRegistrationTests
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["Tars:Communication:Email:Smtp:Host"] = "from-config.tars.local",
+            ["Tars:Communication:Email:Smtp:FromAddress"] = "no-reply@tars.local",
         });
 
         builder.AddTarsMailKitEmailOptions(configure: o => o.Host = "from-callback.tars.local");
