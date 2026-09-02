@@ -10,17 +10,8 @@ namespace Pottmayer.Tars.Observability.AspNetCore.DI;
 /// <summary>
 /// ASP.NET Core instrumentation for the tars observability pipeline and the correlation-id
 /// middleware. The instrumentation methods extend the pipelines registered in the core package, so
-/// call the tracing ones after <c>AddTarsTracing</c> and the metrics ones after <c>AddTarsMetrics</c>:
-/// <code>
-/// builder.Services.AddTarsTracing();
-/// builder.Services.AddTarsAspNetCoreTracing();
-/// builder.Services.AddTarsHttpClientTracing();
-/// builder.Services.AddTarsMetrics();
-/// builder.Services.AddTarsAspNetCoreMetrics();
-/// builder.Services.AddTarsHttpClientMetrics();
-/// // ...
-/// app.UseTarsCorrelationId(); // early in the pipeline
-/// </code>
+/// call the tracing ones after <c>AddTarsTracing</c> and the metrics ones after <c>AddTarsMetrics</c>;
+/// see docs/observability/configuration.md for the canonical order.
 /// </summary>
 public static class ObservabilityAspNetCoreServicesDI
 {

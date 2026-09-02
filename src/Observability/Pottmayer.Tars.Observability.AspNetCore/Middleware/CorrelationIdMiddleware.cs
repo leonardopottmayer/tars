@@ -18,12 +18,22 @@ public sealed class CorrelationIdMiddleware
     private readonly RequestDelegate _next;
     private readonly ILogger<CorrelationIdMiddleware> _logger;
 
+    /// <summary>
+    /// Creates a new middleware instance.
+    /// </summary>
+    /// <param name="next">The next delegate in the pipeline.</param>
+    /// <param name="logger">Logger used to open the correlation-id scope.</param>
     public CorrelationIdMiddleware(RequestDelegate next, ILogger<CorrelationIdMiddleware> logger)
     {
         _next = next;
         _logger = logger;
     }
 
+    /// <summary>
+    /// Resolves or derives the correlation id, tags the current span, echoes it on the response, and
+    /// invokes the rest of the pipeline inside a logger scope carrying the id.
+    /// </summary>
+    /// <param name="context">The current HTTP context.</param>
     public async Task InvokeAsync(HttpContext context)
     {
         var correlationId =

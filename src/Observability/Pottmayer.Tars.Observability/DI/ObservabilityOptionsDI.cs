@@ -6,6 +6,9 @@ using Pottmayer.Tars.Observability.Options;
 
 namespace Pottmayer.Tars.Observability.DI;
 
+/// <summary>
+/// Registers and binds <see cref="ObservabilityOptions"/> from configuration.
+/// </summary>
 public static class ObservabilityOptionsDI
 {
     /// <summary>
@@ -29,7 +32,7 @@ public static class ObservabilityOptionsDI
                 if (string.IsNullOrWhiteSpace(options.ServiceName) && !string.IsNullOrWhiteSpace(applicationName))
                     options.ServiceName = applicationName;
             })
-            .Validate(ObservabilityOptionsValidation.Validate, ObservabilityOptionsValidation.ValidationErrorMessage)
+            .Validate(ObservabilityOptionsValidation.Validate, ObservabilityOptions.ValidationErrorMessage)
             .ValidateOnStart();
 
         if (configure is not null)

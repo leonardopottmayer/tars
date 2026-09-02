@@ -3,7 +3,12 @@ namespace Pottmayer.Tars.Observability.Options;
 /// <summary>Options for the tars observability foundation, bound from configuration.</summary>
 public sealed class ObservabilityOptions
 {
+    /// <summary>Default configuration section name for <see cref="ObservabilityOptions"/>.</summary>
     public const string SectionName = "Tars:Observability";
+
+    /// <summary>Validation error message used when options validation fails.</summary>
+    public const string ValidationErrorMessage =
+        "Tars observability options are invalid: ServiceName must be provided when observability is enabled.";
 
     /// <summary>Master switch. When <c>false</c>, <c>AddTarsObservability</c> is a no-op.</summary>
     public bool Enabled { get; set; } = true;

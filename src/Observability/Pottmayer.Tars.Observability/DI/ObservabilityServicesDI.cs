@@ -12,24 +12,11 @@ namespace Pottmayer.Tars.Observability.DI;
 /// <summary>
 /// Granular registrations for the tars OpenTelemetry pipeline (resource, tracing, metrics and their
 /// OTLP exporters). Each method configures a single concern and is safe to call in any order; the
-/// underlying <c>AddOpenTelemetry()</c> builder is idempotent. A typical host wires them like this:
-/// <code>
-/// builder.AddTarsObservabilityOptions();
-/// var o = builder.Configuration.GetSection(ObservabilityOptions.SectionName).Get&lt;ObservabilityOptions&gt;()
-///         ?? new ObservabilityOptions();
-/// var serviceName = string.IsNullOrWhiteSpace(o.ServiceName) ? builder.Environment.ApplicationName : o.ServiceName;
-///
-/// builder.Services.AddTarsObservabilityResource(serviceName, o.ServiceVersion);
-/// builder.Services.AddTarsTracing();
-/// builder.Services.AddTarsTracingOtlpExporter(o.OtlpEndpoint);
-/// builder.Services.AddTarsMetrics();
-/// builder.Services.AddTarsRuntimeMetrics();
-/// builder.Services.AddTarsMetricsOtlpExporter(o.OtlpEndpoint);
-/// </code>
-/// The exporter methods only make sense once their pipeline (<see cref="AddTarsTracing"/> /
-/// <see cref="AddTarsMetrics"/>) has been added; see each method's remarks. Logging is registered
-/// separately via <see cref="ObservabilitySerilogDI"/>, and request/HTTP-client instrumentation via
-/// the ASP.NET Core package.
+/// underlying <c>AddOpenTelemetry()</c> builder is idempotent. The exporter methods only make sense
+/// once their pipeline (<see cref="AddTarsTracing"/> / <see cref="AddTarsMetrics"/>) has been added;
+/// see each method's remarks and docs/observability/configuration.md for the canonical order. Logging
+/// is registered separately (native or Serilog), and request/HTTP-client instrumentation via the
+/// ASP.NET Core package.
 /// </summary>
 public static class ObservabilityServicesDI
 {

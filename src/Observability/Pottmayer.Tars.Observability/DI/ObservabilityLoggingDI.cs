@@ -7,11 +7,7 @@ namespace Pottmayer.Tars.Observability.DI;
 
 /// <summary>
 /// Provider-agnostic logging registrations built on the native <c>ILogger</c> pipeline exported over
-/// OpenTelemetry. This is the default logging path and pulls in no third-party logging framework:
-/// <code>
-/// builder.Services.AddTarsLogging();
-/// builder.Services.AddTarsLoggingOtlpExporter(o.OtlpEndpoint);
-/// </code>
+/// OpenTelemetry. This is the default logging path and pulls in no third-party logging framework.
 /// Scopes are included, so the correlation-id middleware (which uses <c>ILogger.BeginScope</c>) shows
 /// up on every log record. This shares the resource configured by
 /// <see cref="ObservabilityServicesDI.AddTarsObservabilityResource"/>.
