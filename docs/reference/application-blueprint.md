@@ -25,6 +25,20 @@ For an HTTP backend with authentication, data access, localized messages and sta
 - `UserContext.AspNetCore`
 - optionally `Caching.*`
 - optionally `Multitenancy.*`
+- optionally `Observability.*` and `Observability.AspNetCore` (tracing/metrics/logging over OTLP)
+- optionally `Messaging.*` (in-process bus, in-process outbox, or a broker provider) and
+  `Communication.*` (email, Telegram)
+
+Messaging, Communication and Observability are not shown as full steps below because each already has
+its own dedicated, worked composition guide — see
+[Messaging configuration](../messaging/configuration.md) and
+[Transactional Outbox](../messaging/outbox.md), [Communication configuration](../communication/configuration.md),
+and [Observability configuration](../observability/configuration.md) (the "Canonical order" section
+there). This blueprint's example `Program.cs` below focuses on the HTTP + data + identity core that
+almost every host needs; treat those three as additional, independently-documented steps you insert
+alongside the ones here. If you use Observability, register it **first**, before every other family —
+`AddTarsObservabilityResource()` and the tracing/metrics pipeline must be in place before other
+`AddTars*` calls create the `ActivitySource`/`Meter` instances they subscribe to.
 
 ## Recommended composition order
 
@@ -149,27 +163,81 @@ app.UseTarsTenantResolution();
 
 ## Example `Program.cs`
 
+This wires up all 8 steps above, in the order recommended. It omits Observability, Messaging and
+Communication — add those following their own configuration guides, with Observability registered
+before everything else if you use it.
+
 ```csharp
 var builder = WebApplication.CreateBuilder(args);
 
-builder.AddTarsLocalizationAspNetCoreOptions();
-builder.AddTarsWebHttpOptions();
-builder.AddTarsWebHttpAspNetCoreOptions();
+// 1. Data
+builder.Services.AddTarsDataContextAccessor();
+builder.Services.AddTarsRelationalCompositeConnectionResolver();
+builder.Services.AddTarsRelationalConfigurationConnectionResolver();
+builder.Services.AddTarsDataContextFactory();
+builder.Services.AddTarsRelationalUnitOfWorkFactory();
+builder.Services.AddTarsData<AppDbContext>((sp, descriptor) =>
+    new DbContextOptionsBuilder<AppDbContext>()
+        .UseNpgsql(descriptor.ConnectionString)
+        .Options);
+builder.Services.AddTarsDataRepositoriesFromAssemblies(typeof(AppAssemblyMarker).Assembly);
 
+// 2. Core application
+builder.Services.AddTarsMediator(options =>
+{
+    options.RegisterHandlersFromAssembly(typeof(MyCommand).Assembly);
+});
+builder.Services.AddTarsCqrsExceptionMappingBehavior();
+
+// 3. Localization
+builder.AddTarsLocalizationAspNetCoreOptions();
 builder.Services.AddTarsLocalization();
 builder.Services.AddTarsAspNetCoreStringLocalization();
 builder.Services.AddTarsStringLocalizerSource<MyApp.Resources.SharedResource>();
+
+// 4. User context
+builder.AddTarsUserContextOptions();
+builder.Services.AddTarsClaimsUserResolver<UserData>();
+builder.Services.AddTarsDefaultUserContextFactory<UserData>();
+builder.Services.AddTarsUserContextAccessor<UserData>();
+builder.Services.AddTarsCurrentPrincipalAccessor();
+
+// 5. Identity
+builder.AddTarsIdentityOptions();
+builder.AddTarsIdentityAspNetCoreOptions();
+builder.Services.AddTarsIdentityJwtTokenIssuer();
+builder.Services.AddTarsIdentityJwtTokenValidator();
+builder.Services.AddTarsIdentityRefreshTokenService();
+builder.Services.AddTarsIdentityAspNetCoreJwtBearer();
+
+// 6. Web
+builder.AddTarsWebHttpOptions();
+builder.AddTarsWebHttpAspNetCoreOptions();
 builder.Services.AddTarsDefaultHttpErrorMapper();
 builder.Services.AddTarsDefaultWrapDecisionService();
 builder.Services.AddTarsResponseWrapperResultFilter();
 builder.Services.AddTarsResponseWrapperMvcOptionsSetup();
 builder.Services.AddTarsResponseWrapperEndpointFilter();
 builder.Services.AddTarsExceptionFilter();
-
 builder.Services.AddControllers(options =>
 {
     options.Filters.AddService<HttpExceptionFilter>();
 });
+
+// 7. Caching (optional)
+builder.AddTarsMemoryCachingOptions();
+builder.Services.AddTarsCacheKeyBuilder<MemoryCachingOptions>();
+builder.Services.AddMemoryCache();
+builder.Services.AddTarsMemoryCacheProvider();
+
+// 8. Multitenancy (optional — only if the application is multi-tenant)
+builder.Services.AddTarsTenantContextAccessor();
+builder.Services.AddTarsTenantContextFactory();
+builder.Services.AddTarsTenantResolution(options =>
+{
+    options.AddResolver(new HeaderTenantResolver("X-Tenant-Key"));
+});
+builder.Services.AddTarsTenantCatalog<ConfigurationTenantCatalog>();
 
 var app = builder.Build();
 
@@ -177,13 +245,14 @@ app.UseHttpsRedirection();
 app.UseTarsLocalization();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseTarsTenantResolution(); // only if step 8 is used
 
 app.MapControllers();
 
 var api = app.MapGroup("/api");
 api.MapGet("/orders/{id:guid}", async (Guid id, IMediator mediator, IHttpErrorMapper mapper) =>
 {
-    var result = await mediator.SendAsync(new GetOrderQuery(id));
+    var result = await mediator.Send(new GetOrderQuery(id));
     return result.ToHttpResult(mapper);
 });
 

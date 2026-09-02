@@ -117,3 +117,7 @@ accepted the message (`"logging"` or `"mailkit"`) and its message id, when avail
 ## Configuration
 
 See [configuration.md](./configuration.md).
+
+## Scenarios and testing
+
+See [scenarios.md](./scenarios.md) for worked email/Telegram setups and how to fake `IEmailSender`/`ITelegramClient` in tests.

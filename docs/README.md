@@ -10,12 +10,15 @@ This folder gathers the functional documentation of the `Pottmayer.Tars` framewo
 - [Core](./core/overview.md): primitives, mediator, CQRS, DDD and localization
   - [Localization](./core/localization.md): `IMessageProvider`, `IMessageSource`, `InMemoryMessageSource`, `.resx`, `IStringLocalizer`, `appsettings`
 - [Caching](./caching/overview.md): abstractions, memory, redis, serializer, key builder
+  - [Scenarios and testing](./caching/scenarios.md): memory-only, Redis-only, read-through cache, invalidation, faking `ICacheStore`
 - [Messaging](./messaging/overview.md): integration events, in-process event bus, handler scanning, broker-ready contracts
   - [Broker transports](./messaging/brokers.md): portable routing model, subscriptions, per-broker capability matrix, MassTransit over RabbitMQ and Kafka, reusable topology steps, transactional outbox
   - [Configuration](./messaging/configuration.md): `Tars:Messaging:RabbitMq`, `Tars:Messaging:Kafka`, `Tars:Messaging:Broker`, binders and local development
+  - [Transactional Outbox](./messaging/outbox.md): `Pottmayer.Tars.Messaging.EntityFrameworkCore`, in-process outbox table, per-database relay, at-least-once delivery
 - [Communication](./communication/overview.md): e-mail sending, logging fake and MailKit SMTP provider behind one contract, plus the Telegram Bot API transport
   - [Telegram](./communication/telegram.md): `ITelegramClient`, inline keyboards, long polling vs webhook, permanent/transient failures, media download
   - [Configuration](./communication/configuration.md): `Tars:Communication:Email:Smtp`, MailKit options, local Mailpit, `Tars:Communication:Telegram`
+  - [Scenarios and testing](./communication/scenarios.md): environment-selected email provider, Telegram polling, faking `IEmailSender`/`ITelegramClient`
 - [Data](./data/overview.md): contracts, contexts, pipelines, unit of work, unified EF Core + Dapper, multi-database, domain events
   - [Configuration (Relational)](./data/configuration.md): appsettings, multi-database, multitenancy, custom resolver
   - [Contracts and UoW](./data/pipelines-and-uow.md): `IUnitOfWork`, `IDataContext`, repositories, `QueryParams`, domain events

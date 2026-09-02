@@ -140,6 +140,15 @@ Notes:
 
 - `configure` may override values bound from the configuration section.
 - `IncludeTraceId` does not affect `ToHttpResult()`, because that method builds the `IResult` directly
+- If `AddTarsWebHttpOptions()` / `AddTarsWebHttpAspNetCoreOptions()` are never called, resolving
+  `IOptions<WebHttpOptions>` / `IOptions<WebHttpAspNetCoreOptions>` does **not** throw — the .NET
+  Options pattern falls back to `new WebHttpOptions()` / `new WebHttpAspNetCoreOptions()`, i.e. the
+  same defaults shown in the table above (`Enabled: true`, `ControllersDefaultMode: WrapAll`, ...).
+  The gotcha is that your `appsettings.json` section is then **silently ignored** — nothing binds it
+  — and `ValidateOnStart()` never runs, so a genuinely invalid value (e.g. an undefined
+  `ControllersDefaultMode` string) would only surface as unexpected wrapping behavior, not a startup
+  error. Always call the options method explicitly if you rely on configuration, even though the
+  code-level defaults happen to match.
 
 ## Registration scenarios
 
@@ -297,7 +306,7 @@ app.MapControllers();
 var api = app.MapGroup("/api");
 api.MapGet("/orders/{id:guid}", async (Guid id, IMediator mediator, IHttpErrorMapper mapper) =>
 {
-    var result = await mediator.SendAsync(new GetOrderQuery(id));
+    var result = await mediator.Send(new GetOrderQuery(id));
     return result.ToHttpResult(mapper);
 });
 

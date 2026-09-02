@@ -4,77 +4,98 @@
 
 This document points out where each framework capability appears in the example apps used to validate the documentation.
 
-## Note about naming
+## Note about naming and paths
 
-The example apps still reflect part of the framework's previous naming. In particular:
+Both example apps have been reorganized since this crosswalk was first written. Current locations:
 
-- `Presentation.Rest` in the consumers corresponds to the current role of `Web.Http`
-- localization concerns may appear embedded in host adapters, even when the `Core.Localization` family was not yet isolated
+- **Pandora**: `G:\dev\pandora\backend\src` (repo root `G:\dev\pandora`) — a modular monolith, one project family per module (`Modules/<Name>/Pottmayer.Pandora.Modules.<Name>.{Domain,Application,Infrastructure,Persistence,Presentation}`) plus `Shared/` and `Host/`. It does **not** use an `App.Adapter.*` layout.
+- **Roberto**: `G:\dev\exodyas\roberto\backend\src` (repo root `G:\dev\exodyas\roberto`) — `Exodyas.Roberto.{Domain,Application,Infrastructure,Persistence,Presentation,Host}`.
 
-Use this crosswalk as a reference for real composition, not as a literal mirror of the current package names.
+`Presentation.Rest` in older framework versions corresponds to the current role of `Web.Http`.
+
+Use this crosswalk as a reference for real composition, not as a literal mirror of file layout — module lists change as the apps evolve.
 
 ## Pandora
 
 ### Main host
 
-- `pottmayer-pandora/pandora-app-backend/src/App/Pottmayer.Pandora.App.Host/Program.cs`
-- Shows `Caching`, `Authentication`, `Authorization`, controllers, Swagger and identity endpoint mapping.
+- [`Host/Pottmayer.Pandora.Host/Program.cs`](../../../pandora/backend/src/Host/Pottmayer.Pandora.Host/Program.cs)
+- Composes Observability (via Shared), Localization, UserContext, Web.Http, per-module Persistence/Infrastructure/Application/Presentation, and the outbox (via `OutboxRegistration.cs`).
 
 ### Data
 
-- `.../Pottmayer.Pandora.App.Adapter.Data/DI/PandoraDataAdapterDI.cs`
-- Shows data composition, pipelines and repositories.
+- Per module: `Modules/<Name>/Pottmayer.Pandora.Modules.<Name>.Persistence/DI/`
+- Shared interceptors/value converters: [`Shared/Pottmayer.Pandora.Shared.Persistence`](../../../pandora/backend/src/Shared/Pottmayer.Pandora.Shared.Persistence)
 
 ### Identity
 
-- `.../Pottmayer.Pandora.App.Adapter.Identity/DI/PandoraIdentityAdapterDI.cs`
-- Shows identity options, JWT issuance, refresh token and ASP.NET Core transport.
+- `Modules/Identity/Pottmayer.Pandora.Modules.Identity.{Application,Infrastructure,Persistence,Presentation}/DI/`
+- Shows identity options, JWT issuance, refresh token and ASP.NET Core transport, composed per module rather than in one adapter project.
 
 ### Web
 
-- `.../Pottmayer.Pandora.App.Adapter.Rest/DI/PandoraRestAdapterDI.cs`
-- Corresponds today to the role of the `Web.Http` adapter.
-- Shows:
-  - HTTP layer options
-  - wrapping concerns
-  - filters and MVC configuration
+- Per module: `Modules/<Name>/Pottmayer.Pandora.Modules.<Name>.Presentation/DI/`
+- Shared HTTP/wrapping concerns: [`Shared/Pottmayer.Pandora.Shared.Infrastructure`](../../../pandora/backend/src/Shared/Pottmayer.Pandora.Shared.Infrastructure)
 
 ### User Context
 
-- `.../Pottmayer.Pandora.App.Adapter.UserContext/DI/PandoraUserContextAdapterDI.cs`
-- Shows user resolution, accessor and fallback provider.
+- [`Shared/Pottmayer.Pandora.Shared.Infrastructure/DI/SharedInfrastructureDI.cs`](../../../pandora/backend/src/Shared/Pottmayer.Pandora.Shared.Infrastructure/DI/SharedInfrastructureDI.cs)
+- Shows user resolution, accessor and fallback provider, registered once for the whole host.
 
 ### Core
 
-- `.../Pottmayer.Pandora.App.Core.Application/DI/PandoraApplicationDI.cs`
-- Shows mediator, CQRS and the exception-mapping behavior.
+- Per module: `Modules/<Name>/Pottmayer.Pandora.Modules.<Name>.Application/DI/`
+- Shows mediator, CQRS and the exception-mapping behavior, registered per module rather than globally.
+
+### Caching
+
+- **Not currently used.** No `AddTarsMemoryCache*`/`AddTarsRedis*` call exists in the Pandora backend as of this writing.
+
+### Observability
+
+- [`Shared/Pottmayer.Pandora.Shared.Infrastructure/DI/SharedInfrastructureDI.cs`](../../../pandora/backend/src/Shared/Pottmayer.Pandora.Shared.Infrastructure/DI/SharedInfrastructureDI.cs)
+- `Program.cs` calls `builder.AddPandoraSharedInfrastructure()`, which registers Observability alongside other shared concerns — see the `AddTarsObservability*` calls inside that file for the concrete signal composition.
+
+### Messaging (in-process outbox)
+
+- [`Host/Pottmayer.Pandora.Host/OutboxRegistration.cs`](../../../pandora/backend/src/Host/Pottmayer.Pandora.Host/OutboxRegistration.cs)
+- The only messaging transport Pandora uses: `Pottmayer.Tars.Messaging.EntityFrameworkCore`'s in-process outbox, one relay per producing database (Identity, Channels, Agenda, Integrations). No broker is registered. See [Transactional Outbox](../messaging/outbox.md).
+
+### Communication
+
+- [`Modules/Channels/Pottmayer.Pandora.Modules.Channels.Infrastructure/DI/InfrastructureDI.cs`](../../../pandora/backend/src/Modules/Channels/Pottmayer.Pandora.Modules.Channels.Infrastructure/DI/InfrastructureDI.cs)
+- The Channels module owns email/Telegram wiring — it is the only module that talks to `Communication.*`.
 
 ## Roberto
 
 ### Main host
 
-- `roberto/roberto-backend/src/Exodyas.Roberto.App.Host/Program.cs`
+- [`Host/Program.cs`](../../../exodyas/roberto/backend/src/Exodyas.Roberto.Host/Program.cs)
 - Beyond the base set, it shows `Multitenancy`.
 
 ### Multitenancy
 
-- `.../Program.cs`
-- `.../Host/Multitenancy/ConfigurationTenantCatalog.cs`
-- `.../Host/Multitenancy/RobertoHostTenantResolver.cs`
+- `Host/Program.cs`
+- `Host/Multitenancy/` (tenant catalog and resolvers)
 - Shows the tenant pipeline, catalog and HTTP/custom resolvers.
 
 ### Multi-database data
 
-- `.../Adapter.Data/DI/RobertoDataAdapterDI.cs`
-- Shows the `default` pipeline, an additional `central` pipeline and repositories.
+- `Persistence/DI/`, `Persistence/Modules/`, `Persistence/EFCore/`
+- Shows the `default` pipeline, an additional `central` pipeline and per-module repositories.
 
 ### Workers
 
-- `.../Adapter.Workers/...`
+- `Infrastructure/Workers/`
 - Show usage scenarios for the mediator, data and multitenancy outside the HTTP flow.
+
+### Caching, Messaging, Communication, Observability
+
+- **Not currently used** in Roberto. If you need a worked multitenancy + these-families example, none of the two example apps currently provides one — compose from the family's own configuration guide directly.
 
 ## How to use this crosswalk
 
-- If you want an example of a complete, simple HTTP backend composition: start with `Pandora`.
+- If you want an example of a complete, simple HTTP backend composition with the in-process outbox: start with `Pandora`.
 - If you want an example with multitenancy and more than one logical database: use `Roberto`.
-- If you want to validate the framework's architectural conventions: compare the equivalent adapters of the two apps, remembering the `Presentation.Rest` -> `Web.Http` equivalence.
+- If you want Caching, or a broker-backed Messaging transport (RabbitMQ/Kafka): neither example app uses them yet — follow [Caching configuration](../caching/configuration.md) or [Messaging configuration](../messaging/configuration.md) directly.
+- If you want to validate the framework's architectural conventions: compare the equivalent module/adapter projects of the two apps.

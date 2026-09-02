@@ -76,8 +76,8 @@ builder.Services.AddTarsMessageSource(new InMemoryMessageSource(
 
 ## Important notes
 
-- `AddTarsMediator()` registers `IMediator`, `ISender` and `IPublisher` and optionally scans handlers via `options.RegisterHandlersFromAssembly()`.
-- Granular methods (`AddMediatorHandlersFromAssemblies`, `AddRequestHandlersFromAssembly`, etc.) remain available for fine-grained control.
+- For everything `AddTarsMediator()` registers and the granular alternative methods, see
+  [Mediator and CQRS](./mediator-cqrs.md#registration) — this overview only shows the minimal call.
 - `CommandBase<TResult>` and `QueryBase<TResult>` already carry `CommandOptions` and `QueryOptions`.
 - `Result<T>` enforces success with a non-null value and failure with at least one error.
 - `AddTarsLocalization()` registers only the `IMessageProvider`. To get actual translations, add at least one source with `AddTarsMessageSource(...)` or `AddTarsStringLocalizerSource<TResource>()`.

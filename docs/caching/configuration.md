@@ -73,10 +73,10 @@ Redis-specific fields:
 ```csharp
 public sealed class UserProfileCache
 {
-    private readonly ICacheService _cache;
+    private readonly ICacheStore _cache;
     private readonly ICacheKeyBuilder _keys;
 
-    public UserProfileCache(ICacheService cache, ICacheKeyBuilder keys)
+    public UserProfileCache(ICacheStore cache, ICacheKeyBuilder keys)
     {
         _cache = cache;
         _keys = keys;

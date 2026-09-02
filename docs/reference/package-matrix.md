@@ -34,6 +34,7 @@ See [taxonomy.md](./taxonomy.md) for the complete definition of the levels and c
 |---|---|---|---|
 | `Pottmayer.Tars.Messaging.Abstractions` | Abstractions | Optional | integration messaging contracts: `IIntegrationEvent`, `IIntegrationEventBus`, `IIntegrationEventHandler<T>`, `IntegrationEventNameAttribute` |
 | `Pottmayer.Tars.Messaging` | Runtime | Optional | `InProcessIntegrationEventBus`, handler scanning, DI registration |
+| `Pottmayer.Tars.Messaging.EntityFrameworkCore` | Provider | Optional | transactional in-process outbox: `OutboxIntegrationEventBus`, outbox table, per-database relay `BackgroundService`, at-least-once delivery — no broker required |
 | `Pottmayer.Tars.Messaging.Broker` | Runtime | Optional | shared broker runtime: name-to-type registry, portable route and subscription model, `BrokerCapabilities`, last-mile dispatcher |
 | `Pottmayer.Tars.Messaging.MassTransit` | Provider | Optional | MassTransit-backed bus, relay consumer, logical entity name formatter, `TarsMassTransitOptions` |
 | `Pottmayer.Tars.Messaging.MassTransit.RabbitMq` | Provider | Optional | RabbitMQ transport: exchange topology, queue bindings, routing key application, `TarsRabbitMqOptions`, DI helpers |

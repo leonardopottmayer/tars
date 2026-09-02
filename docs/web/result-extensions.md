@@ -115,7 +115,7 @@ Example:
 ```csharp
 app.MapGet("/orders/{id:guid}", async (Guid id, IMediator mediator, IHttpErrorMapper mapper) =>
 {
-    var result = await mediator.SendAsync(new GetOrderQuery(id));
+    var result = await mediator.Send(new GetOrderQuery(id));
     return result.ToHttpResult(mapper);
 });
 ```
@@ -160,7 +160,7 @@ Example:
 ```csharp
 app.MapPost("/orders", async (CreateOrderRequest request, IMediator mediator, IHttpErrorMapper mapper) =>
 {
-    var result = await mediator.SendAsync(new CreateOrderCommand(request));
+    var result = await mediator.Send(new CreateOrderCommand(request));
     return result.ToHttpResult(mapper);
 });
 ```
@@ -203,7 +203,7 @@ public sealed record OrdersPageDto(
 ```csharp
 app.MapGet("/orders", async (HttpContext http, IMediator mediator) =>
 {
-    var page = await mediator.SendAsync(new ListOrdersQuery(page: 1, pageSize: 20));
+    var page = await mediator.Send(new ListOrdersQuery(page: 1, pageSize: 20));
     http.Response.WritePaginationHeaders(page);
     return page.Items;
 })
@@ -221,7 +221,7 @@ With this format:
 [HttpGet]
 public async Task<IActionResult> GetOrders()
 {
-    var page = await _mediator.SendAsync(new ListOrdersQuery(page: 1, pageSize: 20));
+    var page = await _mediator.Send(new ListOrdersQuery(page: 1, pageSize: 20));
     Response.WritePaginationHeaders(page);
     return Ok(page.Items);
 }

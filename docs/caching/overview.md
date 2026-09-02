@@ -9,7 +9,7 @@
 
 ## What the module offers
 
-- single `ICacheService` contract
+- single `ICacheStore` contract
 - default key builder with prefix and separator
 - default serializer using `System.Text.Json`
 - in-memory provider
@@ -57,12 +57,16 @@ builder.Services.AddTarsRedisCacheProvider();                  // 6. the ICacheS
 
 ## Main contracts
 
-- `ICacheService`
+- `ICacheStore` — `GetAsync<T>`, `TryGetAsync<T>`, `SetAsync<T>`, `RemoveAsync`, `ExistsAsync`, `GetOrSetAsync<T>` (read-through: cache-or-compute-and-store)
 - `ICacheKeyBuilder`
 - `ICacheSerializer`
 - `CacheEntryOptions`
-- `CacheGetResult`
+- `CacheGetResult<T>`
 
 ## Configuration
 
 See [configuration.md](./configuration.md).
+
+## Scenarios and testing
+
+See [scenarios.md](./scenarios.md) for worked memory/Redis/combined setups and how to fake `ICacheStore` in tests.

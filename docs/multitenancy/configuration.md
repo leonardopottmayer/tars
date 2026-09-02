@@ -1,5 +1,13 @@
 # Multitenancy Configuration
 
+> Unlike other families, this module has **no `Tars:Multitenancy` bindable options section** and no
+> `AddTarsMultitenancyOptions()` — deliberately. There is nothing to bind: which tenants exist, which
+> resolver(s) run, and how connection strings map to tenants are all decisions the host makes in code
+> (`AddTarsTenantResolution(options => ...)`, a custom `ITenantCatalog`), because they are usually
+> derived from the host's own domain data, not static config. Any `appsettings` shown below (e.g.
+> `Tenants:Known`) is an **app-owned** configuration class the scenario defines for itself, not a
+> framework-bound options type.
+
 ## Base registration (any host)
 
 The absolute minimum for the tenant context to work:

@@ -27,6 +27,14 @@ Bind them with `AddTarsObservabilityOptions()` (default section `Tars:Observabil
 `sectionName`, with a `configure` callback applied over the bound values). `ServiceName` is validated
 to be non-empty when `Enabled` is true.
 
+If `AddTarsObservabilityOptions()` is never called, `IOptions<ObservabilityOptions>` still resolves —
+to `new ObservabilityOptions()` (`Enabled: true`, `ServiceName: ""`) — rather than throwing; your
+`appsettings.json` section is then silently unbound and `ValidateOnStart()` never runs. The individual
+pipeline methods below (`AddTarsTracing()`, `AddTarsMetrics()`, ...) do not read this options object at
+all — they take `serviceName`/`otlpEndpoint` as explicit parameters, as shown in "Canonical order"
+below — so the options binding only matters if your own code resolves `IOptions<ObservabilityOptions>`
+directly (e.g. to compute `serviceName` before passing it in, as the canonical example does).
+
 ---
 
 ## The methods

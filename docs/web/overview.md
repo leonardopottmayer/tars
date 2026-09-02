@@ -63,7 +63,7 @@ var api = app.MapGroup("/api").AddTarsResponseWrapper();
 ```csharp
 app.MapGet("/orders/{id:guid}", async (Guid id, IMediator mediator, IHttpErrorMapper mapper) =>
 {
-    var result = await mediator.SendAsync(new GetOrderQuery(id));
+    var result = await mediator.Send(new GetOrderQuery(id));
     return result.ToHttpResult(mapper);
 });
 ```
