@@ -13,6 +13,7 @@ public sealed class ScopedIntegrationEventDispatcher(
     ILogger<ScopedIntegrationEventDispatcher> logger)
     : IIntegrationEventDispatcher
 {
+    /// <inheritdoc />
     public async Task DispatchAsync(IIntegrationEvent @event, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(@event);

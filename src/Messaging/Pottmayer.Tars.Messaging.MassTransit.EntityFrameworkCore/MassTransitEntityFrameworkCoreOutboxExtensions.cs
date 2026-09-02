@@ -22,17 +22,20 @@ namespace Pottmayer.Tars.Messaging.MassTransit.EntityFrameworkCore;
 /// difference. What changes is only when the message leaves.
 /// </para>
 /// </remarks>
-public static class TarsOutboxExtensions
+public static class MassTransitEntityFrameworkCoreOutboxExtensions
 {
     /// <summary>
     /// Routes publishing through the outbox stored in <typeparamref name="TDbContext"/>.
     /// </summary>
-    /// <param name="options">The provider options, e.g. <c>TarsRabbitMqOptions</c>.</param>
+    /// <typeparam name="TOptions">The provider options type, extending <see cref="MassTransitMessagingOptions"/>.</typeparam>
+    /// <typeparam name="TDbContext">The EF Core database context type hosting the outbox tables.</typeparam>
+    /// <param name="options">The provider options instance (e.g., <c>MassTransitRabbitMqMessagingOptions</c>).</param>
     /// <param name="configure">
     /// The database dialect and delivery settings. At minimum pick a dialect —
     /// <c>o.UsePostgres()</c>, <c>o.UseSqlServer()</c> — because the outbox takes row locks and the
     /// SQL for that is not portable.
     /// </param>
+    /// <returns>The configured options instance for method chaining.</returns>
     /// <remarks>
     /// <typeparamref name="TDbContext"/> must include MassTransit's outbox entity configurations
     /// (<c>InboxState</c>, <c>OutboxMessage</c>, <c>OutboxState</c>) and a migration creating them.
@@ -43,7 +46,7 @@ public static class TarsOutboxExtensions
     public static TOptions UseEntityFrameworkOutbox<TOptions, TDbContext>(
         this TOptions options,
         Action<IEntityFrameworkOutboxConfigurator> configure)
-        where TOptions : TarsMassTransitOptions
+        where TOptions : MassTransitMessagingOptions
         where TDbContext : DbContext
     {
         ArgumentNullException.ThrowIfNull(options);

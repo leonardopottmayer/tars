@@ -14,5 +14,10 @@ namespace Pottmayer.Tars.Messaging.MassTransit;
 /// </remarks>
 public interface IPublishRouteApplier
 {
+    /// <summary>
+    /// Applies the integration event route to the transport publish context.
+    /// </summary>
+    /// <param name="context">The MassTransit publish context to enrich.</param>
+    /// <param name="route">The resolved integration event route containing destination and headers.</param>
     void Apply(PublishContext context, IntegrationEventRoute route);
 }

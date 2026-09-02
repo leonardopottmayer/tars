@@ -13,6 +13,7 @@ namespace Pottmayer.Tars.Messaging.MassTransit.RabbitMq;
 /// </remarks>
 public sealed class RabbitMqPublishRouteApplier : IPublishRouteApplier
 {
+    /// <inheritdoc />
     public void Apply(PublishContext context, IntegrationEventRoute route)
     {
         ArgumentNullException.ThrowIfNull(context);

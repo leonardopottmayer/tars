@@ -5,6 +5,7 @@ namespace Pottmayer.Tars.Messaging.Abstractions;
 /// A broker routes by this logical name, not by the .NET type, so two services can exchange the event
 /// without sharing the .NET contract assembly. Ignored by the in-process transport, which dispatches by type.
 /// </summary>
+/// <param name="name">The logical event name used for routing and versioning across the wire.</param>
 [AttributeUsage(AttributeTargets.Class, Inherited = false)]
 public sealed class IntegrationEventNameAttribute(string name) : Attribute
 {

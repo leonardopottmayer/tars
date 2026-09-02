@@ -12,6 +12,7 @@ public sealed class DefaultIntegrationEventRouter : IIntegrationEventRouter
     private static readonly IReadOnlyDictionary<string, string> NoHeaders =
         new Dictionary<string, string>(0);
 
+    /// <inheritdoc />
     public IntegrationEventRoute Resolve(IIntegrationEvent @event)
     {
         ArgumentNullException.ThrowIfNull(@event);

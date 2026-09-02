@@ -24,6 +24,8 @@ public static class IntegrationEventNaming
     /// service stops receiving. Declare the attribute on anything that crosses a service boundary or
     /// that you intend to version.
     /// </remarks>
+    /// <param name="eventType">The integration event type to resolve the name for.</param>
+    /// <returns>The logical, transport-level event name.</returns>
     public static string For(Type eventType)
     {
         ArgumentNullException.ThrowIfNull(eventType);
@@ -43,6 +45,8 @@ public static class IntegrationEventNaming
     /// <c>1</c> otherwise. This is the payload schema version a durable transport records so a consumer
     /// can resolve the right shape before deserializing.
     /// </summary>
+    /// <param name="eventType">The integration event type to resolve the version for.</param>
+    /// <returns>The declared payload schema version, or <c>1</c> when none is declared.</returns>
     public static int VersionFor(Type eventType)
     {
         ArgumentNullException.ThrowIfNull(eventType);
@@ -55,6 +59,8 @@ public static class IntegrationEventNaming
         => VersionFor(typeof(TIntegrationEvent));
 
     /// <summary>True when the type declares an explicit name rather than falling back to convention.</summary>
+    /// <param name="eventType">The integration event type to inspect.</param>
+    /// <returns><see langword="true"/> when an explicit name is declared; otherwise <see langword="false"/>.</returns>
     public static bool IsExplicit(Type eventType)
     {
         ArgumentNullException.ThrowIfNull(eventType);

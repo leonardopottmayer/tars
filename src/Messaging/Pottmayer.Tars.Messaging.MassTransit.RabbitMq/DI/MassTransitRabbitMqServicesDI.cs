@@ -10,11 +10,16 @@ using Pottmayer.Tars.Messaging.MassTransit.RabbitMq.Topology;
 
 namespace Pottmayer.Tars.Messaging.MassTransit.RabbitMq.DI;
 
+/// <summary>
+/// Service collection extensions for configuring the MassTransit RabbitMQ messaging provider.
+/// </summary>
 public static class MassTransitRabbitMqServicesDI
 {
     /// <summary>
     /// Registers the MassTransit-backed <see cref="IIntegrationEventBus"/>, scoped.
     /// </summary>
+    /// <param name="services">The service collection to register into.</param>
+    /// <returns>The updated service collection.</returns>
     /// <remarks>
     /// Scoped because MassTransit's <see cref="IPublishEndpoint"/> is: the outbox works by handing
     /// the scope a publish endpoint that writes to the outbox tables instead of to the broker. A
@@ -34,6 +39,8 @@ public static class MassTransitRabbitMqServicesDI
     /// Registers the applier that puts the portable routing key onto RabbitMQ's send context, which
     /// is what a topic or direct exchange matches bindings against.
     /// </summary>
+    /// <param name="services">The service collection to register into.</param>
+    /// <returns>The updated service collection.</returns>
     public static IServiceCollection AddTarsRabbitMqRouteApplier(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
@@ -47,6 +54,9 @@ public static class MassTransitRabbitMqServicesDI
     /// Composes the whole RabbitMQ provider: the shared broker core, the RabbitMQ-specific services,
     /// and the MassTransit bus with its topology.
     /// </summary>
+    /// <param name="services">The service collection to register into.</param>
+    /// <param name="configure">Delegate to configure options.</param>
+    /// <returns>The updated service collection.</returns>
     /// <remarks>
     /// <para>
     /// This is a composition of the smaller methods, nothing more — every step below is public and
@@ -61,12 +71,12 @@ public static class MassTransitRabbitMqServicesDI
     /// </remarks>
     public static IServiceCollection AddTarsMassTransitRabbitMq(
         this IServiceCollection services,
-        Action<TarsRabbitMqOptions> configure)
+        Action<MassTransitRabbitMqMessagingOptions> configure)
     {
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(configure);
 
-        var options = new TarsRabbitMqOptions();
+        var options = new MassTransitRabbitMqMessagingOptions();
         configure(options);
 
         return services.AddTarsMassTransitRabbitMq(options);
@@ -78,10 +88,14 @@ public static class MassTransitRabbitMqServicesDI
     /// the provider. This is the overload most applications want: host and credentials differ per
     /// environment, subscriptions do not.
     /// </summary>
+    /// <param name="builder">The host application builder.</param>
+    /// <param name="sectionName">Optional custom section name.</param>
+    /// <param name="configure">Optional delegate to configure options.</param>
+    /// <returns>The host application builder.</returns>
     public static IHostApplicationBuilder AddTarsMassTransitRabbitMq(
         this IHostApplicationBuilder builder,
         string? sectionName = null,
-        Action<TarsRabbitMqOptions>? configure = null)
+        Action<MassTransitRabbitMqMessagingOptions>? configure = null)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
@@ -92,8 +106,11 @@ public static class MassTransitRabbitMqServicesDI
     }
 
     private static IServiceCollection AddTarsMassTransitRabbitMq(
-        this IServiceCollection services, TarsRabbitMqOptions options)
+        this IServiceCollection services, MassTransitRabbitMqMessagingOptions options)
     {
+        if (!options.IsValid())
+            throw new InvalidOperationException(MassTransitRabbitMqMessagingOptions.ValidationErrorMessage);
+
         // Fail at startup rather than in production. RabbitMQ can honour every routing shape, so
         // anything rejected here is a bug in the subscription itself.
         options.Messaging.ValidateAgainst(BrokerCapabilities.Amqp, "RabbitMQ");
@@ -110,7 +127,7 @@ public static class MassTransitRabbitMqServicesDI
     /// Registers the transport-agnostic pieces the provider needs, from what the options declared.
     /// </summary>
     private static IServiceCollection AddTarsBrokerCoreFor(
-        this IServiceCollection services, TarsRabbitMqOptions options)
+        this IServiceCollection services, MassTransitRabbitMqMessagingOptions options)
     {
         services.AddTarsIntegrationEventTypeRegistry(options.Messaging.DiscoverEventTypes());
         services.AddTarsIntegrationEventRouter();
@@ -127,7 +144,7 @@ public static class MassTransitRabbitMqServicesDI
     /// receive endpoint.
     /// </summary>
     private static IServiceCollection AddTarsRabbitMqBus(
-        this IServiceCollection services, TarsRabbitMqOptions options)
+        this IServiceCollection services, MassTransitRabbitMqMessagingOptions options)
     {
         var subscriptions = options.Messaging.Subscriptions;
 
@@ -171,7 +188,7 @@ public static class MassTransitRabbitMqServicesDI
     private static void ConfigureTarsEndpoint(
         this IRabbitMqReceiveEndpointConfigurator endpoint,
         IBusRegistrationContext context,
-        TarsRabbitMqOptions options)
+        MassTransitRabbitMqMessagingOptions options)
     {
         endpoint.PrefetchCount = options.PrefetchCount;
         endpoint.UseTarsRetry(options.RetryLimit, options.RetryInterval);

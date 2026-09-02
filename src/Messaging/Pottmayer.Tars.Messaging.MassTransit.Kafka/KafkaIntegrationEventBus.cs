@@ -11,6 +11,8 @@ namespace Pottmayer.Tars.Messaging.MassTransit.Kafka;
 /// MassTransit is not a transport: there is no <c>IPublishEndpoint</c> on this path, only an
 /// <see cref="ITopicProducer{T}"/> bound to one topic per event type.
 /// </summary>
+/// <param name="services">The service provider to resolve topic producers from.</param>
+/// <param name="router">The integration event router.</param>
 /// <remarks>
 /// The routing key travels as a header and as the Kafka message key, so a consumer can still see it
 /// and partitioning stays stable per key. It does <strong>not</strong> filter delivery: the topic is
@@ -27,6 +29,7 @@ public sealed class KafkaIntegrationEventBus(
 
     private static readonly ConcurrentDictionary<Type, Func<IServiceProvider, IIntegrationEvent, IntegrationEventRoute, CancellationToken, Task>> Producers = new();
 
+    /// <inheritdoc />
     public Task PublishAsync(IIntegrationEvent @event, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(@event);

@@ -142,6 +142,11 @@ public static class OutboxServicesDI
             var options = new OutboxDatabaseOptions(databaseKey, defaults);
             configure?.Invoke(options);
 
+            if (!options.IsValid())
+            {
+                throw new InvalidOperationException($"Invalid OutboxDatabaseOptions for database '{databaseKey}'.");
+            }
+
             return new OutboxRelayService(
                 sp.GetRequiredService<IServiceScopeFactory>(),
                 sp.GetRequiredService<IIntegrationEventTypeRegistry>(),

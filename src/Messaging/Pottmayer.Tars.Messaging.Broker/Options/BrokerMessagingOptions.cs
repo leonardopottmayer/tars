@@ -12,7 +12,12 @@ namespace Pottmayer.Tars.Messaging.Broker.Options;
 /// </summary>
 public sealed class BrokerMessagingOptions
 {
+    /// <summary>Default configuration section these options bind from (<c>Tars:Messaging:Broker</c>).</summary>
     public const string SectionName = "Tars:Messaging:Broker";
+
+    /// <summary>Message reported when validation fails on application start.</summary>
+    public const string ValidationErrorMessage =
+        "Invalid BrokerMessagingOptions. EndpointName is required.";
 
     private readonly List<Assembly> _eventAssemblies = [];
     private readonly List<(Assembly Assembly, ServiceLifetime Lifetime)> _handlerAssemblies = [];
@@ -23,6 +28,13 @@ public sealed class BrokerMessagingOptions
     /// Kafka. Two instances sharing it compete for messages; two different values each get a copy.
     /// </summary>
     public string EndpointName { get; set; } = "tars";
+
+    /// <summary>
+    /// Returns <c>true</c> when the options are internally consistent: <see cref="EndpointName"/> — the
+    /// one value bound from configuration — is non-blank. Topology consistency is a separate,
+    /// provider-driven check, done by <see cref="ValidateAgainst"/>.
+    /// </summary>
+    public bool IsValid() => !string.IsNullOrWhiteSpace(EndpointName);
 
     /// <summary>
     /// The assemblies whose handlers should be registered, with the lifetime each was declared with.

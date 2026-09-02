@@ -13,6 +13,13 @@ public sealed class IntegrationEventBusOptions
 
     internal IReadOnlyList<(Assembly Assembly, ServiceLifetime Lifetime)> HandlerAssemblies => _handlerAssemblies;
 
+    /// <summary>
+    /// Registers the <see cref="Abstractions.IIntegrationEventHandler{T}"/> implementations found in
+    /// the given assembly for scanning at build time.
+    /// </summary>
+    /// <param name="assembly">The assembly to scan for handler implementations.</param>
+    /// <param name="lifetime">The service lifetime the discovered handlers are registered with.</param>
+    /// <returns>The same options instance, for chaining.</returns>
     public IntegrationEventBusOptions RegisterHandlersFromAssembly(
         Assembly assembly, ServiceLifetime lifetime = ServiceLifetime.Scoped)
     {
@@ -20,6 +27,13 @@ public sealed class IntegrationEventBusOptions
         return this;
     }
 
+    /// <summary>
+    /// Registers the <see cref="Abstractions.IIntegrationEventHandler{T}"/> implementations found in
+    /// the given assemblies for scanning at build time.
+    /// </summary>
+    /// <param name="lifetime">The service lifetime the discovered handlers are registered with.</param>
+    /// <param name="assemblies">The assemblies to scan for handler implementations.</param>
+    /// <returns>The same options instance, for chaining.</returns>
     public IntegrationEventBusOptions RegisterHandlersFromAssemblies(
         ServiceLifetime lifetime = ServiceLifetime.Scoped, params Assembly[] assemblies)
     {

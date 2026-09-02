@@ -17,6 +17,11 @@ public sealed class IntegrationEventTypeRegistry : IIntegrationEventTypeRegistry
     private readonly Dictionary<string, Type> _byName;
     private readonly Dictionary<Type, string> _byType;
 
+    /// <summary>
+    /// Builds the map from the given event types, throwing when two types claim the same logical name.
+    /// </summary>
+    /// <param name="eventTypes">The event types to register; non-events and duplicates are ignored.</param>
+    /// <exception cref="InvalidOperationException">Two distinct types resolve to the same logical name.</exception>
     public IntegrationEventTypeRegistry(IEnumerable<Type> eventTypes)
     {
         ArgumentNullException.ThrowIfNull(eventTypes);
@@ -45,11 +50,14 @@ public sealed class IntegrationEventTypeRegistry : IIntegrationEventTypeRegistry
         }
     }
 
+    /// <inheritdoc />
     public IReadOnlyCollection<Type> KnownTypes => _byType.Keys;
 
+    /// <inheritdoc />
     public bool TryResolve(string name, [NotNullWhen(true)] out Type? eventType)
         => _byName.TryGetValue(name, out eventType);
 
+    /// <inheritdoc />
     public string NameOf(Type eventType)
     {
         ArgumentNullException.ThrowIfNull(eventType);

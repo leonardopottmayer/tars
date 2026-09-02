@@ -8,6 +8,9 @@ namespace Pottmayer.Tars.Messaging.MassTransit;
 /// Publishes through MassTransit. Producers keep calling <see cref="IIntegrationEventBus"/> and never
 /// learn which framework or broker is underneath.
 /// </summary>
+/// <param name="publishEndpoint">The MassTransit publish endpoint.</param>
+/// <param name="router">The integration event router.</param>
+/// <param name="routeAppliers">Transport-specific publish route appliers.</param>
 public sealed class MassTransitIntegrationEventBus(
     IPublishEndpoint publishEndpoint,
     IIntegrationEventRouter router,
@@ -16,6 +19,7 @@ public sealed class MassTransitIntegrationEventBus(
 {
     private readonly IPublishRouteApplier[] _routeAppliers = [.. routeAppliers];
 
+    /// <inheritdoc />
     public Task PublishAsync(IIntegrationEvent @event, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(@event);

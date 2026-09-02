@@ -30,7 +30,9 @@ public static class OutboxOptionsDI
 
         var ob = builder.Services
             .AddOptions<OutboxOptions>()
-            .Bind(builder.Configuration.GetSection(sectionName));
+            .Bind(builder.Configuration.GetSection(sectionName))
+            .Validate(OutboxOptionsValidation.Validate, OutboxOptions.ValidationErrorMessage)
+            .ValidateOnStart();
 
         if (configure is not null)
             ob.Configure(configure);

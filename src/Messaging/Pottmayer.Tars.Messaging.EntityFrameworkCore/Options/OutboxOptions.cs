@@ -12,6 +12,10 @@ public class OutboxOptions
     /// <summary>Configuration section these options bind from by default.</summary>
     public const string SectionName = "Tars:Messaging:Outbox";
 
+    /// <summary>Message reported when validation fails on application start.</summary>
+    public const string ValidationErrorMessage =
+        "Invalid OutboxOptions. PollingInterval, LeaseDuration, RetentionPeriod, and PurgeInterval must be positive; BatchSize, MaxAttempts, and PurgeBatchSize must be greater than zero.";
+
     /// <summary>How often the relay looks for due messages. Also the floor on delivery latency when idle.</summary>
     public TimeSpan PollingInterval { get; set; } = TimeSpan.FromSeconds(5);
 
@@ -41,4 +45,34 @@ public class OutboxOptions
 
     /// <summary>Rows deleted per purge pass, so a large backlog is cleared in bounded chunks.</summary>
     public int PurgeBatchSize { get; set; } = 500;
+
+    /// <summary>
+    /// Returns <c>true</c> when the options are internally consistent: intervals and durations are positive,
+    /// and batch sizes and attempts are greater than zero.
+    /// </summary>
+    public virtual bool IsValid()
+    {
+        if (PollingInterval <= TimeSpan.Zero)
+            return false;
+
+        if (BatchSize <= 0)
+            return false;
+
+        if (MaxAttempts <= 0)
+            return false;
+
+        if (LeaseDuration <= TimeSpan.Zero)
+            return false;
+
+        if (RetentionPeriod <= TimeSpan.Zero)
+            return false;
+
+        if (PurgeInterval <= TimeSpan.Zero)
+            return false;
+
+        if (PurgeBatchSize <= 0)
+            return false;
+
+        return true;
+    }
 }

@@ -14,5 +14,6 @@ namespace Pottmayer.Tars.Messaging.MassTransit;
 /// </remarks>
 public sealed class TarsEntityNameFormatter : IEntityNameFormatter
 {
+    /// <inheritdoc />
     public string FormatEntityName<TMessage>() => IntegrationEventNaming.For(typeof(TMessage));
 }

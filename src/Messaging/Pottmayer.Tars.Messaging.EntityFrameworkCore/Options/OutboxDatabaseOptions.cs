@@ -39,4 +39,22 @@ public sealed class OutboxDatabaseOptions : OutboxOptions
     /// </summary>
     public Func<int, TimeSpan> Backoff { get; set; } =
         attempt => TimeSpan.FromSeconds(Math.Min(300, Math.Pow(2, attempt)));
+
+    /// <summary>
+    /// Returns <c>true</c> when the options are internally consistent: shared outbox checks pass
+    /// (see <see cref="OutboxOptions.IsValid"/>), <see cref="DatabaseKey"/> is non-blank, and <see cref="Backoff"/> is non-null.
+    /// </summary>
+    public override bool IsValid()
+    {
+        if (!base.IsValid())
+            return false;
+
+        if (string.IsNullOrWhiteSpace(DatabaseKey))
+            return false;
+
+        if (Backoff is null)
+            return false;
+
+        return true;
+    }
 }

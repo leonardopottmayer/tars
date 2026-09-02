@@ -10,5 +10,8 @@ public interface IIntegrationEventBus
     /// <summary>
     /// Publishes an integration event. Producers call this after their unit of work has committed.
     /// </summary>
+    /// <param name="event">The event to publish.</param>
+    /// <param name="cancellationToken">Cancels the publish operation.</param>
+    /// <returns>A task that completes once the event has been dispatched to the transport.</returns>
     Task PublishAsync(IIntegrationEvent @event, CancellationToken cancellationToken = default);
 }

@@ -37,7 +37,7 @@ public class MassTransitRabbitMqOptionsBindingTests
         builder.AddTarsRabbitMqOptions();
         using var provider = builder.Services.BuildServiceProvider();
 
-        var options = provider.GetRequiredService<IOptions<TarsRabbitMqOptions>>().Value;
+        var options = provider.GetRequiredService<IOptions<MassTransitRabbitMqMessagingOptions>>().Value;
         options.Host.Should().Be("rabbit.prod");
         options.Port.Should().Be(5673);
         options.VirtualHost.Should().Be("/pandora");
@@ -54,7 +54,7 @@ public class MassTransitRabbitMqOptionsBindingTests
         builder.AddTarsRabbitMqOptions();
         using var provider = builder.Services.BuildServiceProvider();
 
-        provider.GetRequiredService<IOptions<TarsRabbitMqOptions>>()
+        provider.GetRequiredService<IOptions<MassTransitRabbitMqMessagingOptions>>()
             .Value.Messaging.EndpointName.Should().Be("channels");
     }
 
@@ -66,7 +66,7 @@ public class MassTransitRabbitMqOptionsBindingTests
         builder.AddTarsRabbitMqOptions();
         using var provider = builder.Services.BuildServiceProvider();
 
-        provider.GetRequiredService<IOptions<TarsRabbitMqOptions>>()
+        provider.GetRequiredService<IOptions<MassTransitRabbitMqMessagingOptions>>()
             .Value.RetryInterval.Should().Be(TimeSpan.FromSeconds(10));
     }
 
@@ -78,7 +78,7 @@ public class MassTransitRabbitMqOptionsBindingTests
         builder.AddTarsRabbitMqOptions(sectionName: "Broker");
         using var provider = builder.Services.BuildServiceProvider();
 
-        provider.GetRequiredService<IOptions<TarsRabbitMqOptions>>().Value.Host.Should().Be("custom.rabbit");
+        provider.GetRequiredService<IOptions<MassTransitRabbitMqMessagingOptions>>().Value.Host.Should().Be("custom.rabbit");
     }
 
     [Fact]
@@ -89,7 +89,7 @@ public class MassTransitRabbitMqOptionsBindingTests
         builder.AddTarsRabbitMqOptions(configure: o => o.Host = "from-callback");
         using var provider = builder.Services.BuildServiceProvider();
 
-        provider.GetRequiredService<IOptions<TarsRabbitMqOptions>>().Value.Host.Should().Be("from-callback");
+        provider.GetRequiredService<IOptions<MassTransitRabbitMqMessagingOptions>>().Value.Host.Should().Be("from-callback");
     }
 
     [Fact]
@@ -111,11 +111,25 @@ public class MassTransitRabbitMqOptionsBindingTests
     [Fact]
     public void Defaults_target_the_conventional_section_and_a_topic_exchange()
     {
-        var options = new TarsRabbitMqOptions();
+        var options = new MassTransitRabbitMqMessagingOptions();
 
-        TarsRabbitMqOptions.SectionName.Should().Be("Tars:Messaging:RabbitMq");
+        MassTransitRabbitMqMessagingOptions.SectionName.Should().Be("Tars:Messaging:RabbitMq");
         options.Port.Should().Be(5672);
         options.RoutedExchangeType.Should().Be(ExchangeType.Topic);
+        options.IsValid().Should().BeTrue();
+    }
+
+    [Fact]
+    public void Throws_on_startup_validation_when_options_are_invalid()
+    {
+        var builder = BuilderWith(("Tars:Messaging:RabbitMq:Host", ""));
+
+        builder.AddTarsRabbitMqOptions();
+        using var provider = builder.Services.BuildServiceProvider();
+
+        var act = () => provider.GetRequiredService<IOptions<MassTransitRabbitMqMessagingOptions>>().Value;
+        act.Should().Throw<OptionsValidationException>()
+            .WithMessage("*" + MassTransitRabbitMqMessagingOptions.ValidationErrorMessage + "*");
     }
 }
 
@@ -142,7 +156,7 @@ public class MassTransitKafkaOptionsBindingTests
         builder.AddTarsKafkaOptions();
         using var provider = builder.Services.BuildServiceProvider();
 
-        var options = provider.GetRequiredService<IOptions<TarsKafkaOptions>>().Value;
+        var options = provider.GetRequiredService<IOptions<MassTransitKafkaMessagingOptions>>().Value;
         options.BootstrapServers.Should().Be("kafka-1:9092,kafka-2:9092");
         options.ConsumerGroup.Should().Be("analytics");
         options.AutoOffsetReset.Should().Be(Confluent.Kafka.AutoOffsetReset.Latest);
@@ -157,7 +171,7 @@ public class MassTransitKafkaOptionsBindingTests
         builder.AddTarsKafkaOptions(configure: o => o.BootstrapServers = "from-callback:9092");
         using var provider = builder.Services.BuildServiceProvider();
 
-        provider.GetRequiredService<IOptions<TarsKafkaOptions>>()
+        provider.GetRequiredService<IOptions<MassTransitKafkaMessagingOptions>>()
             .Value.BootstrapServers.Should().Be("from-callback:9092");
     }
 
@@ -191,7 +205,20 @@ public class MassTransitKafkaOptionsBindingTests
     [Fact]
     public void Defaults_target_the_conventional_section()
     {
-        TarsKafkaOptions.SectionName.Should().Be("Tars:Messaging:Kafka");
-        new TarsKafkaOptions().BootstrapServers.Should().Be("localhost:9092");
+        MassTransitKafkaMessagingOptions.SectionName.Should().Be("Tars:Messaging:Kafka");
+        new MassTransitKafkaMessagingOptions().BootstrapServers.Should().Be("localhost:9092");
+    }
+
+    [Fact]
+    public void Throws_on_startup_validation_when_options_are_invalid()
+    {
+        var builder = BuilderWith(("Tars:Messaging:Kafka:BootstrapServers", ""));
+
+        builder.AddTarsKafkaOptions();
+        using var provider = builder.Services.BuildServiceProvider();
+
+        var act = () => provider.GetRequiredService<IOptions<MassTransitKafkaMessagingOptions>>().Value;
+        act.Should().Throw<OptionsValidationException>()
+            .WithMessage("*" + MassTransitKafkaMessagingOptions.ValidationErrorMessage + "*");
     }
 }

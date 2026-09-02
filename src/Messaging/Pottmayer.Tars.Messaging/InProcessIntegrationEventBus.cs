@@ -16,6 +16,7 @@ public sealed class InProcessIntegrationEventBus(
     ILogger<InProcessIntegrationEventBus> logger)
     : IIntegrationEventBus
 {
+    /// <inheritdoc />
     public async Task PublishAsync(IIntegrationEvent @event, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(@event);

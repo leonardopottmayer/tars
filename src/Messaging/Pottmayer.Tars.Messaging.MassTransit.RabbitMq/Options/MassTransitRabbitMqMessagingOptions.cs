@@ -7,15 +7,31 @@ namespace Pottmayer.Tars.Messaging.MassTransit.RabbitMq.Options;
 /// <summary>
 /// RabbitMQ connection and topology, plus the portable subscription model shared by every provider.
 /// </summary>
-public sealed class TarsRabbitMqOptions : TarsMassTransitOptions
+public sealed class MassTransitRabbitMqMessagingOptions : MassTransitMessagingOptions
 {
+    /// <summary>Default configuration section these options bind from (<c>Tars:Messaging:RabbitMq</c>).</summary>
     public const string SectionName = "Tars:Messaging:RabbitMq";
 
+    /// <summary>Message reported when validation fails on application start.</summary>
+    public const string ValidationErrorMessage =
+        "Invalid MassTransitRabbitMqMessagingOptions. Host, VirtualHost, Username, Password, and RoutedExchangeType are required; Port, RetryInterval, and PrefetchCount must be positive; RetryLimit must be non-negative.";
+
+    /// <summary>RabbitMQ server hostname or IP address.</summary>
     public string Host { get; set; } = "localhost";
+
+    /// <summary>RabbitMQ server AMQP port (default 5672).</summary>
     public ushort Port { get; set; } = 5672;
+
+    /// <summary>Virtual host path (default "/").</summary>
     public string VirtualHost { get; set; } = "/";
+
+    /// <summary>Username for authentication.</summary>
     public string Username { get; set; } = "guest";
+
+    /// <summary>Password for authentication.</summary>
     public string Password { get; set; } = "guest";
+
+    /// <summary>Whether to connect using SSL/TLS.</summary>
     public bool UseSsl { get; set; }
 
     /// <summary>
@@ -50,4 +66,43 @@ public sealed class TarsRabbitMqOptions : TarsMassTransitOptions
 
     /// <summary>Escape hatch for the receive endpoint, e.g. concurrency or a custom retry policy.</summary>
     public Action<IRabbitMqReceiveEndpointConfigurator>? ConfigureEndpoint { get; set; }
+
+    /// <summary>
+    /// Returns <c>true</c> when the options are internally consistent: host, vhost, credentials, and exchange type
+    /// are non-blank, port and prefetch count are positive, retry interval is positive, and retry limit is non-negative.
+    /// </summary>
+    public override bool IsValid()
+    {
+        if (!base.IsValid())
+            return false;
+
+        if (string.IsNullOrWhiteSpace(Host))
+            return false;
+
+        if (Port == 0)
+            return false;
+
+        if (string.IsNullOrWhiteSpace(VirtualHost))
+            return false;
+
+        if (string.IsNullOrWhiteSpace(Username))
+            return false;
+
+        if (string.IsNullOrWhiteSpace(Password))
+            return false;
+
+        if (string.IsNullOrWhiteSpace(RoutedExchangeType))
+            return false;
+
+        if (RetryLimit < 0)
+            return false;
+
+        if (RetryInterval <= TimeSpan.Zero)
+            return false;
+
+        if (PrefetchCount == 0)
+            return false;
+
+        return true;
+    }
 }

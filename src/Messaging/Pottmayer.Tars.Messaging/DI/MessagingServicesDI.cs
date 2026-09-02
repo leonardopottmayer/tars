@@ -5,6 +5,9 @@ using Pottmayer.Tars.Messaging.Abstractions;
 
 namespace Pottmayer.Tars.Messaging.DI;
 
+/// <summary>
+/// Registration helpers for the in-process integration event bus and its handlers.
+/// </summary>
 public static class MessagingServicesDI
 {
     /// <summary>

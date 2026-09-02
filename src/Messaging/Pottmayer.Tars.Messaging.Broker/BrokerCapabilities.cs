@@ -12,6 +12,7 @@ namespace Pottmayer.Tars.Messaging.Broker;
 [Flags]
 public enum BrokerCapabilities
 {
+    /// <summary>No capabilities. The default before a provider declares what it supports.</summary>
     None = 0,
 
     /// <summary>Every subscriber receives the message. RabbitMQ fanout, Kafka consumer groups.</summary>

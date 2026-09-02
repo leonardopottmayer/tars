@@ -10,11 +10,16 @@ using Pottmayer.Tars.Messaging.MassTransit.Kafka.Topology;
 
 namespace Pottmayer.Tars.Messaging.MassTransit.Kafka.DI;
 
+/// <summary>
+/// Service collection extensions for configuring the MassTransit Kafka messaging provider.
+/// </summary>
 public static class MassTransitKafkaServicesDI
 {
     /// <summary>
     /// Registers the Kafka-backed <see cref="IIntegrationEventBus"/>, scoped.
     /// </summary>
+    /// <param name="services">The service collection to register into.</param>
+    /// <returns>The updated service collection.</returns>
     /// <remarks>
     /// <para>
     /// A separate bus from the RabbitMQ one on purpose: Kafka in MassTransit is a rider, not a
@@ -39,6 +44,9 @@ public static class MassTransitKafkaServicesDI
     /// Composes the whole Kafka provider: the shared broker core, the Kafka bus, and the rider with
     /// its producers and topic endpoints.
     /// </summary>
+    /// <param name="services">The service collection to register into.</param>
+    /// <param name="configure">Delegate to configure options.</param>
+    /// <returns>The updated service collection.</returns>
     /// <remarks>
     /// <para>
     /// This is a composition of the smaller methods, nothing more — every step below is public and
@@ -54,12 +62,12 @@ public static class MassTransitKafkaServicesDI
     /// </remarks>
     public static IServiceCollection AddTarsMassTransitKafka(
         this IServiceCollection services,
-        Action<TarsKafkaOptions> configure)
+        Action<MassTransitKafkaMessagingOptions> configure)
     {
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(configure);
 
-        var options = new TarsKafkaOptions();
+        var options = new MassTransitKafkaMessagingOptions();
         configure(options);
 
         return services.AddTarsMassTransitKafka(options);
@@ -70,10 +78,14 @@ public static class MassTransitKafkaServicesDI
     /// applies <paramref name="configure"/> on top, and registers the provider. This is the overload
     /// most applications want: bootstrap servers differ per environment, subscriptions do not.
     /// </summary>
+    /// <param name="builder">The host application builder.</param>
+    /// <param name="sectionName">Optional custom section name.</param>
+    /// <param name="configure">Optional delegate to configure options.</param>
+    /// <returns>The host application builder.</returns>
     public static IHostApplicationBuilder AddTarsMassTransitKafka(
         this IHostApplicationBuilder builder,
         string? sectionName = null,
-        Action<TarsKafkaOptions>? configure = null)
+        Action<MassTransitKafkaMessagingOptions>? configure = null)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
@@ -84,8 +96,11 @@ public static class MassTransitKafkaServicesDI
     }
 
     private static IServiceCollection AddTarsMassTransitKafka(
-        this IServiceCollection services, TarsKafkaOptions options)
+        this IServiceCollection services, MassTransitKafkaMessagingOptions options)
     {
+        if (!options.IsValid())
+            throw new InvalidOperationException(MassTransitKafkaMessagingOptions.ValidationErrorMessage);
+
         // Kafka cannot filter on a per-message routing key, so a routed subscription is rejected here
         // rather than silently turned into "everyone reads everything and discards".
         options.Messaging.ValidateAgainst(BrokerCapabilities.Log, "Kafka");
@@ -101,7 +116,7 @@ public static class MassTransitKafkaServicesDI
     /// Registers the transport-agnostic pieces the provider needs, from what the options declared.
     /// </summary>
     private static IServiceCollection AddTarsBrokerCoreFor(
-        this IServiceCollection services, TarsKafkaOptions options)
+        this IServiceCollection services, MassTransitKafkaMessagingOptions options)
     {
         services.AddTarsIntegrationEventTypeRegistry(options.Messaging.DiscoverEventTypes());
         services.AddTarsIntegrationEventRouter();
@@ -118,7 +133,7 @@ public static class MassTransitKafkaServicesDI
     /// endpoints, plus the in-memory bus that hosts the rider.
     /// </summary>
     private static IServiceCollection AddTarsKafkaBus(
-        this IServiceCollection services, TarsKafkaOptions options)
+        this IServiceCollection services, MassTransitKafkaMessagingOptions options)
     {
         var eventTypes = options.Messaging.DiscoverEventTypes().ToArray();
         var subscriptions = options.Messaging.Subscriptions;

@@ -6,7 +6,7 @@ namespace Pottmayer.Tars.Messaging.MassTransit.Options;
 /// <summary>
 /// What every MassTransit-backed provider shares, whatever broker sits underneath.
 /// </summary>
-public abstract class TarsMassTransitOptions
+public abstract class MassTransitMessagingOptions
 {
     /// <summary>What this application publishes and subscribes to. Portable across providers.</summary>
     public BrokerMessagingOptions Messaging { get; } = new();
@@ -21,4 +21,11 @@ public abstract class TarsMassTransitOptions
     /// be reached from the service collection afterwards.
     /// </remarks>
     public Action<IBusRegistrationConfigurator>? ConfigureRegistration { get; set; }
+
+    /// <summary>
+    /// Returns <c>true</c> when the shared options are internally consistent: the nested
+    /// <see cref="Messaging"/> options pass validation. Providers override this to add their own checks,
+    /// calling <c>base.IsValid()</c> first.
+    /// </summary>
+    public virtual bool IsValid() => Messaging is not null && Messaging.IsValid();
 }

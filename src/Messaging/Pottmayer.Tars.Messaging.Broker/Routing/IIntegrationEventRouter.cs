@@ -8,5 +8,8 @@ namespace Pottmayer.Tars.Messaging.Broker.Routing;
 /// </summary>
 public interface IIntegrationEventRouter
 {
+    /// <summary>Resolves the route a provider should publish the given event on.</summary>
+    /// <param name="event">The event about to be published.</param>
+    /// <returns>The destination, routing key and headers the event should be published with.</returns>
     IntegrationEventRoute Resolve(IIntegrationEvent @event);
 }
