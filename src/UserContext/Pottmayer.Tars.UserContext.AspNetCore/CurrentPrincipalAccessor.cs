@@ -12,6 +12,10 @@ public sealed class CurrentPrincipalAccessor : ICurrentPrincipalAccessor
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
 
+    /// <summary>
+    /// Creates a new accessor.
+    /// </summary>
+    /// <param name="httpContextAccessor">Provides access to the current <see cref="Microsoft.AspNetCore.Http.HttpContext"/>.</param>
     public CurrentPrincipalAccessor(IHttpContextAccessor httpContextAccessor)
     {
         _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));

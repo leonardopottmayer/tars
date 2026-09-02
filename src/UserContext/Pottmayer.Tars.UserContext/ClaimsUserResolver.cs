@@ -23,6 +23,7 @@ public sealed class ClaimsUserResolver<TUser> : IUserResolver<TUser>
     /// <summary>
     /// Creates a new resolver.
     /// </summary>
+    /// <param name="options">The user context options, read at resolution time.</param>
     public ClaimsUserResolver(IOptionsMonitor<UserContextOptions> options)
     {
         _options = options ?? throw new ArgumentNullException(nameof(options));
@@ -56,6 +57,7 @@ public sealed class ClaimsUserResolver<TUser> : IUserResolver<TUser>
         return user;
     }
 
+    /// <summary>Returns the value of the first matching claim for the mapping's candidate claim types.</summary>
     private static string? GetClaimValue(ClaimsPrincipal principal, PropertyMapping mapping)
     {
         foreach (var claimType in mapping.ClaimTypes)
@@ -67,6 +69,7 @@ public sealed class ClaimsUserResolver<TUser> : IUserResolver<TUser>
         return null;
     }
 
+    /// <summary>Builds (or retrieves from cache) the writable-property-to-claim-type mappings for a user type.</summary>
     private static IReadOnlyList<PropertyMapping> GetOrCreateMappings(Type userType)
     {
         return PropertyCache.GetOrAdd(userType, static type =>
@@ -88,6 +91,7 @@ public sealed class ClaimsUserResolver<TUser> : IUserResolver<TUser>
         });
     }
 
+    /// <summary>Returns the candidate claim types to try for a property without a <see cref="ClaimAttribute"/>.</summary>
     private static string[] GetClaimTypesForProperty(string propertyName)
     {
         return propertyName switch
@@ -99,6 +103,7 @@ public sealed class ClaimsUserResolver<TUser> : IUserResolver<TUser>
         };
     }
 
+    /// <summary>Attempts to convert a claim's string value to the target property type.</summary>
     private static bool TryConvert(string value, Type targetType, bool throwOnError, out object? result)
     {
         result = null;
@@ -189,11 +194,13 @@ public sealed class ClaimsUserResolver<TUser> : IUserResolver<TUser>
         return false;
     }
 
+    /// <summary>Whether a value of the given type may be null (reference type or <see cref="Nullable{T}"/>).</summary>
     private static bool IsNullable(Type type)
     {
         return !type.IsValueType || (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>));
     }
 
+    /// <summary>Returns the underlying type of a <see cref="Nullable{T}"/>, or the type itself.</summary>
     private static Type UnwrapNullable(Type type)
     {
         if (type.IsValueType && type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
@@ -201,11 +208,16 @@ public sealed class ClaimsUserResolver<TUser> : IUserResolver<TUser>
         return type;
     }
 
+    /// <summary>A user property paired with the candidate claim types that may populate it.</summary>
     private sealed class PropertyMapping
     {
+        /// <summary>The target property.</summary>
         public PropertyInfo Property { get; }
+
+        /// <summary>The claim types to try, in order, when looking up a value.</summary>
         public string[] ClaimTypes { get; }
 
+        /// <summary>Creates a new mapping.</summary>
         public PropertyMapping(PropertyInfo property, string[] claimTypes)
         {
             Property = property;

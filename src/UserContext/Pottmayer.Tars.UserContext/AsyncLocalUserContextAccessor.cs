@@ -11,6 +11,7 @@ public sealed class AsyncLocalUserContextAccessor : IUserContextAccessor
 {
     private static readonly AsyncLocal<IUserContext?> _current = new();
 
+    /// <inheritdoc />
     public IUserContext? Current
     {
         get => _current.Value;

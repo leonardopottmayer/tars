@@ -7,6 +7,9 @@ using Pottmayer.Tars.UserContext.Fallback;
 
 namespace Pottmayer.Tars.UserContext.DI;
 
+/// <summary>
+/// Service registrations for the User Context module.
+/// </summary>
 public static class UserContextServicesDI
 {
     /// <summary>
@@ -31,6 +34,9 @@ public static class UserContextServicesDI
     }
 
 
+    /// <summary>
+    /// Registers <see cref="ClaimsUserResolver{TUser}"/> as the scoped <see cref="IUserResolver{TUser}"/>.
+    /// </summary>
     public static IServiceCollection AddTarsClaimsUserResolver<TUser>(this IServiceCollection services)
         where TUser : class
     {
@@ -38,6 +44,9 @@ public static class UserContextServicesDI
         return services;
     }
 
+    /// <summary>
+    /// Registers <see cref="DefaultUserContextFactory{TUser}"/> as the scoped <see cref="IUserContextFactory{TUser}"/>.
+    /// </summary>
     public static IServiceCollection AddTarsDefaultUserContextFactory<TUser>(this IServiceCollection services)
         where TUser : class
     {
@@ -45,6 +54,9 @@ public static class UserContextServicesDI
         return services;
     }
 
+    /// <summary>
+    /// Registers <see cref="UserContextAccessor{TUser}"/> as the scoped <see cref="IUserContextAccessor{TUser}"/>.
+    /// </summary>
     public static IServiceCollection AddTarsUserContextAccessor<TUser>(this IServiceCollection services)
         where TUser : class
     {
@@ -52,6 +64,9 @@ public static class UserContextServicesDI
         return services;
     }
 
+    /// <summary>
+    /// Registers <typeparamref name="TProvider"/> as the scoped <see cref="IFallbackUserProvider{TUser}"/>.
+    /// </summary>
     public static IServiceCollection AddTarsFallbackUserProvider<TUser, TProvider>(this IServiceCollection services)
         where TUser : class
         where TProvider : class, IFallbackUserProvider<TUser>
@@ -60,6 +75,9 @@ public static class UserContextServicesDI
         return services;
     }
 
+    /// <summary>
+    /// Registers a <see cref="DelegateFallbackUserProvider{TUser}"/> as the scoped <see cref="IFallbackUserProvider{TUser}"/>, backed by the given async delegate.
+    /// </summary>
     public static IServiceCollection AddTarsFallbackUserProvider<TUser>(this IServiceCollection services, Func<CancellationToken, Task<TUser?>> getFallbackUserAsync)
         where TUser : class
     {
@@ -67,6 +85,9 @@ public static class UserContextServicesDI
         return services;
     }
 
+    /// <summary>
+    /// Registers a <see cref="DelegateFallbackUserProvider{TUser}"/> as the scoped <see cref="IFallbackUserProvider{TUser}"/>, backed by the given synchronous delegate.
+    /// </summary>
     public static IServiceCollection AddTarsFallbackUserProvider<TUser>(this IServiceCollection services, Func<TUser?> getFallbackUser)
         where TUser : class
     {

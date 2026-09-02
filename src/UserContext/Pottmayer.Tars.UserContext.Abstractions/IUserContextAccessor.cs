@@ -6,5 +6,6 @@ namespace Pottmayer.Tars.UserContext.Abstractions;
 /// </summary>
 public interface IUserContextAccessor
 {
+    /// <summary>The current user context; null when none has been set (e.g. anonymous or unset).</summary>
     IUserContext? Current { get; set; }
 }

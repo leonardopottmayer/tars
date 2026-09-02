@@ -2,6 +2,9 @@ using Microsoft.AspNetCore.Builder;
 
 namespace Pottmayer.Tars.UserContext.AspNetCore;
 
+/// <summary>
+/// Extension methods for registering <see cref="UserContextMiddleware"/> in the ASP.NET Core pipeline.
+/// </summary>
 public static class UserContextMiddlewareExtensions
 {
     /// <summary>

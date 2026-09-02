@@ -1,4 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Pottmayer.Tars.UserContext.Abstractions;
 using Pottmayer.Tars.UserContext.Abstractions.Context;
@@ -26,23 +25,24 @@ public sealed class DefaultUserContextFactory<TUser> : IUserContextFactory<TUser
     private readonly ICurrentPrincipalAccessor _principalAccessor;
     private readonly IUserResolver<TUser> _resolver;
     private readonly IOptionsMonitor<UserContextOptions> _options;
-    private readonly IServiceProvider _serviceProvider;
     private readonly IFallbackUserProvider<TUser>? _fallbackUserProvider;
 
     /// <summary>
     /// Creates a new factory.
     /// </summary>
+    /// <param name="principalAccessor">Provides the current request's claims principal.</param>
+    /// <param name="resolver">Resolves the typed user from the principal.</param>
+    /// <param name="options">The user context options, read at resolution time.</param>
+    /// <param name="fallbackUserProvider">Optional provider of a default user when the principal is anonymous or missing required claims.</param>
     public DefaultUserContextFactory(
         ICurrentPrincipalAccessor principalAccessor,
         IUserResolver<TUser> resolver,
         IOptionsMonitor<UserContextOptions> options,
-        IServiceProvider serviceProvider,
         IFallbackUserProvider<TUser>? fallbackUserProvider = null)
     {
         _principalAccessor = principalAccessor ?? throw new ArgumentNullException(nameof(principalAccessor));
         _resolver = resolver ?? throw new ArgumentNullException(nameof(resolver));
         _options = options ?? throw new ArgumentNullException(nameof(options));
-        _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
         _fallbackUserProvider = fallbackUserProvider;
     }
 
@@ -74,6 +74,7 @@ public sealed class DefaultUserContextFactory<TUser> : IUserContextFactory<TUser
         return new UserContext<TUser>(true, user);
     }
 
+    /// <summary>Invokes the registered fallback provider, if any and if enabled by options.</summary>
     private TUser? TryGetFallbackUser(UserContextOptions options)
     {
         if (!options.UseFallbackUserWhenAnonymous)
@@ -82,6 +83,7 @@ public sealed class DefaultUserContextFactory<TUser> : IUserContextFactory<TUser
         return _fallbackUserProvider?.GetFallbackUserAsync(CancellationToken.None).GetAwaiter().GetResult();
     }
 
+    /// <summary>Returns the first matching user id claim value, trying <see cref="UserIdClaimTypes"/> in order.</summary>
     private static string? GetUserId(ClaimsPrincipal principal)
     {
         foreach (var claimType in UserIdClaimTypes)
