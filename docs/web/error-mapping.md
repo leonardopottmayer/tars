@@ -110,7 +110,7 @@ return Result<OrderDto>.Failure(
         }));
 ```
 
-## `TarsExceptionFilter`
+## `HttpExceptionFilter`
 
 The MVC exception filter uses the mapper in two paths.
 

@@ -51,7 +51,7 @@ For an error `ObjectResult`:
 Important:
 
 - the MVC filter does not use `IHttpErrorMapper` for every error `ObjectResult`
-- the mapper comes into play in the exception flow (`TarsExceptionFilter`) and in endpoints that use `ToHttpResult()`
+- the mapper comes into play in the exception flow (`HttpExceptionFilter`) and in endpoints that use `ToHttpResult()`
 
 ### Controller example
 
@@ -87,7 +87,9 @@ Response:
   "Tars": {
     "Web": {
       "Http": {
-        "ControllersDefaultMode": "WrapAll"
+        "AspNetCore": {
+          "ControllersDefaultMode": "WrapAll"
+        }
       }
     }
   }
@@ -101,7 +103,9 @@ Response:
   "Tars": {
     "Web": {
       "Http": {
-        "ControllersDefaultMode": "WrapNone"
+        "AspNetCore": {
+          "ControllersDefaultMode": "WrapNone"
+        }
       }
     }
   }
@@ -195,7 +199,9 @@ api.MapGet("/health", () => new { ok = true })
   "Tars": {
     "Web": {
       "Http": {
-        "MinimalApisEnabledByDefault": true
+        "AspNetCore": {
+          "MinimalApisEnabledByDefault": true
+        }
       }
     }
   }

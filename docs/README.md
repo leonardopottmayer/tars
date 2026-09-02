@@ -34,7 +34,7 @@ This folder gathers the functional documentation of the `Pottmayer.Tars` framewo
   - [Logging](./observability/logging.md): native `ILogger` vs the Serilog provider, correlation across both
 - [Web](./web/overview.md): HTTP envelopes, error mapping, exception filter, wrapping and pagination
   - [HTTP packages and configuration](./web/http.md): DI, appsettings, per-scenario composition
-  - [HTTP Error Mapping](./web/error-mapping.md): `IHttpErrorMapper`, `DefaultHttpErrorMapper`, `TarsExceptionFilter`
+  - [HTTP Error Mapping](./web/error-mapping.md): `IHttpErrorMapper`, `DefaultHttpErrorMapper`, `HttpExceptionFilter`
   - [Response Wrapping](./web/response-wrapping.md): controllers, Minimal APIs, attributes and metadata
   - [Result Extensions and pagination](./web/result-extensions.md): `ToHttpResult()` and `WritePaginationHeaders()`
 - [Security / Identity](./security/identity/overview.md): JWT, refresh token, revocation, magic link, API key, OAuth, HTTP transport

@@ -16,12 +16,12 @@ The `Web` family covers the framework's HTTP presentation layer:
 |---|---|---|
 | `Pottmayer.Tars.Web.Http.Abstractions` | Abstractions | framework-agnostic HTTP contracts |
 | `Pottmayer.Tars.Web.Http` | Runtime | envelopes, `DefaultHttpErrorMapper`, `WrapDecisionService`, core options |
-| `Pottmayer.Tars.Web.Http.AspNetCore` | Host Integration | MVC filters, endpoint filters, `TarsExceptionFilter`, ASP.NET Core extensions and options |
+| `Pottmayer.Tars.Web.Http.AspNetCore` | Host Integration | MVC filters, endpoint filters, `HttpExceptionFilter`, ASP.NET Core extensions and options |
 
 ## Quick map
 
 - [http.md](./http.md) - packages, DI, options, appsettings and complete scenarios
-- [error-mapping.md](./error-mapping.md) - `IHttpErrorMapper`, messages, `TarsExceptionFilter`
+- [error-mapping.md](./error-mapping.md) - `IHttpErrorMapper`, messages, `HttpExceptionFilter`
 - [response-wrapping.md](./response-wrapping.md) - wrapping in controllers and Minimal APIs
 - [result-extensions.md](./result-extensions.md) - `ToActionResult()` (MVC), `ToHttpResult()` (Minimal API) and `WritePaginationHeaders()`
 - [../core/localization.md](../core/localization.md) - the message base used by the default mapper
@@ -45,7 +45,7 @@ builder.Services.AddTarsExceptionFilter();
 
 builder.Services.AddControllers(options =>
 {
-    options.Filters.AddService<TarsExceptionFilter>();
+    options.Filters.AddService<HttpExceptionFilter>();
 });
 ```
 

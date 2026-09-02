@@ -5,6 +5,9 @@ using Pottmayer.Tars.Web.Http.Internal;
 
 namespace Pottmayer.Tars.Web.Http;
 
+/// <summary>
+/// Default mapper that translates Tars error types into HTTP responses.
+/// </summary>
 public sealed class DefaultHttpErrorMapper : IHttpErrorMapper
 {
     private readonly IMessageProvider _messages;
@@ -12,6 +15,7 @@ public sealed class DefaultHttpErrorMapper : IHttpErrorMapper
     public DefaultHttpErrorMapper(IMessageProvider messages)
         => _messages = messages;
 
+    /// <inheritdoc/>
     public int MapToStatusCode(ErrorType errorType) => errorType switch
     {
         ErrorType.NotFound     => 404,
@@ -23,6 +27,7 @@ public sealed class DefaultHttpErrorMapper : IHttpErrorMapper
         _                      => 500
     };
 
+    /// <inheritdoc/>
     public IHttpErrorResponse Map(Error error)
     {
         var messageKey = TarsHttpMessages.ForType(error.Type);
@@ -39,6 +44,7 @@ public sealed class DefaultHttpErrorMapper : IHttpErrorMapper
         };
     }
 
+    /// <inheritdoc/>
     public IHttpErrorResponse Map(Exception exception)
         => new HttpErrorResponse
         {

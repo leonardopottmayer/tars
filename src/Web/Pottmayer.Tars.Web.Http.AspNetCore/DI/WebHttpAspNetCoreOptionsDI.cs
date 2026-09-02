@@ -5,8 +5,16 @@ using Pottmayer.Tars.Web.Http.AspNetCore.Options;
 
 namespace Pottmayer.Tars.Web.Http.AspNetCore.DI;
 
+/// <summary>
+/// Provides configuration binding for <see cref="WebHttpAspNetCoreOptions"/>.
+/// </summary>
 public static class WebHttpAspNetCoreOptionsDI
 {
+    /// <summary>Binds and validates ASP.NET Core HTTP options.</summary>
+    /// <param name="builder">The host application builder.</param>
+    /// <param name="sectionName">The optional configuration section name.</param>
+    /// <param name="configure">An optional in-code configuration callback.</param>
+    /// <returns>The configured options builder.</returns>
     public static OptionsBuilder<WebHttpAspNetCoreOptions> AddTarsWebHttpAspNetCoreOptions(
         this IHostApplicationBuilder builder,
         string? sectionName = null,

@@ -114,7 +114,7 @@ builder.Services.AddTarsExceptionFilter();
 
 builder.Services.AddControllers(options =>
 {
-    options.Filters.AddService<TarsExceptionFilter>();
+    options.Filters.AddService<HttpExceptionFilter>();
 });
 ```
 
@@ -168,7 +168,7 @@ builder.Services.AddTarsExceptionFilter();
 
 builder.Services.AddControllers(options =>
 {
-    options.Filters.AddService<TarsExceptionFilter>();
+    options.Filters.AddService<HttpExceptionFilter>();
 });
 
 var app = builder.Build();

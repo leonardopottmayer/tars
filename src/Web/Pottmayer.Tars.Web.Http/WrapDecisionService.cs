@@ -2,8 +2,12 @@ using Pottmayer.Tars.Web.Http.Abstractions;
 
 namespace Pottmayer.Tars.Web.Http;
 
+/// <summary>
+/// Default implementation of <see cref="IWrapDecisionService"/>.
+/// </summary>
 public sealed class WrapDecisionService : IWrapDecisionService
 {
+    /// <inheritdoc/>
     public bool ShouldWrap(WrapDecisionContext context)
     {
         if (!context.WrappingEnabled)

@@ -8,25 +8,29 @@ using Pottmayer.Tars.Web.Http.Options;
 
 namespace Pottmayer.Tars.Web.Http.AspNetCore.Filters;
 
-public sealed class TarsExceptionFilter : IExceptionFilter
+/// <summary>
+/// Converts unhandled MVC exceptions into Tars HTTP error envelopes.
+/// </summary>
+public sealed class HttpExceptionFilter : IExceptionFilter
 {
     private readonly IHttpErrorMapper _errorMapper;
     private readonly IOptionsMonitor<WebHttpOptions> _optionsMonitor;
-    private readonly ILogger<TarsExceptionFilter> _logger;
+    private readonly ILogger<HttpExceptionFilter> _logger;
 
-    public TarsExceptionFilter(
+    public HttpExceptionFilter(
         IHttpErrorMapper errorMapper,
         IOptionsMonitor<WebHttpOptions> optionsMonitor,
-        ILogger<TarsExceptionFilter> logger)
+        ILogger<HttpExceptionFilter> logger)
     {
         _errorMapper = errorMapper;
         _optionsMonitor = optionsMonitor;
         _logger = logger;
     }
 
+    /// <inheritdoc/>
     public void OnException(ExceptionContext context)
     {
-        _logger.LogError(context.Exception, "Unhandled exception caught by TarsExceptionFilter");
+        _logger.LogError(context.Exception, "Unhandled exception caught by HttpExceptionFilter");
 
         var traceId = _optionsMonitor.CurrentValue.IncludeTraceId
             ? ResponseWrapperResultFilter.ResolveTraceId(context.HttpContext)

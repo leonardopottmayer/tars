@@ -7,6 +7,9 @@ using Pottmayer.Tars.Web.Http.Options;
 
 namespace Pottmayer.Tars.Web.Http.AspNetCore.Filters;
 
+/// <summary>
+/// Wraps eligible Minimal API endpoint results in Tars HTTP response envelopes.
+/// </summary>
 public sealed class ResponseWrapperEndpointFilter : IEndpointFilter
 {
     private readonly IOptionsMonitor<WebHttpOptions> _optionsMonitor;
@@ -23,6 +26,7 @@ public sealed class ResponseWrapperEndpointFilter : IEndpointFilter
         _decisionService = decisionService;
     }
 
+    /// <inheritdoc/>
     public async ValueTask<object?> InvokeAsync(EndpointFilterInvocationContext context, EndpointFilterDelegate next)
     {
         var result = await next(context);

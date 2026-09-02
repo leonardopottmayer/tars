@@ -6,8 +6,16 @@ using Pottmayer.Tars.Web.Http.Abstractions;
 
 namespace Pottmayer.Tars.Web.Http.AspNetCore.Extensions;
 
+/// <summary>
+/// Converts Tars results to MVC actions and Minimal API results.
+/// </summary>
 public static class ResultHttpExtensions
 {
+    /// <summary>Converts a successful or failed generic result to an MVC action result.</summary>
+    /// <typeparam name="T">The result value type.</typeparam>
+    /// <param name="result">The result to convert.</param>
+    /// <param name="mapper">The error mapper.</param>
+    /// <returns>The MVC action result.</returns>
     public static IActionResult ToActionResult<T>(this Result<T> result, IHttpErrorMapper mapper)
         where T : notnull
     {
@@ -107,3 +115,16 @@ public static class ResultHttpExtensions
         };
     }
 }
+    /// <summary>Converts a successful or failed result to an MVC action result.</summary>
+    /// <param name="result">The result to convert.</param>
+    /// <param name="mapper">The error mapper.</param>
+    /// <returns>The MVC action result.</returns>
+    /// <summary>Converts a successful or failed generic result to a Minimal API result.</summary>
+    /// <typeparam name="T">The result value type.</typeparam>
+    /// <param name="result">The result to convert.</param>
+    /// <param name="mapper">The error mapper.</param>
+    /// <returns>The Minimal API result.</returns>
+    /// <summary>Converts a successful or failed result to a Minimal API result.</summary>
+    /// <param name="result">The result to convert.</param>
+    /// <param name="mapper">The error mapper.</param>
+    /// <returns>The Minimal API result.</returns>

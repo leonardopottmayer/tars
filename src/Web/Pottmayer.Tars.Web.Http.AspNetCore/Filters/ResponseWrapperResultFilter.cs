@@ -10,6 +10,9 @@ using System.Diagnostics;
 
 namespace Pottmayer.Tars.Web.Http.AspNetCore.Filters;
 
+/// <summary>
+/// Wraps eligible MVC action results in Tars HTTP response envelopes.
+/// </summary>
 public sealed class ResponseWrapperResultFilter : IAsyncResultFilter
 {
     private readonly IOptionsMonitor<WebHttpOptions> _optionsMonitor;
@@ -26,6 +29,7 @@ public sealed class ResponseWrapperResultFilter : IAsyncResultFilter
         _decisionService = decisionService;
     }
 
+    /// <inheritdoc/>
     public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
     {
         var options = _optionsMonitor.CurrentValue;
