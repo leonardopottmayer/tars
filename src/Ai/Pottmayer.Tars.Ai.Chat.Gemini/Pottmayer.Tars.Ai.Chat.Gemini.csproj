@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.2" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Pottmayer.Tars.Ai.Abstractions\Pottmayer.Tars.Ai.Abstractions.csproj" />
+    <ProjectReference Include="..\Pottmayer.Tars.Ai.Chat.Abstractions\Pottmayer.Tars.Ai.Chat.Abstractions.csproj" />
+    <ProjectReference Include="..\Pottmayer.Tars.Ai.Chat\Pottmayer.Tars.Ai.Chat.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Pottmayer.Tars.Ai.Chat.Tests.Unit" />
+  </ItemGroup>
+
+</Project>

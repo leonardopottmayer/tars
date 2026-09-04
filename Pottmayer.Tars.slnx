@@ -1,5 +1,11 @@
 <Solution>
   <Folder Name="/src/" />
+  <Folder Name="/src/Ai/">
+    <Project Path="src/Ai/Pottmayer.Tars.Ai.Abstractions/Pottmayer.Tars.Ai.Abstractions.csproj" />
+    <Project Path="src/Ai/Pottmayer.Tars.Ai.Chat.Abstractions/Pottmayer.Tars.Ai.Chat.Abstractions.csproj" />
+    <Project Path="src/Ai/Pottmayer.Tars.Ai.Chat/Pottmayer.Tars.Ai.Chat.csproj" />
+    <Project Path="src/Ai/Pottmayer.Tars.Ai.Chat.Gemini/Pottmayer.Tars.Ai.Chat.Gemini.csproj" />
+  </Folder>
   <Folder Name="/src/Caching/">
     <Project Path="src/Caching/Pottmayer.Tars.Caching.Abstractions/Pottmayer.Tars.Caching.Abstractions.csproj" Id="a82a14e7-5b7c-4073-922d-2c52898d71e1" />
     <Project Path="src/Caching/Pottmayer.Tars.Caching.Memory/Pottmayer.Tars.Caching.Memory.csproj" Id="76c37494-1c82-45c4-a0ed-bb9b444f01e8" />
@@ -67,6 +73,7 @@
     <Project Path="src/UserContext/Pottmayer.Tars.UserContext.AspNetCore/Pottmayer.Tars.UserContext.AspNetCore.csproj" Id="f3a4b5c6-d7e8-4f9a-0b1c-2d3e4f5a6b7c" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/Pottmayer.Tars.Ai.Chat.Tests.Unit/Pottmayer.Tars.Ai.Chat.Tests.Unit.csproj" />
     <Project Path="tests/Pottmayer.Tars.Core.Tests.Unit/Pottmayer.Tars.Core.Tests.Unit.csproj" />
     <Project Path="tests/Pottmayer.Tars.Caching.Tests.Unit/Pottmayer.Tars.Caching.Tests.Unit.csproj" />
     <Project Path="tests/Pottmayer.Tars.Messaging.Tests.Unit/Pottmayer.Tars.Messaging.Tests.Unit.csproj" />

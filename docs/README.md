@@ -19,6 +19,9 @@ This folder gathers the functional documentation of the `Pottmayer.Tars` framewo
   - [Telegram](./communication/telegram.md): `ITelegramClient`, inline keyboards, long polling vs webhook, permanent/transient failures, media download
   - [Configuration](./communication/configuration.md): `Tars:Communication:Email:Smtp`, MailKit options, local Mailpit, `Tars:Communication:Telegram`
   - [Scenarios and testing](./communication/scenarios.md): environment-selected email provider, Telegram polling, faking `IEmailSender`/`ITelegramClient`
+- [AI](./ai/overview.md): chat-completion with tool calling behind one contract, provider selected per call via keyed factory, model and API key per request, permanent/transient failures, Gemini provider
+  - [Configuration](./ai/configuration.md): `Tars:Ai:Chat:Gemini`, the `AddTarsAiChat*`/`AddTarsAiClientFactory` registrations, the per-user key pattern
+  - [Scenarios and testing](./ai/scenarios.md): single-tenant vs per-user keys, several providers in one host, faking `IAiChatCompletionClient`
 - [Data](./data/overview.md): contracts, contexts, pipelines, unit of work, unified EF Core + Dapper, multi-database, domain events
   - [Configuration (Relational)](./data/configuration.md): appsettings, multi-database, multitenancy, custom resolver
   - [Contracts and UoW](./data/pipelines-and-uow.md): `IUnitOfWork`, `IDataContext`, repositories, `QueryParams`, domain events

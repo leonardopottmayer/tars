@@ -51,6 +51,15 @@ See [taxonomy.md](./taxonomy.md) for the complete definition of the levels and c
 | `Pottmayer.Tars.Communication.Telegram.Abstractions` | Abstractions | Optional | Telegram Bot API contracts: `ITelegramClient`, message/update/inline-keyboard models, `TelegramException`, escaping and webhook helpers |
 | `Pottmayer.Tars.Communication.Telegram` | Provider | Optional | Bot API implementation over `HttpClient`: sending, long polling, file download, webhook management, `TelegramOptions`, DI helpers |
 
+## AI
+
+| Project | Level | Classification | Role |
+|---|---|---|---|
+| `Pottmayer.Tars.Ai.Abstractions` | Abstractions | Optional | shared across AI capabilities: `AiException` (permanent/transient) |
+| `Pottmayer.Tars.Ai.Chat.Abstractions` | Abstractions | Optional | chat-completion contracts: `IAiChatCompletionClient`, `IAiChatCompletionClientFactory`, `ChatRequest`/`ChatCompletion`/`ChatMessage`/`ToolDefinition`/`ToolCall`/`TokenUsage` |
+| `Pottmayer.Tars.Ai.Chat` | Runtime | Optional | keyed-DI provider factory (`AddTarsAiClientFactory`) |
+| `Pottmayer.Tars.Ai.Chat.Gemini` | Provider | Optional | Gemini provider over `generateContent`, per-request API key, `GeminiAiOptions`, DI helpers |
+
 ## Data — Shared contracts
 
 | Project | Level | Classification | Role |

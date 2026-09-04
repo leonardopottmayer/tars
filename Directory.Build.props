@@ -1,7 +1,7 @@
 <Project>
   <PropertyGroup>
-    <Version>0.0.9</Version>
-    <PackageVersion>0.0.9</PackageVersion>
+    <Version>0.0.10</Version>
+    <PackageVersion>0.0.10</PackageVersion>
     <AssemblyVersion>$(Version).0</AssemblyVersion>
     <FileVersion>$(Version).0</FileVersion>
     <InformationalVersion>$(Version)</InformationalVersion>
@@ -237,6 +237,26 @@
     <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Observability.AspNetCore'">
       <PropertyGroup>
         <Description>ASP.NET Core adapter for Pottmayer.Tars observability: ASP.NET Core and HttpClient instrumentation registration and the correlation-id middleware.</Description>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Ai.Abstractions'">
+      <PropertyGroup>
+        <Description>Shared AI abstractions for the Pottmayer.Tars framework: types common to every AI capability (chat, embeddings, …), starting with the classified AiException.</Description>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Ai.Chat.Abstractions'">
+      <PropertyGroup>
+        <Description>Provider-agnostic chat-completion abstractions for the Pottmayer.Tars framework: IAiChatCompletionClient and IAiChatCompletionClientFactory contracts and the shared chat message / tool-definition / tool-call model.</Description>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Ai.Chat'">
+      <PropertyGroup>
+        <Description>Chat-completion runtime foundation for the Pottmayer.Tars framework: the keyed IAiChatCompletionClientFactory implementation that resolves providers by name and its DI registration, so an application can host several providers (openai, gemini) at once and pick per call.</Description>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Ai.Chat.Gemini'">
+      <PropertyGroup>
+        <Description>Gemini provider for the Pottmayer.Tars framework: HttpClient-backed IAiChatCompletionClient over the Generative Language generateContent API with tool calling, options and DI registration. API-key authenticated.</Description>
       </PropertyGroup>
     </When>
     <Otherwise>
