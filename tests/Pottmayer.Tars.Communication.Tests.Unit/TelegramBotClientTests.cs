@@ -1,7 +1,6 @@
 using System.Net;
 using System.Text;
 using FluentAssertions;
-using Microsoft.Extensions.Options;
 using Pottmayer.Tars.Communication.Telegram;
 using Pottmayer.Tars.Communication.Telegram.Abstractions;
 using Pottmayer.Tars.Communication.Telegram.Abstractions.Models;
@@ -35,11 +34,11 @@ public class TelegramBotClientTests
     {
         var handler = new StubHttpMessageHandler(status, body);
         var http = new HttpClient(handler) { Timeout = Timeout.InfiniteTimeSpan };
-        var options = Microsoft.Extensions.Options.Options.Create(new TelegramOptions
+        var options = new TelegramBotOptions
         {
             BotToken = "123:ABC",
             ApiBaseUrl = "https://api.telegram.local",
-        });
+        };
 
         return (new TelegramBotClient(http, options), handler);
     }
@@ -115,12 +114,12 @@ public class TelegramBotClientTests
     public async Task SendMessageAsync_fails_when_no_bot_token_is_configured()
     {
         var http = new HttpClient(new StubHttpMessageHandler(HttpStatusCode.OK, "{}"));
-        var client = new TelegramBotClient(http, Microsoft.Extensions.Options.Options.Create(new TelegramOptions()));
+        var client = new TelegramBotClient(http, new TelegramBotOptions());
 
         var act = () => client.SendMessageAsync(new TelegramMessage("987", "oi"));
 
         await act.Should().ThrowAsync<InvalidOperationException>()
-            .WithMessage("*Tars:Communication:Telegram:BotToken*");
+            .WithMessage("*bot token is not configured*");
     }
 
     [Fact]

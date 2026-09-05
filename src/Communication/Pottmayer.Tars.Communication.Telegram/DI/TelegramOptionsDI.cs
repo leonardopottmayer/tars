@@ -9,9 +9,12 @@ namespace Pottmayer.Tars.Communication.Telegram.DI;
 public static class TelegramOptionsDI
 {
     /// <summary>
-    /// Binds <see cref="TelegramOptions"/> from configuration (default section
-    /// <c>Tars:Communication:Telegram</c>).
+    /// Binds <see cref="TelegramOptions"/> — the set of bots under <see cref="TelegramOptions.Bots"/> — from
+    /// configuration (default section <c>Tars:Communication:Telegram</c>) and validates every bot on start.
     /// </summary>
+    /// <param name="builder">The host application builder whose configuration and services are used.</param>
+    /// <param name="sectionName">Configuration section to bind. Defaults to <see cref="TelegramOptions.SectionName"/>.</param>
+    /// <param name="configure">Optional code-based overrides applied after binding.</param>
     public static OptionsBuilder<TelegramOptions> AddTarsTelegramOptions(
         this IHostApplicationBuilder builder,
         string? sectionName = null,

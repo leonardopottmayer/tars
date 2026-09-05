@@ -1,7 +1,6 @@
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Microsoft.Extensions.Options;
 using Pottmayer.Tars.Communication.Telegram.Abstractions;
 using Pottmayer.Tars.Communication.Telegram.Abstractions.Models;
 using Pottmayer.Tars.Communication.Telegram.Options;
@@ -10,10 +9,10 @@ using Pottmayer.Tars.Communication.Telegram.Wire;
 namespace Pottmayer.Tars.Communication.Telegram;
 
 /// <summary>
-/// Talks to the Telegram Bot API over HTTP. Stateless, so it is safe as a singleton, and it holds no
-/// polling offset — that is the caller's state to persist.
+/// Talks to the Telegram Bot API over HTTP for one bot. Stateless, so it is safe as a singleton, and it
+/// holds no polling offset — that is the caller's state to persist.
 /// </summary>
-public sealed class TelegramBotClient(HttpClient http, IOptions<TelegramOptions> options) : ITelegramClient
+public sealed class TelegramBotClient(HttpClient http, TelegramBotOptions options) : ITelegramClient
 {
     public const string ProviderName = "telegram";
 
@@ -29,7 +28,7 @@ public sealed class TelegramBotClient(HttpClient http, IOptions<TelegramOptions>
         ArgumentNullException.ThrowIfNull(message);
 
         var sent = await CallAsync<WireMessage>(
-            "sendMessage", TelegramWireMapper.ToSendRequest(message), options.Value.RequestTimeout, cancellationToken);
+            "sendMessage", TelegramWireMapper.ToSendRequest(message), options.RequestTimeout, cancellationToken);
 
         return new TelegramSendResult(
             message.ChatId, sent.MessageId, DateTimeOffset.FromUnixTimeSeconds(sent.Date));
@@ -41,7 +40,7 @@ public sealed class TelegramBotClient(HttpClient http, IOptions<TelegramOptions>
         ArgumentException.ThrowIfNullOrWhiteSpace(callbackQueryId);
 
         var request = new AnswerCallbackQueryRequest { CallbackQueryId = callbackQueryId, Text = text };
-        await CallAsync<bool>("answerCallbackQuery", request, options.Value.RequestTimeout, cancellationToken);
+        await CallAsync<bool>("answerCallbackQuery", request, options.RequestTimeout, cancellationToken);
     }
 
     public async Task<IReadOnlyList<TelegramUpdate>> GetUpdatesAsync(
@@ -57,7 +56,7 @@ public sealed class TelegramBotClient(HttpClient http, IOptions<TelegramOptions>
         };
 
         // The request must outlive the long poll itself, or the transport cancels what it is waiting for.
-        var httpTimeout = pollTimeout + options.Value.PollTimeoutGrace;
+        var httpTimeout = pollTimeout + options.PollTimeoutGrace;
 
         var updates = await CallAsync<List<WireUpdate>>("getUpdates", request, httpTimeout, cancellationToken);
 
@@ -72,7 +71,7 @@ public sealed class TelegramBotClient(HttpClient http, IOptions<TelegramOptions>
     /// </summary>
     /// <remarks>
     /// The 20 MB ceiling is the whole justification, so it stops holding against a self-hosted Bot
-    /// API server (<see cref="TelegramOptions.ApiBaseUrl"/>), where the limit rises to 2 GB and a
+    /// API server (<see cref="TelegramBotOptions.ApiBaseUrl"/>), where the limit rises to 2 GB and a
     /// large file becomes an <see cref="OutOfMemoryException"/>. A streaming overload is the fix when
     /// a caller actually needs one; until then, this method is for small attachments.
     /// </remarks>
@@ -80,7 +79,7 @@ public sealed class TelegramBotClient(HttpClient http, IOptions<TelegramOptions>
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(fileId);
 
-        var settings = options.Value;
+        var settings = options;
 
         var file = await CallAsync<WireFile>(
             "getFile", new GetFileRequest { FileId = fileId }, settings.RequestTimeout, cancellationToken);
@@ -131,11 +130,11 @@ public sealed class TelegramBotClient(HttpClient http, IOptions<TelegramOptions>
         ArgumentException.ThrowIfNullOrWhiteSpace(secretToken);
 
         var request = new SetWebhookRequest { Url = url.ToString(), SecretToken = secretToken };
-        await CallAsync<bool>("setWebhook", request, options.Value.RequestTimeout, cancellationToken);
+        await CallAsync<bool>("setWebhook", request, options.RequestTimeout, cancellationToken);
     }
 
     public async Task DeleteWebhookAsync(CancellationToken cancellationToken = default)
-        => await CallAsync<bool>("deleteWebhook", new object(), options.Value.RequestTimeout, cancellationToken);
+        => await CallAsync<bool>("deleteWebhook", new object(), options.RequestTimeout, cancellationToken);
 
     /// <summary>
     /// Posts one Bot API method and unwraps the <c>{ ok, result }</c> envelope, turning every failure
@@ -144,10 +143,10 @@ public sealed class TelegramBotClient(HttpClient http, IOptions<TelegramOptions>
     private async Task<TResult> CallAsync<TResult>(
         string method, object request, TimeSpan timeout, CancellationToken cancellationToken)
     {
-        var settings = options.Value;
+        var settings = options;
 
         if (string.IsNullOrWhiteSpace(settings.BotToken))
-            throw new InvalidOperationException($"{TelegramOptions.SectionName}:BotToken is not configured.");
+            throw new InvalidOperationException("The Telegram bot token is not configured.");
 
         var url = $"{settings.ApiBaseUrl.TrimEnd('/')}/bot{settings.BotToken}/{method}";
 

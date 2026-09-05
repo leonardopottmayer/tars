@@ -78,22 +78,31 @@ container (SMTP on `1025`, web UI on `8025`) with no authentication:
 
 ## `TelegramOptions`
 
-Section name:
+The Telegram configuration is a **set of named bots** under `Bots`. Each key is a bot name — what you
+pass to `ITelegramClientFactory.GetClient` — and each value is a full bot config. One bot or several,
+the shape is the same; a single-bot app is just one entry.
 
 ```json
 "Tars": {
   "Communication": {
     "Telegram": {
-      "BotToken": "123456:ABC-DEF...",
-      "ApiBaseUrl": "https://api.telegram.org",
-      "RequestTimeout": "00:00:30",
-      "PollTimeoutGrace": "00:00:10"
+      "Bots": {
+        "notifications": {
+          "BotToken": "111111:NOTIF-TOKEN..."
+        },
+        "assistant": {
+          "BotToken": "222222:ASSISTANT-TOKEN...",
+          "ApiBaseUrl": "https://api.telegram.org",
+          "RequestTimeout": "00:00:45",
+          "PollTimeoutGrace": "00:00:10"
+        }
+      }
     }
   }
 }
 ```
 
-Fields:
+Per-bot fields (`TelegramBotOptions`):
 
 - `BotToken`: the token from BotFather. Required — calls fail with an `InvalidOperationException`
   when it is empty, rather than reaching Telegram with an unusable URL
@@ -105,20 +114,30 @@ Fields:
 - `PollTimeoutGrace`: slack added on top of the caller's poll timeout before the HTTP request itself
   is cancelled, so a long poll is never killed by its own transport. Default: `10` seconds
 
+Bot names are matched **case-insensitively**. An empty `Bots` set is valid — the feature is simply
+off, and asking the factory for a bot that is not configured is what fails, at the call. Validation on
+start rejects any configured bot with a missing token or an invalid `ApiBaseUrl`/timeout.
+
+A single-bot application configures its bot under the reserved key `default` and calls
+`ITelegramClientFactory.GetClient()` with no name; see [telegram.md](./telegram.md#the-default-bot).
+
 ### Binding
 
 ```csharp
-builder.AddTarsTelegramOptions();
+builder.AddTarsTelegramOptions();                // binds Tars:Communication:Telegram (the Bots set)
+builder.Services.AddTarsTelegramHttpClient();    // the shared HttpClient every bot uses
+builder.Services.AddTarsTelegramClientFactory(); // resolves a bot by name
 ```
 
-Same shape as the MailKit binder — it accepts a custom `sectionName` and a post-bind `configure`
-callback.
+`AddTarsTelegramOptions` has the same shape as the MailKit binder — a custom `sectionName` and a
+post-bind `configure` callback. Register the HttpClient and the factory together — the factory's bots
+need that transport. See [telegram.md](./telegram.md#registration) for resolving a bot.
 
 ### Keeping the token out of configuration files
 
 The bot token is a credential with no scoping: it can read and write every chat the bot is in. Supply
-it through an environment variable (`Tars__Communication__Telegram__BotToken`) or a mounted secret,
-not through a committed `appsettings.json`.
+it through an environment variable (`Tars__Communication__Telegram__Bots__assistant__BotToken`) or a
+mounted secret, not through a committed `appsettings.json`.
 
 ## Notes
 
@@ -126,5 +145,6 @@ not through a committed `appsettings.json`.
 - Both e-mail senders register `IEmailSender` as a singleton via `TryAddSingleton`; register exactly
   one. Selecting which provider to register (e.g. by environment, or by a config key your host
   owns) is a composition concern of the consuming application, not of this module.
-- `AddTarsTelegramClient` registers a typed `HttpClient` with its handler timeout disabled; the
-  per-call deadlines above replace it. Do not set a handler timeout on top, or long polling breaks.
+- `AddTarsTelegramHttpClient` registers the shared `HttpClient` every bot uses with its handler
+  timeout disabled; the per-call deadlines above replace it. Do not set a handler timeout on top, or
+  long polling breaks.

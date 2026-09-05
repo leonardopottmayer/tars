@@ -12,6 +12,7 @@ possible providers, and Telegram has exactly one — the Bot API.
 
 - an `ITelegramClient` contract covering sending, inline keyboards, long polling, file download and
   webhook management
+- an `ITelegramClientFactory` to run several bots at once, each with its own token, resolved by name
 - normalized inbound models (`TelegramUpdate`, `TelegramIncomingMessage`, `TelegramCallbackQuery`,
   `TelegramMedia`) with no JSON concerns leaking into them
 - a `TelegramException` that says whether a failure is **permanent**
@@ -47,15 +48,62 @@ Large file downloads are a separate limit — see [Media](#media).
 
 ## Registration
 
+The configuration models a **set of named bots** (`TelegramOptions.Bots`), and the same three calls set
+it up whether you run one bot or several. Adding a bot is a configuration entry, not a registration.
+
 ```csharp
-builder.AddTarsTelegramOptions();          // binds Tars:Communication:Telegram
-builder.Services.AddTarsTelegramClient();
+builder.AddTarsTelegramOptions();                  // binds Tars:Communication:Telegram (the Bots set)
+builder.Services.AddTarsTelegramHttpClient();      // the shared HttpClient every bot uses
+builder.Services.AddTarsTelegramClientFactory();   // registers ITelegramClientFactory
 ```
 
-`AddTarsTelegramClient` registers `TelegramBotClient` as `ITelegramClient` on a typed `HttpClient`
-whose handler timeout is **disabled on purpose** — every call sets its own deadline, because a long
-poll legitimately waits longer than any sane default and would otherwise be cancelled by its own
-transport.
+`AddTarsTelegramHttpClient` registers the shared `HttpClient` whose handler timeout is **disabled on
+purpose** — every call sets its own deadline, because a long poll legitimately waits longer than any sane
+default and would otherwise be cancelled by its own transport. The factory needs it, so register both:
+without the client the factory's bots fall back to a 100-second default that kills long polling.
+
+Resolve a bot by name through the factory (`ITelegramClient` is not registered directly):
+
+```csharp
+public sealed class AssistantIngress(ITelegramClientFactory telegram)
+{
+    private ITelegramClient Bot => telegram.GetClient("assistant");
+}
+```
+
+`GetClient` builds a `TelegramBotClient` for the bot configured under that name and throws a permanent
+`TelegramException` when no such bot is configured. `TelegramBotClient` is stateless, so a fresh one per
+call is free.
+
+### The default bot
+
+An application that runs a single bot does not need to name it at the call site. Configure it under the
+reserved key `default` (`ITelegramClientFactory.DefaultBotName`) and call `GetClient()` without an
+argument:
+
+```json
+"Tars": { "Communication": { "Telegram": { "Bots": {
+  "default": { "BotToken": "<from environment>" }
+}}}}
+```
+
+```csharp
+public sealed class TaskReminder(ITelegramClientFactory telegram)
+{
+    private ITelegramClient Bot => telegram.GetClient();   // resolves "default"
+}
+```
+
+`GetClient()` is just `GetClient("default")`, so it throws the same permanent `TelegramException` when no
+bot is configured under `default`. Multi-bot applications ignore the key and always pass a name.
+
+### Why several bots stay independent
+
+A **different token per bot** is exactly what makes them independent: `getUpdates` allows one consumer
+per token, so separate tokens never collide on `409`. The usual split is a **notifications** bot that
+only sends and an **assistant** bot that also polls for inbound — resolve each with
+`telegram.GetClient("notifications")` / `telegram.GetClient("assistant")`. A single-bot application is
+just one entry in `Bots`.
 
 ## Sending
 
@@ -211,7 +259,7 @@ notes, photos, documents — and moving large files needs a streaming overload t
 
 ## Main contracts
 
-- `ITelegramClient`
+- `ITelegramClient`, `ITelegramClientFactory`
 - `TelegramMessage`, `InlineKeyboard`, `InlineButton`, `TelegramSendResult`
 - `TelegramUpdate`, `TelegramIncomingMessage`, `TelegramCallbackQuery`, `TelegramMedia`,
   `TelegramChat`, `TelegramSender`

@@ -52,7 +52,8 @@ else
 ```csharp
 // Program.cs
 builder.AddTarsTelegramOptions();
-builder.Services.AddTarsTelegramClient();
+builder.Services.AddTarsTelegramHttpClient();
+builder.Services.AddTarsTelegramClientFactory();
 ```
 
 ```json
@@ -61,9 +62,13 @@ builder.Services.AddTarsTelegramClient();
   "Tars": {
     "Communication": {
       "Telegram": {
-        "BotToken": "<from environment, not committed>",
-        "RequestTimeout": "00:00:30",
-        "PollTimeoutGrace": "00:00:10"
+        "Bots": {
+          "default": {
+            "BotToken": "<from environment, not committed>",
+            "RequestTimeout": "00:00:30",
+            "PollTimeoutGrace": "00:00:10"
+          }
+        }
       }
     }
   }
@@ -71,11 +76,12 @@ builder.Services.AddTarsTelegramClient();
 ```
 
 ```csharp
-public sealed class TelegramUpdatePump(ITelegramClient client, ILogger<TelegramUpdatePump> logger)
+public sealed class TelegramUpdatePump(ITelegramClientFactory telegram, ILogger<TelegramUpdatePump> logger)
     : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        var client = telegram.GetClient();   // the "default" bot
         long offset = 0;
         while (!stoppingToken.IsCancellationRequested)
         {
@@ -105,12 +111,14 @@ builder.AddTarsMailKitEmailOptions();
 builder.Services.AddTarsMailKitEmailSender();
 
 builder.AddTarsTelegramOptions();
-builder.Services.AddTarsTelegramClient();
+builder.Services.AddTarsTelegramHttpClient();
+builder.Services.AddTarsTelegramClientFactory();
 ```
 
 A module that needs to notify a user over "whichever channel they prefer" (e.g. Pandora's Channels
 module) typically wraps both behind its own `INotificationDispatcher`-style port, choosing `IEmailSender`
-or `ITelegramClient` per recipient preference — that port is application code, not part of this family.
+or a bot from `ITelegramClientFactory` per recipient preference — that port is application code, not
+part of this family.
 
 ---
 

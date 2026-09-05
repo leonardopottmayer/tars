@@ -1,6 +1,11 @@
 namespace Pottmayer.Tars.Communication.Telegram.Options;
 
-/// <summary>Bot API configuration for <see cref="TelegramBotClient"/>.</summary>
+/// <summary>
+/// The Telegram configuration: a set of named bots, each with its own token. One application can run
+/// several at once — e.g. a <c>notifications</c> bot that only sends and an <c>assistant</c> bot that
+/// also polls for inbound — and resolve one by name through <c>ITelegramClientFactory.GetClient</c>.
+/// A single-bot application is simply one entry in <see cref="Bots"/>.
+/// </summary>
 public sealed class TelegramOptions
 {
     /// <summary>Default configuration section these options bind from (<c>Tars:Communication:Telegram</c>).</summary>
@@ -8,50 +13,17 @@ public sealed class TelegramOptions
 
     /// <summary>Message reported when validation fails on application start.</summary>
     public const string ValidationErrorMessage =
-        "Invalid TelegramOptions. BotToken is required; ApiBaseUrl must be an absolute URI; RequestTimeout must be positive; PollTimeoutGrace must not be negative.";
-
-    /// <summary>The bot token from BotFather. Required.</summary>
-    public string BotToken { get; set; } = string.Empty;
+        "Invalid TelegramOptions. Every bot under Bots needs a BotToken; ApiBaseUrl must be an absolute URI; RequestTimeout must be positive; PollTimeoutGrace must not be negative.";
 
     /// <summary>
-    /// Bot API root. Override only when running a self-hosted Bot API server, which raises the file
-    /// size limits.
+    /// The configured bots, keyed by name. The key is what <c>ITelegramClientFactory.GetClient</c> takes,
+    /// and it is bound case-insensitively.
     /// </summary>
-    /// <remarks>
-    /// Raising those limits does not make <see cref="TelegramBotClient.DownloadFileAsync"/> able to
-    /// use them: it buffers the whole file in memory, which is only sound under the public API's
-    /// 20 MB ceiling. Self-hosting to move large files needs a streaming download first.
-    /// </remarks>
-    public string ApiBaseUrl { get; set; } = "https://api.telegram.org";
-
-    /// <summary>Per-request timeout for everything except long polling. Default: 30 seconds.</summary>
-    public TimeSpan RequestTimeout { get; set; } = TimeSpan.FromSeconds(30);
+    public Dictionary<string, TelegramBotOptions> Bots { get; set; } = new(StringComparer.OrdinalIgnoreCase);
 
     /// <summary>
-    /// Slack added on top of the caller's poll timeout before the HTTP request itself is cancelled, so
-    /// a long poll is never killed by its own transport. Default: 10 seconds.
+    /// Returns <c>true</c> when every configured bot is valid. An empty set is valid — the feature is
+    /// simply off, and asking the factory for a bot that is not configured is what fails, at the call.
     /// </summary>
-    public TimeSpan PollTimeoutGrace { get; set; } = TimeSpan.FromSeconds(10);
-
-    /// <summary>
-    /// Returns <c>true</c> when the options are internally consistent: a bot token is present,
-    /// <see cref="ApiBaseUrl"/> is an absolute URI, <see cref="RequestTimeout"/> is strictly positive and
-    /// <see cref="PollTimeoutGrace"/> is not negative.
-    /// </summary>
-    public bool IsValid()
-    {
-        if (string.IsNullOrWhiteSpace(BotToken))
-            return false;
-
-        if (!Uri.TryCreate(ApiBaseUrl, UriKind.Absolute, out _))
-            return false;
-
-        if (RequestTimeout <= TimeSpan.Zero)
-            return false;
-
-        if (PollTimeoutGrace < TimeSpan.Zero)
-            return false;
-
-        return true;
-    }
+    public bool IsValid() => Bots.Values.All(bot => bot is not null && bot.IsValid());
 }
