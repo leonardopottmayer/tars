@@ -12,7 +12,7 @@ public sealed class GeminiAiOptions
 
     /// <summary>Message reported when validation fails on application start.</summary>
     public const string ValidationErrorMessage =
-        "Invalid GeminiAiOptions. BaseUrl must be an absolute URL; RequestTimeout must be positive.";
+        "Invalid GeminiAiOptions. BaseUrl must be an absolute http(s) URL; RequestTimeout must be positive.";
 
     /// <summary>The Google AI Studio API key used as the default when a request carries none. Optional.</summary>
     public string ApiKey { get; init; } = string.Empty;
@@ -27,12 +27,20 @@ public sealed class GeminiAiOptions
     public TimeSpan RequestTimeout { get; init; } = TimeSpan.FromSeconds(100);
 
     /// <summary>
-    /// Returns <c>true</c> when the options are internally consistent: the base URL is an absolute URI and
-    /// the request timeout is strictly positive. The API key is not checked — it may be supplied per request.
+    /// Returns <c>true</c> when the options are internally consistent: the base URL is an absolute http(s)
+    /// URL and the request timeout is strictly positive. The API key is not checked — it may be supplied
+    /// per request.
     /// </summary>
+    /// <remarks>
+    /// The scheme is checked, not just absoluteness: on Unix <see cref="Uri.TryCreate(string, UriKind, out Uri)"/>
+    /// treats a leading-slash path (e.g. <c>/relative/only</c>) as an absolute <c>file</c> URI, so requiring
+    /// http/https is what keeps validation consistent across platforms.
+    /// </remarks>
     public bool IsValid()
     {
-        if (string.IsNullOrWhiteSpace(BaseUrl) || !Uri.TryCreate(BaseUrl, UriKind.Absolute, out _))
+        if (string.IsNullOrWhiteSpace(BaseUrl)
+            || !Uri.TryCreate(BaseUrl, UriKind.Absolute, out var uri)
+            || (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps))
             return false;
 
         if (RequestTimeout <= TimeSpan.Zero)

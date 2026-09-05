@@ -204,4 +204,11 @@ public class TelegramOptionsTests
         var withEmptyBot = new TelegramOptions { Bots = { ["assistant"] = new TelegramBotOptions() } };
         withEmptyBot.IsValid().Should().BeFalse();
     }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("not-a-url")]
+    [InlineData("/relative/only")]
+    public void A_bot_with_a_non_http_base_url_is_invalid(string baseUrl)
+        => new TelegramBotOptions { BotToken = "123:ABC", ApiBaseUrl = baseUrl }.IsValid().Should().BeFalse();
 }

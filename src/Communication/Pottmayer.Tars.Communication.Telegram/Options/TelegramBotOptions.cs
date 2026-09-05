@@ -39,7 +39,10 @@ public sealed class TelegramBotOptions
         if (string.IsNullOrWhiteSpace(BotToken))
             return false;
 
-        if (!Uri.TryCreate(ApiBaseUrl, UriKind.Absolute, out _))
+        // Scheme, not just absoluteness: on Unix Uri.TryCreate treats a leading-slash path as an absolute
+        // file URI, so require http/https to keep validation consistent across platforms.
+        if (!Uri.TryCreate(ApiBaseUrl, UriKind.Absolute, out var apiBaseUri)
+            || (apiBaseUri.Scheme != Uri.UriSchemeHttp && apiBaseUri.Scheme != Uri.UriSchemeHttps))
             return false;
 
         if (RequestTimeout <= TimeSpan.Zero)
