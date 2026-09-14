@@ -12,7 +12,8 @@ public sealed class GeminiAiOptions
 
     /// <summary>Message reported when validation fails on application start.</summary>
     public const string ValidationErrorMessage =
-        "Invalid GeminiAiOptions. BaseUrl must be an absolute http(s) URL; RequestTimeout must be positive.";
+        "Invalid GeminiAiOptions. BaseUrl must be an absolute http(s) URL; RequestTimeout must be positive; "
+        + "MaxRetryAttempts must be non-negative; RetryBaseDelay must be non-negative.";
 
     /// <summary>The Google AI Studio API key used as the default when a request carries none. Optional.</summary>
     public string ApiKey { get; init; } = string.Empty;
@@ -27,9 +28,22 @@ public sealed class GeminiAiOptions
     public TimeSpan RequestTimeout { get; init; } = TimeSpan.FromSeconds(100);
 
     /// <summary>
+    /// How many times a transient failure (503 overloaded, 429 rate limit, other 5xx, or a network error)
+    /// is retried before the call gives up. Retries use exponential backoff with jitter and honour the
+    /// server's <c>Retry-After</c> header when present. Set to <c>0</c> to disable retrying.
+    /// </summary>
+    public int MaxRetryAttempts { get; init; } = 3;
+
+    /// <summary>
+    /// The base delay for the exponential backoff between retry attempts. The effective wait grows per
+    /// attempt and carries jitter, and a <c>Retry-After</c> header from the server takes precedence.
+    /// </summary>
+    public TimeSpan RetryBaseDelay { get; init; } = TimeSpan.FromSeconds(1);
+
+    /// <summary>
     /// Returns <c>true</c> when the options are internally consistent: the base URL is an absolute http(s)
-    /// URL and the request timeout is strictly positive. The API key is not checked — it may be supplied
-    /// per request.
+    /// URL, the request timeout is strictly positive, and the retry settings are non-negative. The API key
+    /// is not checked — it may be supplied per request.
     /// </summary>
     /// <remarks>
     /// The scheme is checked, not just absoluteness: on Unix <see cref="Uri.TryCreate(string, UriKind, out Uri)"/>
@@ -44,6 +58,9 @@ public sealed class GeminiAiOptions
             return false;
 
         if (RequestTimeout <= TimeSpan.Zero)
+            return false;
+
+        if (MaxRetryAttempts < 0 || RetryBaseDelay < TimeSpan.Zero)
             return false;
 
         return true;
