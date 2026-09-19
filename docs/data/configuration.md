@@ -123,10 +123,10 @@ services.AddTarsDataContextAccessor();
 services.AddTarsRelationalCompositeConnectionResolver();
 services.AddTarsRelationalConfigurationConnectionResolver();
 services.AddTarsDataContextFactory();
-services.AddTarsRelationalUnitOfWorkFactory();
+services.AddTarsUnitOfWorkFactory();
 
 // Database pipeline (no explicit key — uses "default")
-services.AddTarsData<AppDbContext>((sp, descriptor) =>
+services.AddTarsRelationalData<AppDbContext>((sp, descriptor) =>
 {
     var options = new DbContextOptionsBuilder<AppDbContext>();
     options.UseNpgsql(descriptor.ConnectionString);
@@ -144,14 +144,14 @@ services.AddTarsDataContextAccessor();
 services.AddTarsRelationalCompositeConnectionResolver();
 services.AddTarsRelationalConfigurationConnectionResolver();
 services.AddTarsDataContextFactory();
-services.AddTarsRelationalUnitOfWorkFactory();
+services.AddTarsUnitOfWorkFactory();
 
 // Tenant's default database
-services.AddTarsData<AppDbContext>("default", (sp, d) =>
+services.AddTarsRelationalData<AppDbContext>("default", (sp, d) =>
     new DbContextOptionsBuilder<AppDbContext>().UseNpgsql(d.ConnectionString).Options);
 
 // Central database (data shared across tenants)
-services.AddTarsData<CentralDbContext>("central", (sp, d) =>
+services.AddTarsRelationalData<CentralDbContext>("central", (sp, d) =>
     new DbContextOptionsBuilder<CentralDbContext>().UseNpgsql(d.ConnectionString).Options);
 ```
 
@@ -216,8 +216,8 @@ services.AddTarsDataContextAccessor();
 services.AddTarsRelationalCompositeConnectionResolver();
 services.AddTarsRelationalConfigurationConnectionResolver(); // optional — omit if you don't want config as a fallback
 services.AddTarsDataContextFactory();
-services.AddTarsRelationalUnitOfWorkFactory();
-services.AddTarsData<AppDbContext>(buildOptions);
+services.AddTarsUnitOfWorkFactory();
+services.AddTarsRelationalData<AppDbContext>(buildOptions);
 ```
 
 The `CompositeDataConnectionResolver` tries the resolvers in registration order, returning the first non-null result.

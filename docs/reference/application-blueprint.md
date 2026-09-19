@@ -52,9 +52,9 @@ builder.Services.AddTarsDataContextAccessor();
 builder.Services.AddTarsRelationalCompositeConnectionResolver();
 builder.Services.AddTarsRelationalConfigurationConnectionResolver();
 builder.Services.AddTarsDataContextFactory();
-builder.Services.AddTarsRelationalUnitOfWorkFactory();
+builder.Services.AddTarsUnitOfWorkFactory();
 
-builder.Services.AddTarsData<AppDbContext>((sp, descriptor) =>
+builder.Services.AddTarsRelationalData<AppDbContext>((sp, descriptor) =>
     new DbContextOptionsBuilder<AppDbContext>()
         .UseNpgsql(descriptor.ConnectionString)
         .Options);
@@ -175,8 +175,8 @@ builder.Services.AddTarsDataContextAccessor();
 builder.Services.AddTarsRelationalCompositeConnectionResolver();
 builder.Services.AddTarsRelationalConfigurationConnectionResolver();
 builder.Services.AddTarsDataContextFactory();
-builder.Services.AddTarsRelationalUnitOfWorkFactory();
-builder.Services.AddTarsData<AppDbContext>((sp, descriptor) =>
+builder.Services.AddTarsUnitOfWorkFactory();
+builder.Services.AddTarsRelationalData<AppDbContext>((sp, descriptor) =>
     new DbContextOptionsBuilder<AppDbContext>()
         .UseNpgsql(descriptor.ConnectionString)
         .Options);

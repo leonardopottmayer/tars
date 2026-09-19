@@ -31,8 +31,11 @@
   </Folder>
   <Folder Name="/src/Data/">
     <Project Path="src/Data/Pottmayer.Tars.Data.Abstractions/Pottmayer.Tars.Data.Abstractions.csproj" Id="53f8edb1-4da6-46ee-b100-1b9a2e87d100" />
+    <Project Path="src/Data/Pottmayer.Tars.Data/Pottmayer.Tars.Data.csproj" />
     <Project Path="src/Data/Pottmayer.Tars.Data.Relational.Abstractions/Pottmayer.Tars.Data.Relational.Abstractions.csproj" Id="c1d2e3f4-a5b6-4c7d-8e9f-0a1b2c3d4e5f" />
     <Project Path="src/Data/Pottmayer.Tars.Data.Relational/Pottmayer.Tars.Data.Relational.csproj" Id="d2e3f4a5-b6c7-4d8e-9f0a-1b2c3d4e5f6a" />
+    <Project Path="src/Data/Pottmayer.Tars.Data.Document.Abstractions/Pottmayer.Tars.Data.Document.Abstractions.csproj" />
+    <Project Path="src/Data/Pottmayer.Tars.Data.Document.MongoDB/Pottmayer.Tars.Data.Document.MongoDB.csproj" />
   </Folder>
   <Folder Name="/src/Messaging/">
     <Project Path="src/Messaging/Pottmayer.Tars.Messaging.Abstractions/Pottmayer.Tars.Messaging.Abstractions.csproj" Id="b7e1a2c3-d4e5-4f6a-8b9c-0d1e2f3a4b50" />

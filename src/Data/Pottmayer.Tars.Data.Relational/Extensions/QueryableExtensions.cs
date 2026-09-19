@@ -1,13 +1,14 @@
-using System.Linq.Expressions;
-using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Pottmayer.Tars.Data.Abstractions.Query;
+using Pottmayer.Tars.Data.Query;
 
 namespace Pottmayer.Tars.Data.Relational.Extensions;
 
 /// <summary>
-/// Applies <see cref="DataQueryParams{TEntity}"/> to an <see cref="IQueryable{T}"/> and
-/// returns a <see cref="DataQueryResult{TEntity}"/>.
+/// Applies <see cref="DataQueryParams{TEntity}"/> to an EF Core <see cref="IQueryable{T}"/> and
+/// materializes a <see cref="DataQueryResult{TEntity}"/> (page of items + total count). The ordering
+/// composition is provider-agnostic (see <see cref="Pottmayer.Tars.Data.Query.QueryableExtensions"/>);
+/// only the async materialization (<c>CountAsync</c>/<c>ToListAsync</c>) is EF-specific.
 /// </summary>
 public static class QueryableExtensions
 {
@@ -46,58 +47,5 @@ public static class QueryableExtensions
 
         var items = await query.ToListAsync(cancellationToken).ConfigureAwait(false);
         return new DataQueryResult<TEntity> { Items = items, TotalCount = totalCount };
-    }
-
-    /// <summary>Orders the queryable by a property named at runtime.</summary>
-    /// <typeparam name="T">The element type.</typeparam>
-    /// <param name="source">The source queryable.</param>
-    /// <param name="propertyName">Name of the property to order by.</param>
-    /// <param name="ascending">Whether to order ascending.</param>
-    /// <returns>The ordered queryable.</returns>
-    public static IOrderedQueryable<T> OrderByProperty<T>(this IQueryable<T> source, string propertyName, bool ascending)
-    {
-        var (param, access) = PropertyAccess(typeof(T), propertyName);
-        var lambda = Expression.Lambda(access, param);
-        var method = ascending ? "OrderBy" : "OrderByDescending";
-        var call = Expression.Call(typeof(Queryable), method, [typeof(T), access.Type],
-            source.Expression, Expression.Quote(lambda));
-        return (IOrderedQueryable<T>)source.Provider.CreateQuery<T>(call);
-    }
-
-    /// <summary>Adds a secondary ordering to the queryable by a property named at runtime.</summary>
-    /// <typeparam name="T">The element type.</typeparam>
-    /// <param name="source">The already-ordered queryable.</param>
-    /// <param name="propertyName">Name of the property to order by.</param>
-    /// <param name="ascending">Whether to order ascending.</param>
-    /// <returns>The ordered queryable.</returns>
-    public static IOrderedQueryable<T> ThenByProperty<T>(this IOrderedQueryable<T> source, string propertyName, bool ascending)
-    {
-        var (param, access) = PropertyAccess(typeof(T), propertyName);
-        var lambda = Expression.Lambda(access, param);
-        var method = ascending ? "ThenBy" : "ThenByDescending";
-        var call = Expression.Call(typeof(Queryable), method, [typeof(T), access.Type],
-            source.Expression, Expression.Quote(lambda));
-        return (IOrderedQueryable<T>)source.Provider.CreateQuery<T>(call);
-    }
-
-    /// <summary>Builds the parameter and member-access expressions for a property named at runtime.</summary>
-    private static (ParameterExpression, MemberExpression) PropertyAccess(Type entityType, string name)
-    {
-        var param = Expression.Parameter(entityType, "x");
-        var prop = GetProperty(entityType, name)
-            ?? throw new ArgumentException($"Property '{name}' not found on '{entityType.Name}'.", nameof(name));
-        return (param, Expression.Property(param, prop));
-    }
-
-    /// <summary>Finds a public instance property by name (case-insensitive), walking the base types.</summary>
-    private static PropertyInfo? GetProperty(Type type, string name)
-    {
-        const BindingFlags flags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase | BindingFlags.DeclaredOnly;
-        for (var t = type; t != null; t = t.BaseType)
-        {
-            var p = t.GetProperty(name, flags);
-            if (p is not null) return p;
-        }
-        return null;
     }
 }

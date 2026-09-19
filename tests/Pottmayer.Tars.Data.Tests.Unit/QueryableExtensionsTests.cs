@@ -1,5 +1,5 @@
 using FluentAssertions;
-using Pottmayer.Tars.Data.Relational.Extensions;
+using Pottmayer.Tars.Data.Query;
 
 namespace Pottmayer.Tars.Data.Tests.Unit;
 

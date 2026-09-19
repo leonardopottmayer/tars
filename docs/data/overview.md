@@ -6,24 +6,31 @@ The Tars data axis is multi-paradigm. Each paradigm has its own contracts and im
 
 ## Packages
 
-### Shared contracts
+### Shared contracts and runtime
 
 | Package | Type | Role |
 |---|---|---|
-| `Pottmayer.Tars.Data.Abstractions` | Abstractions | Provider-agnostic contracts: `IDataContext`, `IDataContextAccessor`, `IRepository`, `IUnitOfWork`, `IUnitOfWorkFactory`, `QueryParams` and query types |
+| `Pottmayer.Tars.Data.Abstractions` | Abstractions | Provider-agnostic contracts: `IDataContext`, `IDataContextAccessor`, `IStandardRepository`, `IUnitOfWork`, `IUnitOfWorkFactory`, `IDataContextFactory`, `IKeyedDataContextFactory`, `IMultiDatabaseCoordinator`, `QueryParams` and query types |
+| `Pottmayer.Tars.Data` | Runtime | Provider-agnostic runtime shared by every axis: ambient context accessor, composite/keyed context factory, unit-of-work factory, repository resolver, multi-database coordination, `QueryParams` translation and shared DI (`AddTarsDataContextAccessor`, `AddTarsDataContextFactory`, `AddTarsUnitOfWorkFactory`, `AddTarsMultiDatabaseCoordination`, `AddTarsDataRepositoriesFromAssemblies`) |
 
 ### Relational axis
 
 | Package | Type | Role |
 |---|---|---|
-| `Pottmayer.Tars.Data.Relational.Abstractions` | Abstractions | Contracts specific to the relational axis: `IStandardRepository`, `IDataContextFactory`, `IDataConnectionResolver`, `IMultiDatabaseCoordinator` |
-| `Pottmayer.Tars.Data.Relational` | Runtime | EF Core + Dapper implementation, `RelationalDbContext`, `DataContext`, `StandardRepository`, unified DI |
+| `Pottmayer.Tars.Data.Relational.Abstractions` | Abstractions | Contracts specific to the relational axis: `IRelationalRepository` (adds `Queryable()`), `IDataConnectionResolver`, `DbProvider`, tenant connection/schema providers |
+| `Pottmayer.Tars.Data.Relational` | Runtime | EF Core + Dapper implementation: `RelationalDbContext`, `DataContext`, `StandardRepository`, connection resolution, `AddTarsRelationalData` |
+
+### Document axis
+
+| Package | Type | Role |
+|---|---|---|
+| `Pottmayer.Tars.Data.Document.Abstractions` | Abstractions | Mongo connection descriptor, resolution context and resolver contract |
+| `Pottmayer.Tars.Data.Document.MongoDB` | Runtime | MongoDB implementation: session/transaction `MongoDataContext`, `MongoStandardRepository`, connection resolution, `AddTarsMongoData`. See [MongoDB provider](./document-mongodb.md) |
 
 ### Future paradigms
 
 | Package | Status |
 |---|---|
-| `Data.Document.MongoDB` | Planned (temporarily removed) |
 | `Data.Document.CosmosDB` | Planned |
 | `Data.KeyValue.Abstractions` / `Data.KeyValue.DynamoDB` | Planned |
 | `Data.Search.Abstractions` / `Data.Search.OpenSearch` | Planned |
@@ -59,10 +66,10 @@ builder.Services.AddTarsDataContextAccessor();
 builder.Services.AddTarsRelationalCompositeConnectionResolver();
 builder.Services.AddTarsRelationalConfigurationConnectionResolver();
 builder.Services.AddTarsDataContextFactory();
-builder.Services.AddTarsRelationalUnitOfWorkFactory();
+builder.Services.AddTarsUnitOfWorkFactory();
 
 // Database pipeline
-builder.Services.AddTarsData<AppDbContext>((sp, descriptor) =>
+builder.Services.AddTarsRelationalData<AppDbContext>((sp, descriptor) =>
     new DbContextOptionsBuilder<AppDbContext>()
         .UseNpgsql(descriptor.ConnectionString)
         .Options);
@@ -94,7 +101,8 @@ builder.Services.AddTarsDataRepositoriesFromAssemblies(typeof(AppAssemblyMarker)
 - [Configuration](./configuration.md) — appsettings, providers, connection resolution, multitenancy
 - [Contracts and Pipelines](./pipelines-and-uow.md) — UnitOfWork, DataContext, repositories, QueryParams, domain events
 - [Data, Multitenancy and Multi-Database](./multitenancy-and-multi-database.md) — logical keys, multi-database and transaction coordination
-- [Future Paradigms](./future-paradigms.md) — planned document, key-value and search axes
+- [MongoDB provider](./document-mongodb.md) — the document axis: registration, transactions/unit of work, repositories, multitenancy and coexistence with relational
+- [Future Paradigms](./future-paradigms.md) — planned CosmosDB, key-value and search axes
 
 ---
 

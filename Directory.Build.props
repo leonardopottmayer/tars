@@ -1,7 +1,7 @@
 <Project>
   <PropertyGroup>
-    <Version>0.0.14</Version>
-    <PackageVersion>0.0.14</PackageVersion>
+    <Version>0.0.15</Version>
+    <PackageVersion>0.0.15</PackageVersion>
     <AssemblyVersion>$(Version).0</AssemblyVersion>
     <FileVersion>$(Version).0</FileVersion>
     <InformationalVersion>$(Version)</InformationalVersion>
@@ -146,17 +146,32 @@
     </When>
     <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Data.Abstractions'">
       <PropertyGroup>
-        <Description>Provider-agnostic data abstractions for the Pottmayer.Tars framework: repository contracts, unit of work, data context, keys and query models.</Description>
+        <Description>Provider-agnostic data abstractions for the Pottmayer.Tars framework: standard repository contract, unit of work, data context and keyed context factories, multi-database coordination, keys and query models.</Description>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Data'">
+      <PropertyGroup>
+        <Description>Provider-agnostic data runtime for the Pottmayer.Tars framework: ambient context accessor, composite/keyed context factory, unit-of-work factory, repository resolver, multi-database coordination, QueryParams translation and shared DI helpers. Shared by the relational and document providers.</Description>
       </PropertyGroup>
     </When>
     <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Data.Relational.Abstractions'">
       <PropertyGroup>
-        <Description>Relational data abstractions for the Pottmayer.Tars framework: connection descriptors and resolvers, context factory, multi-database coordination and tenant connection/schema providers.</Description>
+        <Description>Relational data abstractions for the Pottmayer.Tars framework: relational repository contract, connection descriptors and resolvers, tenant connection/schema providers and the DbProvider enum.</Description>
       </PropertyGroup>
     </When>
     <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Data.Relational'">
       <PropertyGroup>
-        <Description>Relational data provider for the Pottmayer.Tars framework on EF Core + Dapper: RelationalDbContext, unit of work, standard repository base, QueryParams translation, configuration-based connection resolution, multi-database coordination and DI helpers.</Description>
+        <Description>Relational data provider for the Pottmayer.Tars framework on EF Core + Dapper: RelationalDbContext, standard repository base, EF QueryParams materialization, configuration-based connection resolution and DI helpers.</Description>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Data.Document.Abstractions'">
+      <PropertyGroup>
+        <Description>Document data abstractions for the Pottmayer.Tars framework: MongoDB connection descriptors, resolution context and resolver contract.</Description>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Data.Document.MongoDB'">
+      <PropertyGroup>
+        <Description>MongoDB document data provider for the Pottmayer.Tars framework: session/transaction-backed MongoDataContext and unit of work, standard repository base implementing the provider-agnostic repository contract, configuration-based connection resolution and DI helpers.</Description>
       </PropertyGroup>
     </When>
     <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Core.Localization.Abstractions'">

@@ -2,8 +2,8 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Pottmayer.Tars.Data.Abstractions.UnitOfWork;
-using Pottmayer.Tars.Data.Relational.Abstractions.MultiDb;
-using Pottmayer.Tars.Data.Relational.DI;
+using Pottmayer.Tars.Data.Abstractions.MultiDb;
+using Pottmayer.Tars.Data.DI;
 
 namespace Pottmayer.Tars.Data.Tests.Unit;
 

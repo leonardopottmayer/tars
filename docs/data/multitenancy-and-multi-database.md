@@ -73,36 +73,44 @@ When `Pottmayer.Tars.Multitenancy` is active, the current tenant's `TenantKey`/`
 
 ### 3.2 Data abstractions
 
-Provider-agnostic (`Pottmayer.Tars.Data.Abstractions`):
+Provider-agnostic contracts (`Pottmayer.Tars.Data.Abstractions`):
 
 - `IDataContext`, `IDataContextAccessor`
 - `IUnitOfWork`, `IUnitOfWorkFactory`
-- `IRepository` / `IRepository<T>`, `IRepositoryResolver`
+- `IDataContextFactory` (`CreateScopedAsync` / `CreateIsolatedAsync`), `IKeyedDataContextFactory`
+- `IStandardRepository`, `IRepository` / `IRepository<T>`, `IRepositoryResolver`
+- `IMultiDatabaseCoordinator`, `IMultiDatabaseExecutionContext`
 - `DataKeys`
+
+Provider-agnostic runtime (`Pottmayer.Tars.Data`): the composite/keyed `IDataContextFactory`, the
+`IUnitOfWorkFactory`, the ambient accessor and multi-database coordination — shared by every axis.
 
 Specific to the relational axis (`Pottmayer.Tars.Data.Relational.Abstractions`):
 
+- `IRelationalRepository` (adds `Queryable()`)
 - `IDataConnectionDescriptor`, `IDataConnectionResolver`, `DataConnectionResolutionContext`
-- `IDataContextFactory` (`CreateScopedAsync` / `CreateIsolatedAsync`)
-- `IMultiDatabaseCoordinator`, `IMultiDatabaseExecutionContext`
 - `ITenantConnectionStringProvider`, `ITenantSchemaProvider` (namespace `...Relational.Abstractions.Multitenancy`)
 - `DbProvider`
 
+The document axis (`Pottmayer.Tars.Data.Document.MongoDB`) contributes keyed pipelines the same way; a
+Mongo key is registered with `AddTarsMongoData("key")` and coexists with relational keys behind the same
+`IUnitOfWorkFactory`. See [MongoDB provider](./document-mongodb.md).
+
 ### 3.3 Per-key pipelines (`Pottmayer.Tars.Data.Relational`)
 
-Each database is registered with `AddTarsData<TDbContext>`. For simple apps, the keyless overload uses `"default"`:
+Each database is registered with `AddTarsRelationalData<TDbContext>`. For simple apps, the keyless overload uses `"default"`:
 
 ```csharp
-services.AddTarsData<AppDbContext>((sp, d) =>
+services.AddTarsRelationalData<AppDbContext>((sp, d) =>
     new DbContextOptionsBuilder<AppDbContext>().UseNpgsql(d.ConnectionString).Options);
 ```
 
 For multi-database, one call per key:
 
 ```csharp
-services.AddTarsData<CentralDbContext>("central", (sp, d) =>
+services.AddTarsRelationalData<CentralDbContext>("central", (sp, d) =>
     new DbContextOptionsBuilder<CentralDbContext>().UseNpgsql(d.ConnectionString).Options);
-services.AddTarsData<TenantDbContext>("primary", (sp, d) =>
+services.AddTarsRelationalData<TenantDbContext>("primary", (sp, d) =>
     new DbContextOptionsBuilder<TenantDbContext>().UseNpgsql(d.ConnectionString).Options);
 ```
 
@@ -235,7 +243,7 @@ When the naming convention is stable:
 Having the key in configuration **is not enough**. If the code uses `_uowFactory.Create("central")`, then **two** registrations must exist:
 
 1. configuration for `central` (in `Connections`, `TenantConnections` or `TenantConnectionTemplates`);
-2. a pipeline registered for `central` via `AddTarsData<T>("central", ...)`.
+2. a pipeline registered for `central` via `AddTarsRelationalData<T>("central", ...)`.
 
 If the configuration exists but the pipeline was not registered, creating the context/unit of work for that key fails at runtime.
 
@@ -248,9 +256,9 @@ services.AddTarsDataContextAccessor();
 services.AddTarsRelationalCompositeConnectionResolver();
 services.AddTarsRelationalConfigurationConnectionResolver();
 services.AddTarsDataContextFactory();
-services.AddTarsRelationalUnitOfWorkFactory();
+services.AddTarsUnitOfWorkFactory();
 
-// one AddTarsData<T> per database (see sections below)
+// one AddTarsRelationalData<T> per database (see sections below)
 
 // repositories
 services.AddTarsDataRepositoriesFromAssemblies(typeof(AppAssemblyMarker).Assembly);
@@ -368,9 +376,9 @@ services.AddTarsDataContextAccessor();
 services.AddTarsRelationalCompositeConnectionResolver();
 services.AddTarsRelationalConfigurationConnectionResolver();
 services.AddTarsDataContextFactory();
-services.AddTarsRelationalUnitOfWorkFactory();
+services.AddTarsUnitOfWorkFactory();
 
-services.AddTarsData<AppDbContext>((sp, d) =>
+services.AddTarsRelationalData<AppDbContext>((sp, d) =>
     new DbContextOptionsBuilder<AppDbContext>().UseNpgsql(d.ConnectionString).Options);
 ```
 
@@ -392,11 +400,11 @@ await _uowFactory.ExecuteAsync(async (ctx, ct) =>
 
 ```csharp
 // infrastructure (same as 9.1) +
-services.AddTarsData<CentralDbContext>("central", (sp, d) =>
+services.AddTarsRelationalData<CentralDbContext>("central", (sp, d) =>
     new DbContextOptionsBuilder<CentralDbContext>().UseNpgsql(d.ConnectionString).Options);
-services.AddTarsData<TenantDbContext>("primary", (sp, d) =>
+services.AddTarsRelationalData<TenantDbContext>("primary", (sp, d) =>
     new DbContextOptionsBuilder<TenantDbContext>().UseNpgsql(d.ConnectionString).Options);
-services.AddTarsData<TenantAnalyticsDbContext>("secondary", (sp, d) =>
+services.AddTarsRelationalData<TenantAnalyticsDbContext>("secondary", (sp, d) =>
     new DbContextOptionsBuilder<TenantAnalyticsDbContext>().UseNpgsql(d.ConnectionString).Options);
 ```
 
@@ -431,7 +439,7 @@ builder.Services.AddTarsTenantContextAccessor();
 builder.Services.AddTarsTenantContextFactory();
 builder.Services.AddTarsHeaderTenantResolver("X-Tenant-Key");
 builder.Services.AddTarsTenantResolution(o => o.AddResolver<HeaderTenantResolver>());
-// + data infrastructure + AddTarsData<T>("primary", ...)
+// + data infrastructure + AddTarsRelationalData<T>("primary", ...)
 
 var app = builder.Build();
 app.UseTarsTenantResolution();
@@ -517,7 +525,7 @@ Recommendation: local commits by default; best-effort coordination as opt-in; an
 - Prefer explicit keys (`central`/`primary`/`secondary`) for multi-database apps.
 - Keep `default` only when the team wants contextual convenience on purpose.
 - Treat tenant resolution and data resolution as separate concerns.
-- Register an `AddTarsData<T>` for each key the code uses.
+- Register an `AddTarsRelationalData<T>` for each key the code uses.
 - Ensure configuration and DI agree on the same keys.
 - Use templates only when the tenant naming convention is stable.
 - Do not assume HTTP is the only execution environment; use `ITenantExecutionRunner` in jobs.
@@ -527,7 +535,7 @@ Recommendation: local commits by default; best-effort coordination as opt-in; an
 
 ## 12. Common mistakes
 
-**Key exists in config but not in DI** — `_uowFactory.Create("central")` fails. *Fix:* register `AddTarsData<T>("central", ...)`.
+**Key exists in config but not in DI** — `_uowFactory.Create("central")` fails. *Fix:* register `AddTarsRelationalData<T>("central", ...)`.
 
 **Using physical names as the runtime key** — the code becomes tied to the environment. *Fix:* use logical roles.
 

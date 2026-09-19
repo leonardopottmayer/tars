@@ -1,12 +1,18 @@
 # Data — Future Paradigms
 
-The Tars data axis is multi-paradigm. Currently only the **relational** axis (EF Core + Dapper) is implemented. This page covers the paradigms that are still planned.
+The Tars data axis is multi-paradigm. The **relational** axis (EF Core + Dapper) and the **document** axis
+(MongoDB) are implemented; this page covers the paradigms that are still planned, plus how any mix of axes
+coexists in one application.
 
 ---
 
-## Document family (planned)
+## Document family (implemented)
 
-The document axis (MongoDB and, in the future, CosmosDB) should not be forced into the relational `IStandardRepository` — each paradigm has its own contract (`IMongoStandardRepository`, etc.). MongoDB support was temporarily removed and will return as a dedicated document family.
+The MongoDB provider is implemented — see [MongoDB provider](./document-mongodb.md). It does **not** get its
+own repository contract: it implements the same provider-agnostic `IStandardRepository<TEntity, TKey>` as the
+relational axis, so domain repository interfaces (`IUserRepository`) stay backend-neutral and never name a
+provider. The relational axis adds `IRelationalRepository` (with `Queryable()`) only for callers that
+deliberately need composable EF `IQueryable`. CosmosDB is planned as a second document provider.
 
 ---
 
@@ -73,20 +79,41 @@ public interface IIndexWriter<TDocument> where TDocument : class
 
 ## Coexistence without conflict
 
-Each paradigm has an independent entry point in the container:
+The shared runtime (`Pottmayer.Tars.Data`) is registered **once**, and each provider contributes its own
+**keyed pipelines** on top. Every pipeline registers an `IKeyedDataContextFactory` for its `databaseKey`, and
+the single composite `IDataContextFactory` routes each key to the provider that owns it — so relational and
+document databases coexist behind one `IUnitOfWorkFactory`:
 
 ```csharp
-// Relational — via IUnitOfWorkFactory + IDataContextFactory
-services.AddTarsData<AppDbContext>(buildOptions);
+// Shared, provider-agnostic infrastructure (registered once)
+services.AddTarsDataContextAccessor();
+services.AddTarsDataContextFactory();
+services.AddTarsUnitOfWorkFactory();
 
-// Document — independent entry point (future)
-// services.AddTarsMongoData("catalog");
+// Relational keys
+services.AddTarsRelationalCompositeConnectionResolver();
+services.AddTarsRelationalConfigurationConnectionResolver();
+services.AddTarsRelationalData<AppDbContext>("sql-central", (sp, d) => /* UseNpgsql */ default!);
+
+// Document keys — same IUnitOfWorkFactory, different backend
+services.AddTarsMongoCompositeConnectionResolver();
+services.AddTarsMongoConfigurationConnectionResolver();
+services.AddTarsMongoData("mongo-catalog");
+services.AddTarsMongoData("mongo-events");
 
 // Key-Value — independent entry point (future)
-services.AddTarsDynamoDbStore(opts => { ... });
+// services.AddTarsDynamoDbStore(opts => { ... });
 
 // Search — independent entry point (future)
-services.AddTarsOpenSearchIndex<ProductDocument>("products-index", opts => { ... });
+// services.AddTarsOpenSearchIndex<ProductDocument>("products-index", opts => { ... });
 ```
 
-> **Note:** when a document axis is reintroduced, the public contracts (`IUnitOfWork`, `IDataContext`) will tend to be identical to the relational ones, but an application must choose **a single data provider**. Each provider registers its own implementation of `IDataContextAccessor` and `IUnitOfWorkFactory`, and the container would resolve only one of them. The design ensures that switching between providers does not require changes in the application layer.
+Any mix works — 2 SQL + 1 Mongo, 2 Mongo + 1 SQL, 2 of each — and every key is multitenant on its own terms.
+`_uowFactory.Create("sql-central")` and `_uowFactory.Create("mongo-catalog")` live side by side, and the
+`IMultiDatabaseCoordinator` can commit across providers (best-effort, Level 1).
+
+> **Note:** the public contracts (`IUnitOfWork`, `IDataContext`, `IStandardRepository`) are shared, so
+> switching a key from one provider to another means changing its pipeline registration
+> (`AddTarsRelationalData` → `AddTarsMongoData`) and swapping the concrete repository implementation for that
+> key — the **domain repository interface stays identical**. Earlier drafts of this framework assumed an app
+> would pick a single provider; the keyed/composite design supersedes that — providers coexist.

@@ -27,7 +27,8 @@ This folder gathers the functional documentation of the `Pottmayer.Tars` framewo
   - [Configuration (Relational)](./data/configuration.md): appsettings, multi-database, multitenancy, custom resolver
   - [Contracts and UoW](./data/pipelines-and-uow.md): `IUnitOfWork`, `IDataContext`, repositories, `QueryParams`, domain events
   - [Data, Multitenancy and Multi-Database](./data/multitenancy-and-multi-database.md): complete guide to logical keys, connection resolution, per-scenario combinations and cross-database transaction coordination
-  - [Future paradigms](./data/future-paradigms.md): Document (MongoDB), Key-Value, Search
+  - [MongoDB provider](./data/document-mongodb.md): the document axis — registration, transactions/unit of work, repositories, multitenancy and coexistence with relational
+  - [Future paradigms](./data/future-paradigms.md): CosmosDB, Key-Value, Search
 - [Multitenancy](./multitenancy/overview.md): tenant context, resolution pipeline, catalog, store, per-tenant execution
   - [Resolvers](./multitenancy/resolvers.md): all built-in resolvers and how to create a custom one
   - [Catalog and Store](./multitenancy/catalog-and-store.md): `ITenantCatalog`, `ITenantStore`, implementations

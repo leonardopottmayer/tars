@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Pottmayer.Tars.Core.Ddd;
 using Pottmayer.Tars.Data.Abstractions.DataContext;
 using Pottmayer.Tars.Data.Abstractions.Repositories;
-using Pottmayer.Tars.Data.Relational.Repositories;
+using Pottmayer.Tars.Data.Repositories;
 
 namespace Pottmayer.Tars.Data.Relational.DataContext;
 

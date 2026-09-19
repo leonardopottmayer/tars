@@ -64,16 +64,25 @@ See [taxonomy.md](./taxonomy.md) for the complete definition of the levels and c
 
 | Project | Level | Classification | Role |
 |---|---|---|---|
-| `Pottmayer.Tars.Data.Abstractions` | Abstractions | Essential (data axis) | provider-agnostic contracts: `IUnitOfWork`, `IUnitOfWorkFactory`, `IDataContext`, `IDataContextAccessor`, `IRepository`, `IRepositoryResolver`, `QueryParams`, `FilterSpec`, `FilterOperator`, `SortOption`, `DataQueryResult`, `DataKeys` |
+| `Pottmayer.Tars.Data.Abstractions` | Abstractions | Essential (data axis) | provider-agnostic contracts: `IUnitOfWork`, `IUnitOfWorkFactory`, `IDataContext`, `IDataContextAccessor`, `IDataContextFactory`, `IKeyedDataContextFactory`, `IStandardRepository`, `IRepository`, `IRepositoryResolver`, `IMultiDatabaseCoordinator`, `QueryParams`, `FilterSpec`, `FilterOperator`, `SortOption`, `DataQueryResult`, `DataKeys` |
+| `Pottmayer.Tars.Data` | Runtime | Essential (data axis) | provider-agnostic runtime: `DataContextAccessor`, composite/keyed `IDataContextFactory`, `UnitOfWorkFactory`, `RepositoryResolver`, `MultiDatabaseCoordinator`, `QueryParams` translation, shared DI (`AddTarsDataContextAccessor`, `AddTarsDataContextFactory`, `AddTarsUnitOfWorkFactory`, `AddTarsMultiDatabaseCoordination`, `AddTarsDataRepositoriesFromAssemblies`) |
 
 ## Data — Relational Axis
 
 | Project | Level | Classification | Role |
 |---|---|---|---|
-| `Pottmayer.Tars.Data.Relational.Abstractions` | Abstractions | Optional | relational contracts: `IStandardRepository`, `IDataContextFactory`, `IDataConnectionResolver`, `IDataConnectionDescriptor`, `IMultiDatabaseCoordinator`, `ITenantConnectionStringProvider`, `ITenantSchemaProvider` |
-| `Pottmayer.Tars.Data.Relational` | Runtime | Optional | EF Core + Dapper implementation, `RelationalDbContext`, `DataContext`, `StandardRepository`, `DataContextAccessor`, unified DI |
+| `Pottmayer.Tars.Data.Relational.Abstractions` | Abstractions | Optional | relational contracts: `IRelationalRepository` (adds `Queryable()`), `IDataConnectionResolver`, `IDataConnectionDescriptor`, `DbProvider`, `ITenantConnectionStringProvider`, `ITenantSchemaProvider` |
+| `Pottmayer.Tars.Data.Relational` | Runtime | Optional | EF Core + Dapper implementation, `RelationalDbContext`, `DataContext`, `StandardRepository`, connection resolution, `AddTarsRelationalData` |
 
-> The document axis (MongoDB) was temporarily removed and will return as a dedicated family (`Data.Document.*`). See [future paradigms](../data/future-paradigms.md).
+## Data — Document Axis
+
+| Project | Level | Classification | Role |
+|---|---|---|---|
+| `Pottmayer.Tars.Data.Document.Abstractions` | Abstractions | Optional | document contracts: `IMongoConnectionResolver`, `IMongoConnectionDescriptor`, `MongoConnectionResolutionContext` |
+| `Pottmayer.Tars.Data.Document.MongoDB` | Runtime | Optional | MongoDB implementation: session/transaction `MongoDataContext`, `MongoStandardRepository`, connection resolution, `AddTarsMongoData` |
+
+> The relational and document axes share the same provider-agnostic contracts and runtime, so an application
+> can register any mix of relational and MongoDB keys. See [MongoDB provider](../data/document-mongodb.md).
 
 ## Data — Legacy packages
 
@@ -130,7 +139,7 @@ See [taxonomy.md](./taxonomy.md) for the complete definition of the levels and c
 ## Important notes
 
 - The framework publishes multiple small packages instead of a single monolith.
-- `Data.Abstractions` is the base package of the entire data family — the relational axis depends on it.
+- `Data.Abstractions` (contracts) and `Data` (shared runtime) are the base of the entire data family — every axis depends on them.
 - `Web.Http` replaces the old `Presentation.Rest` family.
-- When using the relational axis, reference `Data.Relational.Abstractions` + `Data.Relational`, which reference `Data.Abstractions` automatically.
+- When using the relational axis, reference `Data.Relational.Abstractions` + `Data.Relational`; for the document axis, `Data.Document.Abstractions` + `Data.Document.MongoDB`. Both pull in `Data.Abstractions` + `Data` automatically, and both can be referenced together in one application.
 - When a `*.AspNetCore` package exists, it is the correct place for middleware, endpoints, filters and integration with the specific host.

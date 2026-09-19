@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using Pottmayer.Tars.Data.Abstractions.DataContext;
 using Pottmayer.Tars.Data.Abstractions.Query;
+using Pottmayer.Tars.Data.Query;
 using Pottmayer.Tars.Data.Relational.Abstractions.Repositories;
 using Pottmayer.Tars.Data.Relational.Extensions;
 
@@ -17,7 +18,7 @@ namespace Pottmayer.Tars.Data.Relational.Repositories;
 /// </summary>
 /// <typeparam name="TEntity">The entity type managed by the repository.</typeparam>
 /// <typeparam name="TKey">The entity's key type.</typeparam>
-public class StandardRepository<TEntity, TKey> : RepositoryBase, IStandardRepository<TEntity, TKey>
+public class StandardRepository<TEntity, TKey> : RepositoryBase, IRelationalRepository<TEntity, TKey>
     where TEntity : class
     where TKey : notnull
 {

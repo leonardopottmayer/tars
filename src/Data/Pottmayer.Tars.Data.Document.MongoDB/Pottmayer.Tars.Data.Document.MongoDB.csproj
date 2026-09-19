@@ -7,21 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Dapper" Version="2.1.35" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.2" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.2" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.2" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.2" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.2" />
+    <PackageReference Include="MongoDB.Driver" Version="3.12.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Core\Pottmayer.Tars.Core.Ddd\Pottmayer.Tars.Core.Ddd.csproj" />
     <ProjectReference Include="..\Pottmayer.Tars.Data.Abstractions\Pottmayer.Tars.Data.Abstractions.csproj" />
     <ProjectReference Include="..\Pottmayer.Tars.Data\Pottmayer.Tars.Data.csproj" />
-    <ProjectReference Include="..\Pottmayer.Tars.Data.Relational.Abstractions\Pottmayer.Tars.Data.Relational.Abstractions.csproj" />
+    <ProjectReference Include="..\Pottmayer.Tars.Data.Document.Abstractions\Pottmayer.Tars.Data.Document.Abstractions.csproj" />
     <ProjectReference Include="..\..\Multitenancy\Pottmayer.Tars.Multitenancy.Abstractions\Pottmayer.Tars.Multitenancy.Abstractions.csproj" />
   </ItemGroup>
 

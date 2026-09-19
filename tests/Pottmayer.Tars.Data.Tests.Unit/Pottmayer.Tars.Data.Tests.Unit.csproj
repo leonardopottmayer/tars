@@ -28,8 +28,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Data\Pottmayer.Tars.Data.Abstractions\Pottmayer.Tars.Data.Abstractions.csproj" />
+    <ProjectReference Include="..\..\src\Data\Pottmayer.Tars.Data\Pottmayer.Tars.Data.csproj" />
     <ProjectReference Include="..\..\src\Data\Pottmayer.Tars.Data.Relational.Abstractions\Pottmayer.Tars.Data.Relational.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\Data\Pottmayer.Tars.Data.Relational\Pottmayer.Tars.Data.Relational.csproj" />
+    <ProjectReference Include="..\..\src\Data\Pottmayer.Tars.Data.Document.Abstractions\Pottmayer.Tars.Data.Document.Abstractions.csproj" />
+    <ProjectReference Include="..\..\src\Data\Pottmayer.Tars.Data.Document.MongoDB\Pottmayer.Tars.Data.Document.MongoDB.csproj" />
   </ItemGroup>
 
 </Project>
