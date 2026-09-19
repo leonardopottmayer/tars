@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Pottmayer.Tars.Messaging.Broker.Dispatch;
 using Pottmayer.Tars.Messaging.Broker.Registry;
 using Pottmayer.Tars.Messaging.EntityFrameworkCore.Options;
 using Pottmayer.Tars.Messaging.EntityFrameworkCore.Outbox;
@@ -28,7 +27,7 @@ public sealed class OutboxRelayService : BackgroundService
     public OutboxRelayService(
         IServiceScopeFactory scopeFactory,
         IIntegrationEventTypeRegistry registry,
-        IIntegrationEventDispatcher dispatcher,
+        IOutboxRelayDelivery delivery,
         IIntegrationEventSerializer serializer,
         TimeProvider timeProvider,
         ILogger<OutboxRelayService> logger,
@@ -39,7 +38,7 @@ public sealed class OutboxRelayService : BackgroundService
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _timeProvider = timeProvider ?? throw new ArgumentNullException(nameof(timeProvider));
         _processor = new OutboxRelayProcessor(
-            scopeFactory, registry, dispatcher, serializer, timeProvider, logger, options);
+            scopeFactory, registry, delivery, serializer, timeProvider, logger, options);
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)

@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Pottmayer.Tars.Data.Abstractions.UnitOfWork;
-using Pottmayer.Tars.Messaging.Broker.Dispatch;
 using Pottmayer.Tars.Messaging.Broker.Registry;
 using Pottmayer.Tars.Messaging.EntityFrameworkCore.Options;
 using Pottmayer.Tars.Messaging.EntityFrameworkCore.Outbox;
@@ -16,7 +15,7 @@ namespace Pottmayer.Tars.Messaging.EntityFrameworkCore.Relay;
 /// <para>Delivery runs in three phases, on purpose:</para>
 /// <list type="number">
 ///   <item><b>Lease</b> — read a batch of due rows and close the transaction. Nothing is held open while handlers run.</item>
-///   <item><b>Deliver</b> — dispatch each event through the shared last-mile dispatcher (fresh scope, failures propagate), recording the outcome in memory.</item>
+///   <item><b>Deliver</b> — hand each event to the relay delivery (local handlers by default, or a broker), recording the outcome in memory.</item>
 ///   <item><b>Record</b> — reopen a short transaction and stamp each row dispatched or failed-with-backoff.</item>
 /// </list>
 /// <para>
@@ -30,7 +29,7 @@ namespace Pottmayer.Tars.Messaging.EntityFrameworkCore.Relay;
 public sealed class OutboxRelayProcessor(
     IServiceScopeFactory scopeFactory,
     IIntegrationEventTypeRegistry registry,
-    IIntegrationEventDispatcher dispatcher,
+    IOutboxRelayDelivery delivery,
     IIntegrationEventSerializer serializer,
     TimeProvider timeProvider,
     ILogger logger,
@@ -118,7 +117,7 @@ public sealed class OutboxRelayProcessor(
             }
 
             var @event = serializer.DeserializePayload(eventType, message.Payload);
-            await dispatcher.DispatchAsync(@event, cancellationToken).ConfigureAwait(false);
+            await delivery.DeliverAsync(@event, cancellationToken).ConfigureAwait(false);
             return null;
         }
         catch (Exception ex)

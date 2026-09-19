@@ -26,7 +26,7 @@ public class OutboxRelayProcessorTests
         var scopeFactory = services.BuildServiceProvider().GetRequiredService<IServiceScopeFactory>();
 
         return new OutboxRelayProcessor(
-            scopeFactory, _registry, dispatcher, _serializer, _clock, NullLogger.Instance,
+            scopeFactory, _registry, new LocalHandlerOutboxDelivery(dispatcher), _serializer, _clock, NullLogger.Instance,
             options ?? new OutboxDatabaseOptions("test") { Backoff = _ => TimeSpan.FromSeconds(10) });
     }
 

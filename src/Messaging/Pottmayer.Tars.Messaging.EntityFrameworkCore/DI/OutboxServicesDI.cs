@@ -119,6 +119,31 @@ public static class OutboxServicesDI
     }
 
     /// <summary>
+    /// Switches every relay from local dispatch to <b>forwarding to a broker</b>: drained events are
+    /// published through the transport bus registered under <paramref name="transportKey"/> (a composite
+    /// route key, or an <c>AddTarsKeyed{RabbitMq,Kafka}IntegrationEventBus</c> key). This is what makes
+    /// the in-process outbox a transactional outbox <em>to Kafka or RabbitMQ</em> — the row is still
+    /// written in the producer's transaction; the relay just delivers it to the broker instead of to
+    /// local handlers.
+    /// </summary>
+    /// <remarks>
+    /// Without this call the relay delivers locally (the modular-monolith default). Register the keyed
+    /// transport before or after — the relay resolves the delivery lazily when it starts. The delivery is
+    /// process-wide: all relays share it. (An alternative to running the relay at all is to leave the
+    /// table for an external CDC reader such as Debezium — see the outbox documentation.)
+    /// </remarks>
+    public static IServiceCollection AddTarsOutboxBrokerDelivery(this IServiceCollection services, string transportKey)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentException.ThrowIfNullOrWhiteSpace(transportKey);
+
+        services.RemoveAll<IOutboxRelayDelivery>();
+        services.AddSingleton<IOutboxRelayDelivery>(
+            sp => new BrokerOutboxDelivery(sp.GetRequiredService<IServiceScopeFactory>(), transportKey));
+        return services;
+    }
+
+    /// <summary>
     /// Registers one background relay for <paramref name="databaseKey"/>: it drains that database's outbox,
     /// delivering due messages to the local handlers with retry, backoff and dead-lettering, and purging
     /// dispatched rows. Call once per producing database.
@@ -150,7 +175,9 @@ public static class OutboxServicesDI
             return new OutboxRelayService(
                 sp.GetRequiredService<IServiceScopeFactory>(),
                 sp.GetRequiredService<IIntegrationEventTypeRegistry>(),
-                sp.GetRequiredService<IIntegrationEventDispatcher>(),
+                // Local dispatch is the default; AddTarsOutboxBrokerDelivery swaps in broker forwarding.
+                sp.GetService<IOutboxRelayDelivery>()
+                    ?? new LocalHandlerOutboxDelivery(sp.GetRequiredService<IIntegrationEventDispatcher>()),
                 sp.GetRequiredService<IIntegrationEventSerializer>(),
                 sp.GetRequiredService<TimeProvider>(),
                 sp.GetRequiredService<ILogger<OutboxRelayService>>(),

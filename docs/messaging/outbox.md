@@ -210,6 +210,53 @@ unambiguous), and a slow handler never pins the producer's connection. The price
 crash mid-delivery leaves the claim in place and the message reappears once the lease expires — hence
 idempotent handlers. A separate purge pass deletes `Dispatched` rows older than `RetentionPeriod`.
 
+## Delivering to a broker (Kafka, RabbitMQ) — and Debezium
+
+The relay's **last mile is pluggable**. By default it hands each drained event to the local
+`IIntegrationEventHandler<T>` (the modular-monolith path above). One call swaps that for **forwarding to
+a broker**:
+
+```csharp
+// Register the transport as a keyed bus (a composite route key, or the keyed provider helper)…
+services.AddTarsKeyedKafkaIntegrationEventBus("events");   // + the Kafka host/rider wiring
+// …then tell the relay to forward drained events to it instead of to local handlers.
+services.AddTarsOutboxBrokerDelivery("events");
+```
+
+Nothing else changes: the row is still written in the producer's transaction and drained the same way —
+only the destination moves from local handlers to the broker. This is a **transactional outbox to
+Kafka**, and it is the one clean way to get it: MassTransit's own bus outbox (`UseBusOutbox`) cannot
+cover Kafka, because the Kafka path publishes through `ITopicProducer<T>`, not the `IPublishEndpoint`
+the bus outbox intercepts (see [brokers.md](./brokers.md)). The relay sidesteps that — it stores at the
+seam and republishes through the keyed transport bus afterwards.
+
+> **Why a *keyed* bus.** `AddTarsOutboxBus` replaces the ambient (unkeyed) `IIntegrationEventBus` with
+> the outbox writer, so forwarding to the ambient bus would loop back into the outbox. The keyed
+> transport bus is the real broker bus, and it survives that replacement.
+
+### One table, two readers: the relay or Debezium
+
+Because the outbox table is just a durable, transactionally-written log of events, the relay is not the
+only thing that can drain it. **Debezium** (change-data-capture) can read the same table straight from
+the PostgreSQL WAL and produce to Kafka itself — no tars code runs on that path. The columns already fit
+Debezium's outbox `EventRouter` SMT: `id`, `event_id` (message key), `event_type` (topic/type),
+`payload` (value), `headers`. The relay-only bookkeeping (`status`, `attempts`, `next_attempt_at`, …)
+is simply ignored by Debezium.
+
+They are **mutually exclusive per table** — if both drain the same rows, every event is published twice.
+So "prepare for both" means: the table and the producer code are shared; **which** reader runs is a
+deployment choice. And they differ in one way that decides where each fits — the **wire format**:
+
+| Reader | Publishes | Fits |
+|---|---|---|
+| tars relay (`AddTarsOutboxBrokerDelivery`) | through MassTransit → the **MassTransit envelope** | tars / MassTransit consumers (they expect the envelope) |
+| Debezium (CDC) | the **raw `payload` JSON** | external / raw-JSON consumers (data platform, other services) |
+
+A natural split is to use **each for a different purpose** — the relay for events your own
+tars/MassTransit services consume, Debezium for a raw event feed to the outside — on **different**
+topics, so no event is drained twice. Debezium itself needs no tars code: leave the relay unregistered
+(or point it at a different table) and configure the connector against the table.
+
 ## Registration
 
 The pieces register one at a time — there is no "configure everything" method (the same idiom as the
@@ -256,7 +303,9 @@ services.AddTarsDomainEventHandlers(typeof(SomeTranslator).Assembly);
 ```
 
 Everything is idempotent (`TryAdd`) except `AddTarsOutboxBus` (removes any prior bus so it wins) and
-`AddTarsOutboxRelay` (one per database), so ordering does not matter.
+`AddTarsOutboxRelay` (one per database), so ordering does not matter. To deliver to a broker instead of
+local handlers, add `AddTarsOutboxBrokerDelivery(transportKey)` — see
+[Delivering to a broker](#delivering-to-a-broker-kafka-rabbitmq--and-debezium) above.
 
 ### Relay tuning from configuration
 
