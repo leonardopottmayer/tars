@@ -41,6 +41,29 @@ public static class MassTransitKafkaMessagingServicesDI
     }
 
     /// <summary>
+    /// Registers the Kafka-backed <see cref="IIntegrationEventBus"/> under a transport
+    /// <paramref name="key"/>, scoped, instead of as the default bus.
+    /// </summary>
+    /// <param name="services">The service collection to register into.</param>
+    /// <param name="key">The transport key the composite bus resolves this bus under (e.g. "kafka").</param>
+    /// <returns>The updated service collection.</returns>
+    /// <remarks>
+    /// This is the multi-transport registration: an application publishing to Kafka <em>and</em>
+    /// another broker registers each bus under its own key, and the composite bus picks between them
+    /// per event. It does not claim the default <see cref="IIntegrationEventBus"/>, so the composite
+    /// stays the one seam producers see.
+    /// </remarks>
+    public static IServiceCollection AddTarsKeyedKafkaIntegrationEventBus(
+        this IServiceCollection services, string key)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentException.ThrowIfNullOrWhiteSpace(key);
+
+        services.TryAddKeyedScoped<IIntegrationEventBus, KafkaIntegrationEventBus>(key);
+        return services;
+    }
+
+    /// <summary>
     /// Composes the whole Kafka provider: the shared broker core, the Kafka bus, and the rider with
     /// its producers and topic endpoints.
     /// </summary>

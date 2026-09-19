@@ -8,7 +8,7 @@
 | Project | Level |
 |---|---|
 | `Pottmayer.Tars.Messaging.Broker` | Runtime — shared by every broker provider |
-| `Pottmayer.Tars.Messaging.MassTransit` | Provider core |
+| `Pottmayer.Tars.Messaging.MassTransit` | Provider core — plus the composite orchestrator (`AddTarsMassTransitComposite`) for several transports in one process, see [multi-transport.md](./multi-transport.md) |
 | `Pottmayer.Tars.Messaging.MassTransit.RabbitMq` | Transport |
 | `Pottmayer.Tars.Messaging.MassTransit.Kafka` | Transport |
 | `Pottmayer.Tars.Messaging.MassTransit.EntityFrameworkCore` | Outbox |
@@ -248,8 +248,10 @@ The per-service registrations compose the same way:
 | Method | Registers |
 |---|---|
 | `AddTarsRabbitMqIntegrationEventBus()` | the MassTransit-backed bus |
+| `AddTarsKeyedRabbitMqIntegrationEventBus(key)` | the same bus under a transport key, for the composite (see [multi-transport.md](./multi-transport.md)) |
 | `AddTarsRabbitMqRouteApplier()` | the routing key applier |
 | `AddTarsKafkaIntegrationEventBus()` | the Kafka bus (its own, since the rider has no publish endpoint) |
+| `AddTarsKeyedKafkaIntegrationEventBus(key)` | the same Kafka bus under a transport key, for the composite |
 
 Both buses are registered **scoped**, because what they publish through is: MassTransit's
 `IPublishEndpoint` and `ITopicProducer<T>` are scoped, and the outbox works by giving the scope a
@@ -260,8 +262,11 @@ resolve `IIntegrationEventBus` from a scope, which is where a request or a consu
 ### One broker per application
 
 The bus has one `PublishAsync`, so one provider is registered and everything goes there. Most systems
-use one broker, and this keeps "swap the broker" a one-line change. Running two at once would need a
-named-bus concept, which is deliberately not built until something needs it.
+use one broker, and this keeps "swap the broker" a one-line change.
+
+When an application genuinely needs several at once — a Kafka event backbone plus a RabbitMQ work plane —
+the `.Multi` provider composes them behind the same seam, routing each event to one or several transports
+by a declarative map. It is the exception, not the default; see [multi-transport.md](./multi-transport.md).
 
 ## Failure behaviour
 
@@ -334,7 +339,9 @@ isolates the framework choice, so adding it later touches no producer and no han
 **Azure Service Bus, SQS.** No provider yet. Both fit the portable model — they have broadcast, keyed
 and header-based filtering — so they would be a transport package alongside the existing two.
 
-**Named buses.** Running two brokers in one application. Not built until something needs it.
+**Named buses.** Running several brokers in one application. Built as the `.Multi` provider — a composite
+bus over a keyed bus per transport, routing (and fanning out) by a declarative event-to-transport map.
+See [multi-transport.md](./multi-transport.md).
 
 ## Main contracts
 

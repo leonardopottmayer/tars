@@ -53,3 +53,11 @@ For multi-step tasks, state a brief plan:
 ```
 
 Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification.
+
+## 5. Framework Conventions
+
+When adding or changing framework code, follow the code-level conventions in
+[docs/reference/conventions.md](docs/reference/conventions.md): `Options` vs `Configuration` suffix,
+one-method-per-registration DI (no "register everything" method), `TryAdd` so consumers can override,
+`AddTars*` / `AddTarsKeyed*` naming, and fail-fast validation at startup. Package-level rules (the four
+levels, project naming, folder = namespace) are in [docs/reference/taxonomy.md](docs/reference/taxonomy.md).

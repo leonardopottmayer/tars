@@ -6,6 +6,7 @@
 - `Pottmayer.Tars.Messaging`
 - `Pottmayer.Tars.Messaging.Broker` — shared runtime for broker transports
 - `Pottmayer.Tars.Messaging.MassTransit` + `.RabbitMq` + `.Kafka` + `.EntityFrameworkCore`
+- `Pottmayer.Tars.Messaging.MassTransit` — the composite orchestrator (`AddTarsMassTransitComposite`) that runs several transports in one process; each provider (`.RabbitMq`, `.Kafka`, …) contributes itself ([multi-transport.md](./multi-transport.md))
 
 This document covers the in-process bus. For running the same contracts over a real broker —
 routing, subscriptions, the per-broker capability matrix and the outbox — see

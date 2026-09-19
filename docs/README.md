@@ -13,6 +13,7 @@ This folder gathers the functional documentation of the `Pottmayer.Tars` framewo
   - [Scenarios and testing](./caching/scenarios.md): memory-only, Redis-only, read-through cache, invalidation, faking `ICacheStore`
 - [Messaging](./messaging/overview.md): integration events, in-process event bus, handler scanning, broker-ready contracts
   - [Broker transports](./messaging/brokers.md): portable routing model, subscriptions, per-broker capability matrix, MassTransit over RabbitMQ and Kafka, reusable topology steps, transactional outbox
+  - [Multi transport](./messaging/multi-transport.md): several transports in one process, the composite bus and event-to-transport map (with fan-out), the two-plane (event backbone + work queue) architecture
   - [Configuration](./messaging/configuration.md): `Tars:Messaging:RabbitMq`, `Tars:Messaging:Kafka`, `Tars:Messaging:Broker`, binders and local development
   - [Transactional Outbox](./messaging/outbox.md): `Pottmayer.Tars.Messaging.EntityFrameworkCore`, in-process outbox table, per-database relay, at-least-once delivery
 - [Communication](./communication/overview.md): e-mail sending, logging fake and MailKit SMTP provider behind one contract, plus the Telegram Bot API transport
@@ -58,6 +59,7 @@ This folder gathers the functional documentation of the `Pottmayer.Tars` framewo
   - [Testing](./user-context/testing.md): direct injection, DI, integration, reusable helpers
 - [Reference](./reference/package-matrix.md): global maps, application blueprint and crosswalk with the example apps
   - [Package taxonomy](./reference/taxonomy.md): the four levels (Abstractions, Runtime, Provider, Host Integration) and naming rules
+  - [Coding conventions](./reference/conventions.md): code-level idioms — `Options` vs `Configuration`, one-method-per-registration DI, `TryAdd`/override, `AddTars*`/`AddTarsKeyed*` naming, fail-fast at startup
   - [Publishing](./reference/publishing.md): packaging and publishing the NuGet packages (GitHub Packages), versioning and scripts
 
 ## Architectural principles of the repository

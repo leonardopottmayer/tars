@@ -36,6 +36,29 @@ public static class MassTransitRabbitMqMessagingServicesDI
     }
 
     /// <summary>
+    /// Registers the MassTransit-backed <see cref="IIntegrationEventBus"/> under a transport
+    /// <paramref name="key"/>, scoped, instead of as the default bus.
+    /// </summary>
+    /// <param name="services">The service collection to register into.</param>
+    /// <param name="key">The transport key the composite bus resolves this bus under (e.g. "rabbitmq").</param>
+    /// <returns>The updated service collection.</returns>
+    /// <remarks>
+    /// This is the multi-transport registration: an application publishing to RabbitMQ <em>and</em>
+    /// another broker registers each bus under its own key, and the composite bus picks between them
+    /// per event. It does not claim the default <see cref="IIntegrationEventBus"/>, so the composite
+    /// stays the one seam producers see.
+    /// </remarks>
+    public static IServiceCollection AddTarsKeyedRabbitMqIntegrationEventBus(
+        this IServiceCollection services, string key)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentException.ThrowIfNullOrWhiteSpace(key);
+
+        services.TryAddKeyedScoped<IIntegrationEventBus, MassTransitIntegrationEventBus>(key);
+        return services;
+    }
+
+    /// <summary>
     /// Registers the applier that puts the portable routing key onto RabbitMQ's send context, which
     /// is what a topic or direct exchange matches bindings against.
     /// </summary>
