@@ -30,7 +30,7 @@ internal static class GeminiWireMapper
                     break;
 
                 case ChatRole.User:
-                    contents.Add(new GeminiContent("user", [new GeminiPart(Text: message.Content ?? string.Empty)]));
+                    contents.Add(new GeminiContent("user", UserParts(message)));
                     break;
 
                 case ChatRole.Assistant:
@@ -89,6 +89,22 @@ internal static class GeminiWireMapper
             toolCalls.Count > 0 ? toolCalls : null);
 
         return new ChatCompletion(request.Model, message, usage);
+    }
+
+    private static IReadOnlyList<GeminiPart> UserParts(ChatMessage message)
+    {
+        if (message.Attachments is not { Count: > 0 })
+            return [new GeminiPart(Text: message.Content ?? string.Empty)];
+
+        var parts = new List<GeminiPart>();
+        if (!string.IsNullOrEmpty(message.Content))
+            parts.Add(new GeminiPart(Text: message.Content));
+
+        foreach (var attachment in message.Attachments)
+            parts.Add(new GeminiPart(InlineData: new GeminiInlineData(
+                attachment.MimeType, Convert.ToBase64String(attachment.Data.Span))));
+
+        return parts;
     }
 
     private static IReadOnlyList<GeminiPart> AssistantParts(ChatMessage message, Queue<string> pendingCallNames)

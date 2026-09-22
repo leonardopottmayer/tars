@@ -135,10 +135,25 @@ The model's meaningful output is `ChatCompletion.ToolCalls` (empty when it repli
 `completion.Message.Content` holds the text). The model never invokes anything itself — the caller
 validates `ToolCall.Arguments` against the tool's schema and decides whether to execute.
 
+## Multimodal input
+
+A user turn can carry binary content — a voice note, a photo — as `ChatAttachment`s (bytes + MIME
+type). Gemini sends each as an `inlineData` part after the text, so transcribing audio is an ordinary
+completion:
+
+```csharp
+var transcription = await client.CompleteAsync(new ChatRequest(
+    "gemini-2.5-flash",
+    [ChatMessage.User("Transcribe this voice note verbatim.", new ChatAttachment(audioBytes, "audio/ogg"))],
+    Temperature: 0), ct);
+```
+
+Attachments travel inline, so keep them small (Gemini caps an inline request at 20 MB).
+
 ## Main contracts
 
 - `IAiChatCompletionClient`, `IAiChatCompletionClientFactory`
-- `ChatRequest`, `ChatCompletion`, `ChatMessage`, `ChatRole`
+- `ChatRequest`, `ChatCompletion`, `ChatMessage`, `ChatAttachment`, `ChatRole`
 - `ToolDefinition`, `ToolCall`, `TokenUsage`
 - `AiException`
 

@@ -19,7 +19,12 @@ internal sealed record GeminiContent(
 internal sealed record GeminiPart(
     [property: JsonPropertyName("text")] string? Text = null,
     [property: JsonPropertyName("functionCall")] GeminiFunctionCall? FunctionCall = null,
-    [property: JsonPropertyName("functionResponse")] GeminiFunctionResponse? FunctionResponse = null);
+    [property: JsonPropertyName("functionResponse")] GeminiFunctionResponse? FunctionResponse = null,
+    [property: JsonPropertyName("inlineData")] GeminiInlineData? InlineData = null);
+
+internal sealed record GeminiInlineData(
+    [property: JsonPropertyName("mimeType")] string MimeType,
+    [property: JsonPropertyName("data")] string Data);
 
 internal sealed record GeminiFunctionCall(
     [property: JsonPropertyName("name")] string Name,

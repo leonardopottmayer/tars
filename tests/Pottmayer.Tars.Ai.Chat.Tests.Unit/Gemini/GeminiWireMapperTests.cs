@@ -52,6 +52,20 @@ public class GeminiWireMapperTests
     }
 
     [Fact]
+    public void ToWireRequest_sends_attachments_as_inline_data_after_the_text()
+    {
+        byte[] audio = [1, 2, 3];
+        var request = new ChatRequest("m", [ChatMessage.User("transcribe", new ChatAttachment(audio, "audio/ogg"))]);
+
+        var parts = GeminiWireMapper.ToWireRequest(request).Contents.Single().Parts;
+
+        parts.Should().HaveCount(2);
+        parts[0].Text.Should().Be("transcribe");
+        parts[1].InlineData!.MimeType.Should().Be("audio/ogg");
+        Convert.FromBase64String(parts[1].InlineData!.Data).Should().Equal(audio);
+    }
+
+    [Fact]
     public void ToCompletion_reads_text_and_usage()
     {
         var response = new GeminiResponse(
