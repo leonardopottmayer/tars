@@ -10,7 +10,11 @@ public sealed record TelegramUpdate(
     TelegramIncomingMessage? Message = null,
     TelegramCallbackQuery? CallbackQuery = null);
 
-/// <summary>A message sent to the bot: text, or media, or both.</summary>
+/// <summary>
+/// A message sent to the bot: text, or media, or both. Photos and documents sent together as an album
+/// arrive as one message each, sharing <see cref="MediaGroupId"/>; only one of them (the first, from the
+/// official apps) carries the caption.
+/// </summary>
 public sealed record TelegramIncomingMessage(
     long MessageId,
     TelegramChat Chat,
@@ -18,7 +22,8 @@ public sealed record TelegramIncomingMessage(
     DateTimeOffset SentAt,
     string? Text = null,
     TelegramMedia? Media = null,
-    long? ReplyToMessageId = null);
+    long? ReplyToMessageId = null,
+    string? MediaGroupId = null);
 
 /// <summary>An inline button press. <see cref="Data"/> is the button's <c>callback_data</c>.</summary>
 public sealed record TelegramCallbackQuery(

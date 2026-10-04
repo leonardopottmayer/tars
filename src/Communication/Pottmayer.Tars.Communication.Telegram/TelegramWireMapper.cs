@@ -19,7 +19,8 @@ internal static class TelegramWireMapper
         // A caption is the human text of a media message, so callers see it in the same place.
         wire.Text ?? wire.Caption,
         ToMedia(wire),
-        wire.ReplyToMessage?.MessageId);
+        wire.ReplyToMessage?.MessageId,
+        wire.MediaGroupId);
 
     internal static TelegramCallbackQuery ToCallbackQuery(WireCallbackQuery wire) => new(
         wire.Id,

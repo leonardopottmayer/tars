@@ -67,6 +67,8 @@ internal sealed class WireMessage
     public WireFile[]? Photo { get; set; }
 
     public WireMessage? ReplyToMessage { get; set; }
+
+    public string? MediaGroupId { get; set; }
 }
 
 internal sealed class WireCallbackQuery

@@ -77,6 +77,14 @@ public class TelegramWireMapperTests
     }
 
     [Fact]
+    public void ToIncomingMessage_carries_the_album_it_belongs_to()
+    {
+        var wire = Message(m => m.MediaGroupId = "album-1");
+
+        TelegramWireMapper.ToIncomingMessage(wire).MediaGroupId.Should().Be("album-1");
+    }
+
+    [Fact]
     public void ToMedia_maps_a_voice_note_with_its_mime_type_and_duration()
     {
         var wire = Message(m => m.Voice = new WireFile

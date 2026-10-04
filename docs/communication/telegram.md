@@ -246,6 +246,10 @@ An incoming message carries at most one `TelegramMedia`, whatever field Telegram
 audio, video, video note, document or photo. For photos, which arrive as every available size, the
 largest is selected. `FileId` is opaque and bot-specific — hand it back to `DownloadFileAsync`.
 
+Several photos or documents sent together (an album) arrive as **one message each**, sharing
+`MediaGroupId`. Only one of them carries the caption — the first, from the official apps — so a caller
+that needs the caption on every file has to carry it across the group itself.
+
 `DownloadFileAsync` **buffers the whole file into memory**, and the caller owns the returned stream.
 
 That is sound against the public Bot API, which caps downloads at 20 MB — buffering keeps the HTTP
