@@ -40,7 +40,9 @@ internal sealed class ConfigureJwtBearerFromIdentityOptions : IConfigureNamedOpt
             ValidateAudience = true,
             ValidateLifetime = true,
             ClockSkew = jwt.ClockSkew,
-            RequireExpirationTime = true
+            RequireExpirationTime = true,
+            // Only the algorithm the issuer signs with; anything else is rejected.
+            ValidAlgorithms = [SecurityAlgorithms.HmacSha256]
         };
         options.RequireHttpsMetadata = _identityAspNetCoreOptionsMonitor.CurrentValue.Jwt.RequireHttpsMetadata;
 

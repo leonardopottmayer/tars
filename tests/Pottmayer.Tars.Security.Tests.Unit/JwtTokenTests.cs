@@ -50,6 +50,25 @@ public class JwtTokenTests
     }
 
     [Fact]
+    public async Task Validation_fails_for_token_signed_with_another_algorithm_and_the_same_key()
+    {
+        var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
+        var key = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(SigningKey));
+        var token = handler.WriteToken(handler.CreateToken(new Microsoft.IdentityModel.Tokens.SecurityTokenDescriptor
+        {
+            Issuer = "tars-test",
+            Audience = "tars-test",
+            Subject = new ClaimsIdentity([new Claim("sub", "user-1")]),
+            Expires = DateTime.UtcNow.AddMinutes(5),
+            SigningCredentials = new Microsoft.IdentityModel.Tokens.SigningCredentials(key, Microsoft.IdentityModel.Tokens.SecurityAlgorithms.HmacSha512),
+        }));
+
+        var principal = await new JwtTokenValidator(Options()).ValidateAsync(token);
+
+        principal.Should().BeNull();
+    }
+
+    [Fact]
     public async Task Validation_fails_for_token_signed_with_different_key()
     {
         var issued = await new JwtTokenIssuer(Options()).IssueAsync(Auth());
