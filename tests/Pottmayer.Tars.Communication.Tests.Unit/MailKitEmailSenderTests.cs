@@ -76,7 +76,7 @@ public class MailKitEmailSenderTests
         var mime = MailKitEmailSender.BuildMimeMessage(message, Settings());
 
         mime.Subject.Should().Be("Welcome");
-        ((TextPart)mime.Body).Text.Should().Be("Hello there");
+        mime.Body.Should().BeOfType<TextPart>().Which.Text.Should().Be("Hello there");
     }
 
     [Theory]
@@ -88,6 +88,6 @@ public class MailKitEmailSenderTests
 
         var mime = MailKitEmailSender.BuildMimeMessage(message, Settings());
 
-        ((TextPart)mime.Body).ContentType.MimeType.Should().Be(expectedMimeType);
+        mime.Body.Should().BeOfType<TextPart>().Which.ContentType.MimeType.Should().Be(expectedMimeType);
     }
 }
