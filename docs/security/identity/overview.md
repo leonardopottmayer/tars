@@ -125,7 +125,7 @@ Revokes the refresh token. In stateful mode it also revokes the JTI in the black
 | `ISignOutHandler` | Side-effects on sign-out (e.g. auditing) |
 | `IRefreshTokenStore` | Refresh token store (required if using refresh) |
 | `ITokenRevocationStore` | Stateful revocation store |
-| `IMagicLinkTokenStore` | Magic link token store |
+| `IMagicLinkTokenStore` | Magic link token store (receives only the SHA-256 hash of each token, never the raw token) |
 | `IUserStore<TUser>` | Used by `PasswordAuthenticatorBase<TUser>` |
 | `IClaimsProvider<TUser>` | Used by `PasswordAuthenticatorBase<TUser>` |
 

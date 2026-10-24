@@ -1,4 +1,5 @@
 using System.Security.Cryptography;
+using System.Text;
 using Microsoft.Extensions.Options;
 using Pottmayer.Tars.Security.Identity.Abstractions.Results;
 using Pottmayer.Tars.Security.Identity.Abstractions.Services;
@@ -30,13 +31,13 @@ public sealed class MagicLinkTokenService : IMagicLinkTokenService
         var options = _optionsMonitor.CurrentValue.MagicLink;
         var token = GenerateToken();
         var expiresAt = DateTimeOffset.UtcNow.Add(options.TokenLifetime);
-        await _store.StoreAsync(token, payload, expiresAt, cancellationToken).ConfigureAwait(false);
+        await _store.StoreAsync(HashToken(token), payload, expiresAt, cancellationToken).ConfigureAwait(false);
 
         return new MagicLinkIssueResult(token, expiresAt);
     }
 
     public ValueTask<IReadOnlyDictionary<string, object?>?> ConsumeAsync(string token, CancellationToken cancellationToken = default)
-        => _store.ConsumeAsync(token, cancellationToken);
+        => _store.ConsumeAsync(HashToken(token), cancellationToken);
 
     private static string GenerateToken()
     {
@@ -44,4 +45,7 @@ public sealed class MagicLinkTokenService : IMagicLinkTokenService
         RandomNumberGenerator.Fill(bytes);
         return Convert.ToBase64String(bytes).Replace("+", "-").Replace("/", "_").TrimEnd('=');
     }
+
+    private static string HashToken(string token) =>
+        Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(token)));
 }

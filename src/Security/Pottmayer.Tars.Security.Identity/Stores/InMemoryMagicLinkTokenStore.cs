@@ -11,20 +11,20 @@ public sealed class InMemoryMagicLinkTokenStore : IMagicLinkTokenStore
     private readonly ConcurrentDictionary<string, (IReadOnlyDictionary<string, object?> Payload, DateTimeOffset ExpiresAt)> _tokens = new();
 
     public ValueTask StoreAsync(
-        string token,
+        string tokenHash,
         IReadOnlyDictionary<string, object?> payload,
         DateTimeOffset expiresAt,
         CancellationToken cancellationToken = default)
     {
-        _tokens[token] = (payload, expiresAt);
+        _tokens[tokenHash] = (payload, expiresAt);
         return ValueTask.CompletedTask;
     }
 
     public ValueTask<IReadOnlyDictionary<string, object?>?> ConsumeAsync(
-        string token,
+        string tokenHash,
         CancellationToken cancellationToken = default)
     {
-        if (!_tokens.TryRemove(token, out var entry))
+        if (!_tokens.TryRemove(tokenHash, out var entry))
             return ValueTask.FromResult<IReadOnlyDictionary<string, object?>?>(null);
 
         if (entry.ExpiresAt < DateTimeOffset.UtcNow)
