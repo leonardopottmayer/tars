@@ -48,8 +48,10 @@ public static class HttpContextTokenBridge
     public static void DeleteAuthCookies(HttpContext httpContext, IdentityAspNetCoreOptions options)
     {
         var cookieOpts = options.Cookie;
-        httpContext.Response.Cookies.Delete(cookieOpts.AccessTokenCookieName);
-        httpContext.Response.Cookies.Delete(cookieOpts.RefreshTokenCookieName);
+        // A cookie is only deleted when the path matches the one it was written with.
+        httpContext.Response.Cookies.Delete(cookieOpts.AccessTokenCookieName, new CookieOptions { Path = cookieOpts.Path });
+        httpContext.Response.Cookies.Delete(cookieOpts.RefreshTokenCookieName,
+            new CookieOptions { Path = cookieOpts.RefreshTokenCookiePath ?? cookieOpts.Path });
     }
 
     private static Microsoft.AspNetCore.Http.SameSiteMode MapSameSite(TokenCookieSameSiteMode mode)

@@ -16,6 +16,12 @@ public sealed class IdentityCookieOptions
     /// <summary>The cookie path.</summary>
     public string Path { get; init; } = "/";
 
+    /// <summary>
+    /// Path for the refresh token cookie; <c>null</c> uses <see cref="Path"/>. Set it to the identity base path
+    /// (e.g. <c>/identity</c>) so the browser sends the refresh token only to the refresh and sign-out endpoints.
+    /// </summary>
+    public string? RefreshTokenCookiePath { get; init; }
+
     /// <summary>The cookie's SameSite policy.</summary>
     public TokenCookieSameSiteMode SameSite { get; init; } = TokenCookieSameSiteMode.Lax;
 

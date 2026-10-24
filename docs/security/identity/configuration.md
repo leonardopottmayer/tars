@@ -152,6 +152,7 @@ Disable it in development: `"RequireHttpsMetadata": false`.
   "AccessTokenCookieName": "tars.at",
   "RefreshTokenCookieName": "tars.rt",
   "Path": "/",
+  "RefreshTokenCookiePath": "/identity",
   "SameSite": 1,
   "HttpOnly": true,
   "SecurePolicy": true
@@ -159,6 +160,10 @@ Disable it in development: `"RequireHttpsMetadata": false`.
 ```
 
 `SameSite`: `0` = None, `1` = Lax, `2` = Strict, `-1` = Unspecified.
+
+`RefreshTokenCookiePath` is optional (default: same as `Path`). Pointing it at the identity base path keeps
+the refresh token out of every other request; the refresh and sign-out endpoints still receive it. The
+refresh cookie expires with `Tars:Security:Identity:RefreshToken:Lifetime`.
 
 ---
 

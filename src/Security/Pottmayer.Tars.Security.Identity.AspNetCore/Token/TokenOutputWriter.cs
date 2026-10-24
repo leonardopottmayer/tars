@@ -3,16 +3,21 @@ using Pottmayer.Tars.Security.Identity.Abstractions.Dtos;
 using Pottmayer.Tars.Security.Identity.Abstractions.Enums;
 using Pottmayer.Tars.Security.Identity.Abstractions.Transport;
 using Pottmayer.Tars.Security.Identity.AspNetCore.Options;
+using Pottmayer.Tars.Security.Identity.Options;
 
 namespace Pottmayer.Tars.Security.Identity.AspNetCore.Token;
 
 internal sealed class TokenOutputWriter : ITokenOutputWriter
 {
     private readonly IOptionsMonitor<IdentityAspNetCoreOptions> _optionsMonitor;
+    private readonly IOptionsMonitor<SecurityIdentityOptions> _identityOptionsMonitor;
 
-    public TokenOutputWriter(IOptionsMonitor<IdentityAspNetCoreOptions> optionsMonitor)
+    public TokenOutputWriter(
+        IOptionsMonitor<IdentityAspNetCoreOptions> optionsMonitor,
+        IOptionsMonitor<SecurityIdentityOptions> identityOptionsMonitor)
     {
         _optionsMonitor = optionsMonitor ?? throw new ArgumentNullException(nameof(optionsMonitor));
+        _identityOptionsMonitor = identityOptionsMonitor ?? throw new ArgumentNullException(nameof(identityOptionsMonitor));
     }
 
     public Task WriteAsync(
@@ -29,9 +34,12 @@ internal sealed class TokenOutputWriter : ITokenOutputWriter
         switch (effectiveMode)
         {
             case TokenDeliveryMode.CookieOnly:
-                AppendCookie(context, accessName, tokenResponse.AccessToken, tokenResponse.ExpiresAt, cookieOpts);
+                AppendCookie(context, accessName, tokenResponse.AccessToken,
+                    DateTimeOffset.FromUnixTimeSeconds(tokenResponse.ExpiresAt), cookieOpts.Path, cookieOpts);
                 if (!string.IsNullOrEmpty(tokenResponse.RefreshToken))
-                    AppendCookie(context, refreshName, tokenResponse.RefreshToken, null, cookieOpts, longLived: true);
+                    AppendCookie(context, refreshName, tokenResponse.RefreshToken,
+                        DateTimeOffset.UtcNow.Add(_identityOptionsMonitor.CurrentValue.RefreshToken.Lifetime),
+                        cookieOpts.RefreshTokenCookiePath ?? cookieOpts.Path, cookieOpts);
                 break;
 
             case TokenDeliveryMode.HeaderOnly:
@@ -65,21 +73,15 @@ internal sealed class TokenOutputWriter : ITokenOutputWriter
         TokenWriteContext context,
         string name,
         string value,
-        long? expiresAt,
-        IdentityCookieOptions cookieOpts,
-        bool longLived = false)
+        DateTimeOffset expires,
+        string path,
+        IdentityCookieOptions cookieOpts)
     {
-        DateTimeOffset? expires = null;
-        if (expiresAt.HasValue)
-            expires = DateTimeOffset.FromUnixTimeSeconds(expiresAt.Value);
-        else if (longLived)
-            expires = DateTimeOffset.UtcNow.AddDays(7);
-
         context.CookiesToAppend.Add(new TokenCookieWriteModel
         {
             Name = name,
             Value = value,
-            Path = cookieOpts.Path,
+            Path = path,
             HttpOnly = cookieOpts.HttpOnly,
             Secure = cookieOpts.SecurePolicy,
             SameSite = cookieOpts.SameSite,
