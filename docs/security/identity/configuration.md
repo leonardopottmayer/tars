@@ -202,6 +202,9 @@ When `Mode = Hybrid`, the server inspects the `X-Client-Type` header:
 }
 ```
 
+Leave `QueryParameterName` unset unless a client cannot send headers: a key in the URL ends up in access
+logs, browser history and `Referer` headers.
+
 ---
 
 ### `Endpoints`
