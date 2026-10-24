@@ -148,6 +148,8 @@ Revokes the refresh token and, in stateful mode, the JWT.
 
 **Dependencies:** `IRefreshTokenService`, `ITokenInputReader`. Optional: `ITokenRevocationService`, `ISignOutHandler`.
 
+Without `ITokenRevocationService` the access token stays valid until it expires, even after sign-out. The host logs a warning once at the first token validation when it is missing.
+
 ---
 
 ### `GET /identity/sign-in/oauth/{provider}`

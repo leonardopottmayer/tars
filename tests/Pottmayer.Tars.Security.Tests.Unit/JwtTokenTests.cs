@@ -110,4 +110,30 @@ public class JwtTokenTests
 
         await act.Should().ThrowAsync<InvalidOperationException>();
     }
+
+    [Fact]
+    public void Missing_revocation_service_is_warned_about_once_per_process()
+    {
+        var logger = new CapturingLogger();
+
+        _ = new JwtTokenValidator(Options(), revocationService: null, logger);
+        _ = new JwtTokenValidator(Options(), revocationService: null, logger);
+
+        logger.Warnings.Should().ContainSingle().Which.Should().Contain("ITokenRevocationService");
+    }
+
+    private sealed class CapturingLogger : Microsoft.Extensions.Logging.ILogger<JwtTokenValidator>
+    {
+        public List<string> Warnings { get; } = [];
+
+        public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
+
+        public bool IsEnabled(Microsoft.Extensions.Logging.LogLevel logLevel) => true;
+
+        public void Log<TState>(Microsoft.Extensions.Logging.LogLevel logLevel, Microsoft.Extensions.Logging.EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
+        {
+            if (logLevel == Microsoft.Extensions.Logging.LogLevel.Warning)
+                Warnings.Add(formatter(state, exception));
+        }
+    }
 }

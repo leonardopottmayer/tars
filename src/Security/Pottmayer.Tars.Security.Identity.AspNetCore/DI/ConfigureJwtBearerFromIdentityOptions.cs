@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Pottmayer.Tars.Security.Identity.Abstractions.Contracts;
@@ -12,6 +14,9 @@ internal sealed class ConfigureJwtBearerFromIdentityOptions : IConfigureNamedOpt
 {
     private readonly IOptionsMonitor<SecurityIdentityOptions> _identityOptionsMonitor;
     private readonly IOptionsMonitor<IdentityAspNetCoreOptions> _identityAspNetCoreOptionsMonitor;
+
+    // Warn about missing revocation once per process, not on every validated token.
+    private static int _missingRevocationWarned;
 
     public ConfigureJwtBearerFromIdentityOptions(
         IOptionsMonitor<SecurityIdentityOptions> identityOptionsMonitor,
@@ -58,7 +63,13 @@ internal sealed class ConfigureJwtBearerFromIdentityOptions : IConfigureNamedOpt
 
             var revocation = ctx.HttpContext.RequestServices.GetService(typeof(ITokenRevocationService)) as ITokenRevocationService;
             if (revocation is null)
+            {
+                if (Interlocked.Exchange(ref _missingRevocationWarned, 1) == 0)
+                    ctx.HttpContext.RequestServices.GetService<ILoggerFactory>()
+                        ?.CreateLogger<ConfigureJwtBearerFromIdentityOptions>()
+                        .LogWarning("No ITokenRevocationService is registered: revoked access tokens and signed-out sessions stay valid until they expire. Register one with AddTarsIdentityTokenRevocationService.");
                 return;
+            }
 
             var jti = ctx.Principal?.FindFirst("jti")?.Value;
             if (!string.IsNullOrEmpty(jti))

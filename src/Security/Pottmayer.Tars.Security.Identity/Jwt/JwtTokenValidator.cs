@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Pottmayer.Tars.Security.Identity.Abstractions.Contracts;
@@ -17,10 +18,19 @@ public sealed class JwtTokenValidator : ITokenValidator
     private readonly IOptionsMonitor<SecurityIdentityOptions> _optionsMonitor;
     private readonly ITokenRevocationService? _revocationService;
 
-    public JwtTokenValidator(IOptionsMonitor<SecurityIdentityOptions> optionsMonitor, ITokenRevocationService? revocationService = null)
+    // The validator is scoped: warn about missing revocation once per process, not once per request.
+    private static int _missingRevocationWarned;
+
+    public JwtTokenValidator(
+        IOptionsMonitor<SecurityIdentityOptions> optionsMonitor,
+        ITokenRevocationService? revocationService = null,
+        ILogger<JwtTokenValidator>? logger = null)
     {
         _optionsMonitor = optionsMonitor ?? throw new ArgumentNullException(nameof(optionsMonitor));
         _revocationService = revocationService;
+
+        if (revocationService is null && logger is not null && Interlocked.Exchange(ref _missingRevocationWarned, 1) == 0)
+            logger.LogWarning("No ITokenRevocationService is registered: revoked access tokens and signed-out sessions stay valid until they expire. Register one with AddTarsIdentityTokenRevocationService.");
     }
 
     public async ValueTask<ClaimsPrincipal?> ValidateAsync(string token, CancellationToken cancellationToken = default)
