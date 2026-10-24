@@ -21,6 +21,9 @@ public sealed class JwtTokenValidator : ITokenValidator
     // The validator is scoped: warn about missing revocation once per process, not once per request.
     private static int _missingRevocationWarned;
 
+    /// <summary>Re-arms the one-time warning, so a test does not depend on which test built a validator first.</summary>
+    internal static void ResetMissingRevocationWarning() => Interlocked.Exchange(ref _missingRevocationWarned, 0);
+
     public JwtTokenValidator(
         IOptionsMonitor<SecurityIdentityOptions> optionsMonitor,
         ITokenRevocationService? revocationService = null,

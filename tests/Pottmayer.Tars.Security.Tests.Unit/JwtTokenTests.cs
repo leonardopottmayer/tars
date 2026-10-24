@@ -115,6 +115,7 @@ public class JwtTokenTests
     public void Missing_revocation_service_is_warned_about_once_per_process()
     {
         var logger = new CapturingLogger();
+        JwtTokenValidator.ResetMissingRevocationWarning();
 
         _ = new JwtTokenValidator(Options(), revocationService: null, logger);
         _ = new JwtTokenValidator(Options(), revocationService: null, logger);

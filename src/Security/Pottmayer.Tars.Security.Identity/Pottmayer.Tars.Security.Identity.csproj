@@ -18,4 +18,8 @@
     <ProjectReference Include="..\Pottmayer.Tars.Security.Identity.Abstractions\Pottmayer.Tars.Security.Identity.Abstractions.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="Pottmayer.Tars.Security.Tests.Unit" />
+  </ItemGroup>
+
 </Project>
