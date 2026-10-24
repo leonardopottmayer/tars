@@ -12,7 +12,8 @@ public sealed class IdentityAspNetCoreOptions
     public const string SectionName = SecurityIdentityOptions.SectionName;
 
     /// <summary>Validation error message used when options validation fails.</summary>
-    public const string ValidationErrorMessage = "Invalid IdentityAspNetCoreOptions.";
+    public const string ValidationErrorMessage =
+        "Invalid IdentityAspNetCoreOptions. Jwt, Cookie, RefreshToken, TokenDelivery, ApiKey, Endpoints and MagicLink must not be null.";
 
     /// <summary>JWT bearer settings.</summary>
     public IdentityJwtAspNetCoreOptions Jwt { get; init; } = new();

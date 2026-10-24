@@ -13,7 +13,8 @@ public sealed class DataProtectionOptions
     /// <summary>
     /// Validation error message used when options validation fails.
     /// </summary>
-    public const string ValidationErrorMessage = "Invalid DataProtectionOptions.";
+    public const string ValidationErrorMessage =
+        "Invalid DataProtectionOptions. ActiveKeyVersion is required, Keys needs at least one key, and ActiveKeyVersion must be one of the Keys.";
 
     /// <summary>
     /// Available keys, by version label. Each value is a base64-encoded 256-bit (32-byte) key.
