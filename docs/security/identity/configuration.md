@@ -219,9 +219,14 @@ logs, browser history and `Referer` headers.
   "RefreshPath": "refresh",
   "SignOutPath": "sign-out",
   "OAuthChallengePath": "sign-in/oauth/{provider}",
-  "OAuthCallbackPath": "/identity/callback/oauth"
+  "OAuthCallbackPath": "/identity/callback/oauth",
+  "AllowedReturnUrlOrigins": [ "https://app.example.com" ]
 }
 ```
+
+`returnUrl` (magic link request and OAuth challenge) accepts a local path such as `/dashboard`, or an
+absolute URL whose origin is in `AllowedReturnUrlOrigins` (empty by default). Anything else returns 400, so
+the endpoints cannot be used as an open redirect.
 
 ---
 

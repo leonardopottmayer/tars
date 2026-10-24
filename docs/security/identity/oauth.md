@@ -245,7 +245,8 @@ https://my-api.com/api/v1/auth/social/callback
 
 ## ReturnUrl after OAuth login
 
-The challenge endpoint accepts `?returnUrl=/dashboard`:
+The challenge endpoint accepts `?returnUrl=/dashboard`. Only a local path or a URL on an origin listed in
+`Endpoints:AllowedReturnUrlOrigins` is accepted; anything else returns 400:
 
 ```
 GET /identity/sign-in/oauth/Google?returnUrl=/dashboard

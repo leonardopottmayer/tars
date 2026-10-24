@@ -66,4 +66,11 @@ public sealed class IdentityEndpointsOptions
 
     /// <summary>OAuth callback path.</summary>
     public string OAuthCallbackPath { get; init; } = DefaultOAuthCallbackPath;
+
+    /// <summary>
+    /// Origins (e.g. <c>https://app.example.com</c>) an absolute <c>returnUrl</c> may point to. A local path
+    /// (<c>/dashboard</c>) is always accepted; any other absolute URL is rejected with 400, so the endpoints
+    /// cannot be used as an open redirect.
+    /// </summary>
+    public string[] AllowedReturnUrlOrigins { get; init; } = [];
 }

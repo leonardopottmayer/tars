@@ -31,6 +31,25 @@ public static class IdentityEndpoints
     /// <summary>Default base path all endpoint paths are relative to.</summary>
     public const string DefaultBasePath = IdentityEndpointsOptions.DefaultBasePath;
 
+    /// <summary>
+    /// True for a local path (<c>/dashboard</c>, but not <c>//host</c> or <c>/\host</c>) or an absolute http(s) URL
+    /// whose origin is listed in <see cref="IdentityEndpointsOptions.AllowedReturnUrlOrigins"/>.
+    /// </summary>
+    private static bool IsAllowedReturnUrl(string returnUrl, IdentityEndpointsOptions options)
+    {
+        if (returnUrl.StartsWith('/'))
+            return returnUrl.Length == 1 || (returnUrl[1] != '/' && returnUrl[1] != '\\');
+
+        if (!Uri.TryCreate(returnUrl, UriKind.Absolute, out var uri) || (uri.Scheme != Uri.UriSchemeHttps && uri.Scheme != Uri.UriSchemeHttp))
+            return false;
+
+        var origin = uri.GetLeftPart(UriPartial.Authority);
+        return options.AllowedReturnUrlOrigins.Any(o => string.Equals(o.TrimEnd('/'), origin, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private static IResult InvalidReturnUrl() =>
+        Results.BadRequest(IdentityProblemDetails.Validation("Invalid request.", "ReturnUrl must be a local path or an allowed origin."));
+
     /// <summary>Resolves the current endpoint route options from the app's service provider.</summary>
     private static IdentityEndpointsOptions GetEndpointsOptions(IEndpointRouteBuilder app)
     {
@@ -161,6 +180,9 @@ public static class IdentityEndpoints
         [FromQuery] string? returnUrl,
         [FromServices] IOptionsMonitor<IdentityAspNetCoreOptions> aspNetCoreOptionsMonitor)
     {
+        if (!string.IsNullOrEmpty(returnUrl) && !IsAllowedReturnUrl(returnUrl, aspNetCoreOptionsMonitor.CurrentValue.Endpoints))
+            return InvalidReturnUrl();
+
         var properties = new AuthenticationProperties
         {
             RedirectUri = aspNetCoreOptionsMonitor.CurrentValue.Endpoints.OAuthCallbackPath,
@@ -269,6 +291,8 @@ public static class IdentityEndpoints
             return Results.BadRequest(IdentityProblemDetails.Validation("Invalid request.", $"Target cannot exceed {limits.MaxMagicLinkTargetLength} characters."));
         if (!string.IsNullOrEmpty(request.ReturnUrl) && limits.MaxReturnUrlLength > 0 && request.ReturnUrl.Length > limits.MaxReturnUrlLength)
             return Results.BadRequest(IdentityProblemDetails.Validation("Invalid request.", $"ReturnUrl cannot exceed {limits.MaxReturnUrlLength} characters."));
+        if (!string.IsNullOrEmpty(request.ReturnUrl) && !IsAllowedReturnUrl(request.ReturnUrl, aspNetCoreOptionsMonitor.CurrentValue.Endpoints))
+            return InvalidReturnUrl();
 
         var payload = new Dictionary<string, object?> { ["target"] = request.Target };
         if (!string.IsNullOrEmpty(request.ReturnUrl))
