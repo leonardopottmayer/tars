@@ -109,6 +109,16 @@ public class MyPasswordAuthenticator : PasswordAuthenticatorBase<ApplicationUser
     protected override Task<ApplicationUser?> ResolveUserAsync(
         PasswordSignInRequest request, CancellationToken ct)
         => _userStore.FindByEmailAsync(request.Username, ct);
+
+    // Recommended: hash against a dummy when the user does not exist, so an unknown
+    // username takes as long as a wrong password (no account enumeration by timing).
+    private static readonly ApplicationUser DummyUser = new() { PasswordHash = "<a valid hash of any password>" };
+
+    protected override ValueTask VerifyPasswordForMissingUserAsync(string password, CancellationToken ct)
+    {
+        _hasher.VerifyHashedPassword(DummyUser, DummyUser.PasswordHash, password);
+        return ValueTask.CompletedTask;
+    }
 }
 
 // 4. Registration

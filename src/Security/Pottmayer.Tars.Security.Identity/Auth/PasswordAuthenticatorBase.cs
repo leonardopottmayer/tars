@@ -27,7 +27,10 @@ public abstract class PasswordAuthenticatorBase<TUser> : IPasswordAuthenticator
 
         var user = await ResolveUserAsync(request, cancellationToken).ConfigureAwait(false);
         if (user is null)
+        {
+            await VerifyPasswordForMissingUserAsync(request.Password, cancellationToken).ConfigureAwait(false);
             return null;
+        }
 
         var valid = await VerifyPasswordAsync(user, request.Password, cancellationToken).ConfigureAwait(false);
         if (!valid)
@@ -52,6 +55,14 @@ public abstract class PasswordAuthenticatorBase<TUser> : IPasswordAuthenticator
     /// Verifies the password for the given user. Must be overridden.
     /// </summary>
     protected abstract ValueTask<bool> VerifyPasswordAsync(TUser user, string password, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Called when no user matches the username, before returning a failed result. Override it to run the same
+    /// password hash as <see cref="VerifyPasswordAsync"/> against a fixed dummy hash, so an unknown username takes
+    /// as long as a wrong password and response time does not reveal which accounts exist. The default does nothing.
+    /// </summary>
+    protected virtual ValueTask VerifyPasswordForMissingUserAsync(string password, CancellationToken cancellationToken)
+        => ValueTask.CompletedTask;
 
     /// <summary>
     /// Resolves the user from the sign-in request. By default looks up by username.
