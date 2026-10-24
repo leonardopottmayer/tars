@@ -62,9 +62,12 @@ internal sealed class AesGcmSecretProtector : ISecretProtector
         _activeVersion = value.ActiveKeyVersion;
     }
 
-    public string Protect(string plaintext)
+    public string Protect(string plaintext) => Protect(plaintext, string.Empty);
+
+    public string Protect(string plaintext, string context)
     {
         ArgumentNullException.ThrowIfNull(plaintext);
+        ArgumentNullException.ThrowIfNull(context);
 
         var key = _keys[_activeVersion];
         var plainBytes = Encoding.UTF8.GetBytes(plaintext);
@@ -74,7 +77,7 @@ internal sealed class AesGcmSecretProtector : ISecretProtector
         var tag = new byte[TagSize];
 
         using (var aes = new AesGcm(key, TagSize))
-            aes.Encrypt(nonce, plainBytes, cipherBytes, tag);
+            aes.Encrypt(nonce, plainBytes, cipherBytes, tag, Encoding.UTF8.GetBytes(context));
 
         var payload = new byte[NonceSize + cipherBytes.Length + TagSize];
         Buffer.BlockCopy(nonce, 0, payload, 0, NonceSize);
@@ -84,9 +87,12 @@ internal sealed class AesGcmSecretProtector : ISecretProtector
         return $"{_activeVersion}.{Convert.ToBase64String(payload)}";
     }
 
-    public string Unprotect(string ciphertext)
+    public string Unprotect(string ciphertext) => Unprotect(ciphertext, string.Empty);
+
+    public string Unprotect(string ciphertext, string context)
     {
         ArgumentNullException.ThrowIfNull(ciphertext);
+        ArgumentNullException.ThrowIfNull(context);
 
         var separator = ciphertext.IndexOf('.');
         if (separator <= 0)
@@ -119,11 +125,11 @@ internal sealed class AesGcmSecretProtector : ISecretProtector
         try
         {
             using var aes = new AesGcm(key, TagSize);
-            aes.Decrypt(nonce, cipherBytes, tag, plainBytes);
+            aes.Decrypt(nonce, cipherBytes, tag, plainBytes, Encoding.UTF8.GetBytes(context));
         }
         catch (CryptographicException)
         {
-            throw new SecretProtectionException("Protected value failed authentication: wrong key or tampered ciphertext.");
+            throw new SecretProtectionException("Protected value failed authentication: wrong key, wrong context or tampered ciphertext.");
         }
 
         return Encoding.UTF8.GetString(plainBytes);

@@ -20,4 +20,17 @@ public interface ISecretProtector
     /// when the value is malformed, its key version is unknown, or the authentication tag does not verify.
     /// </summary>
     string Unprotect(string ciphertext);
+
+    /// <summary>
+    /// Encrypts <paramref name="plaintext"/> bound to <paramref name="context"/> (e.g. the table, column and row id
+    /// the value is stored in). The value only decrypts with the same context, so a ciphertext copied into another
+    /// row or field fails authentication instead of revealing its secret there.
+    /// </summary>
+    string Protect(string plaintext, string context);
+
+    /// <summary>
+    /// Decrypts a value produced by <see cref="Protect(string, string)"/> with the same <paramref name="context"/>.
+    /// Throws <see cref="SecretProtectionException"/> when the context differs or the value fails to verify.
+    /// </summary>
+    string Unprotect(string ciphertext, string context);
 }

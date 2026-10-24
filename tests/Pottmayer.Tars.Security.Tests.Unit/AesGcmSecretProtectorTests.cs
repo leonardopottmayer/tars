@@ -142,4 +142,38 @@ public sealed class AesGcmSecretProtectorTests
 
         act.Should().Throw<InvalidOperationException>().WithMessage("*at least one key*");
     }
+
+    [Fact]
+    public void Value_protected_with_a_context_roundtrips_with_the_same_context()
+    {
+        var protector = Protector(SingleKey());
+
+        var protectedValue = protector.Protect("secret", "credentials.token.row-1");
+
+        protector.Unprotect(protectedValue, "credentials.token.row-1").Should().Be("secret");
+    }
+
+    [Theory]
+    [InlineData("credentials.token.row-2")]
+    [InlineData("")]
+    public void Value_protected_with_a_context_fails_under_another_context(string otherContext)
+    {
+        var protector = Protector(SingleKey());
+        var protectedValue = protector.Protect("secret", "credentials.token.row-1");
+
+        var act = () => protector.Unprotect(protectedValue, otherContext);
+
+        act.Should().Throw<SecretProtectionException>();
+    }
+
+    [Fact]
+    public void Value_protected_without_a_context_does_not_decrypt_with_one()
+    {
+        var protector = Protector(SingleKey());
+        var protectedValue = protector.Protect("secret");
+
+        var act = () => protector.Unprotect(protectedValue, "credentials.token.row-1");
+
+        act.Should().Throw<SecretProtectionException>();
+    }
 }
