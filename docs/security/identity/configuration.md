@@ -16,10 +16,10 @@ Registering the options in DI:
 
 ```csharp
 // Core options (JWT, refresh, revocation, magic link, limits)
-builder.Services.AddTarsIdentityOptions(builder.Configuration);
+builder.AddTarsIdentityOptions();
 
 // ASP.NET Core options (cookies, endpoints, API key, delivery)
-builder.Services.AddTarsIdentityAspNetCoreOptions(builder.Configuration);
+builder.AddTarsIdentityAspNetCoreOptions();
 ```
 
 ---

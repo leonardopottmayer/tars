@@ -13,8 +13,8 @@ The simplest scenario. The host implements only `IPasswordAuthenticator`.
 var builder = WebApplication.CreateBuilder(args);
 
 // Options
-builder.Services.AddTarsIdentityOptions(builder.Configuration);
-builder.Services.AddTarsIdentityAspNetCoreOptions(builder.Configuration);
+builder.AddTarsIdentityOptions();
+builder.AddTarsIdentityAspNetCoreOptions();
 
 // Token
 builder.Services.AddTarsIdentityJwtTokenIssuer();    // registers ITokenIssuer
@@ -25,8 +25,9 @@ builder.Services.AddTarsIdentityTokenDeliveryPolicy();
 builder.Services.AddScoped<IPasswordAuthenticator, MyPasswordAuthenticator>();
 
 // ASP.NET Core
-builder.Services.AddAuthentication()
-    .AddTarsIdentityJwtBearer();
+builder.Services.AddTarsIdentityAspNetCoreJwtBearer(); // JwtBearer validation and revocation check from the Tars options
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(o => o.ConfigureTarsIdentityJwtBearerEvents()) // reads the token from the header or the cookie;
 
 builder.Services.AddTarsIdentityAspNetCoreTokenTransport();
 builder.Services.AddAuthorization();
@@ -98,8 +99,8 @@ public class MyPasswordAuthenticator : IPasswordAuthenticator
 
 ```csharp
 // Program.cs
-builder.Services.AddTarsIdentityOptions(builder.Configuration);
-builder.Services.AddTarsIdentityAspNetCoreOptions(builder.Configuration);
+builder.AddTarsIdentityOptions();
+builder.AddTarsIdentityAspNetCoreOptions();
 
 builder.Services.AddTarsIdentityJwtTokenIssuer();
 builder.Services.AddTarsIdentityJwtTokenValidator();
@@ -109,8 +110,9 @@ builder.Services.AddTarsIdentityInMemoryRefreshTokenStore(); // or a custom stor
 
 builder.Services.AddScoped<IPasswordAuthenticator, MyPasswordAuthenticator>();
 
-builder.Services.AddAuthentication()
-    .AddTarsIdentityJwtBearer();
+builder.Services.AddTarsIdentityAspNetCoreJwtBearer(); // JwtBearer validation and revocation check from the Tars options
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(o => o.ConfigureTarsIdentityJwtBearerEvents()) // reads the token from the header or the cookie;
 
 builder.Services.AddTarsIdentityAspNetCoreTokenTransport();
 builder.Services.AddAuthorization();
@@ -200,8 +202,8 @@ builder.Services.AddSingleton<IRefreshTokenStore, RedisRefreshTokenStore>();
 
 ```csharp
 // Program.cs
-builder.Services.AddTarsIdentityOptions(builder.Configuration);
-builder.Services.AddTarsIdentityAspNetCoreOptions(builder.Configuration);
+builder.AddTarsIdentityOptions();
+builder.AddTarsIdentityAspNetCoreOptions();
 
 builder.Services.AddTarsIdentityJwtTokenIssuer();
 builder.Services.AddTarsIdentityJwtTokenValidator();
@@ -217,8 +219,9 @@ builder.Services.AddScoped<IMagicLinkIdentityResolver, MyMagicLinkIdentityResolv
 builder.Services.AddScoped<IMagicLinkSender, EmailMagicLinkSender>();
 builder.Services.AddScoped<IApiKeyAuthenticator, MyApiKeyAuthenticator>();
 
-builder.Services.AddAuthentication()
-    .AddTarsIdentityJwtBearer();
+builder.Services.AddTarsIdentityAspNetCoreJwtBearer(); // JwtBearer validation and revocation check from the Tars options
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(o => o.ConfigureTarsIdentityJwtBearerEvents()) // reads the token from the header or the cookie;
 
 builder.Services.AddTarsIdentityAspNetCoreTokenTransport();
 builder.Services.AddAuthorization();
@@ -286,8 +289,8 @@ public class MyMagicLinkIdentityResolver : IMagicLinkIdentityResolver
 
 ```csharp
 // Program.cs
-builder.Services.AddTarsIdentityOptions(builder.Configuration);
-builder.Services.AddTarsIdentityAspNetCoreOptions(builder.Configuration);
+builder.AddTarsIdentityOptions();
+builder.AddTarsIdentityAspNetCoreOptions();
 
 builder.Services.AddTarsIdentityJwtTokenIssuer();
 builder.Services.AddTarsIdentityJwtTokenValidator();
@@ -298,8 +301,9 @@ builder.Services.AddTarsIdentityInMemoryRefreshTokenStore();
 builder.Services.AddScoped<IPasswordAuthenticator, MyPasswordAuthenticator>();
 builder.Services.AddScoped<IOAuthUserLinker, MyOAuthUserLinker>();
 
-builder.Services.AddAuthentication()
-    .AddTarsIdentityJwtBearer()
+builder.Services.AddTarsIdentityAspNetCoreJwtBearer(); // JwtBearer validation and revocation check from the Tars options
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(o => o.ConfigureTarsIdentityJwtBearerEvents()) // reads the token from the header or the cookie
     .AddTarsIdentityExternalScheme()         // temporary cookie scheme
     .AddGoogle(options =>
     {
@@ -400,19 +404,16 @@ Use only the Runtime with no dependency on AspNetCore:
 
 ```csharp
 // Program.cs (Worker Service)
-var host = Host.CreateDefaultBuilder(args)
-    .ConfigureServices((ctx, services) =>
-    {
-        services.AddTarsIdentityOptions(ctx.Configuration);
-        services.AddTarsIdentityJwtTokenIssuer();    // ITokenIssuer
-        services.AddTarsIdentityJwtTokenValidator(); // ITokenValidator
+var builder = Host.CreateApplicationBuilder(args);
 
-        // Implement ITokenInputReader for the service's transport (e.g. gRPC, messaging)
-        services.AddSingleton<ITokenInputReader, GrpcMetadataTokenReader>();
-    })
-    .Build();
+builder.AddTarsIdentityOptions();
+builder.Services.AddTarsIdentityJwtTokenIssuer();    // ITokenIssuer
+builder.Services.AddTarsIdentityJwtTokenValidator(); // ITokenValidator
 
-await host.RunAsync();
+// Implement ITokenInputReader for the service's transport (e.g. gRPC, messaging)
+builder.Services.AddSingleton<ITokenInputReader, GrpcMetadataTokenReader>();
+
+await builder.Build().RunAsync();
 ```
 
 ```csharp

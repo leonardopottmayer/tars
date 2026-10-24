@@ -153,8 +153,9 @@ The `CompositeTokenReader` is registered as `ITokenInputReader` and is used by t
 `JwtBearer` is configured via `ConfigureJwtBearerFromIdentityOptions`, which reads the Tars options:
 
 ```csharp
-builder.Services.AddAuthentication()
-    .AddTarsIdentityJwtBearer();
+builder.Services.AddTarsIdentityAspNetCoreJwtBearer(); // JwtBearer validation and revocation check from the Tars options
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(o => o.ConfigureTarsIdentityJwtBearerEvents()) // reads the token from the header or the cookie;
 ```
 
 This configures JwtBearer to:

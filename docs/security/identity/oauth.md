@@ -76,8 +76,8 @@ The module supports any OAuth 2.0 / OIDC provider (Google, GitHub, Microsoft, Fa
 ### 3. Register in DI
 
 ```csharp
-builder.Services.AddTarsIdentityOptions(builder.Configuration);
-builder.Services.AddTarsIdentityAspNetCoreOptions(builder.Configuration);
+builder.AddTarsIdentityOptions();
+builder.AddTarsIdentityAspNetCoreOptions();
 
 builder.Services.AddTarsIdentityJwtTokenIssuer();
 builder.Services.AddTarsIdentityJwtTokenValidator();
@@ -88,8 +88,9 @@ builder.Services.AddTarsIdentityInMemoryRefreshTokenStore();
 // IOAuthUserLinker — implemented by the host
 builder.Services.AddScoped<IOAuthUserLinker, MyOAuthUserLinker>();
 
-builder.Services.AddAuthentication()
-    .AddTarsIdentityJwtBearer()
+builder.Services.AddTarsIdentityAspNetCoreJwtBearer(); // JwtBearer validation and revocation check from the Tars options
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(o => o.ConfigureTarsIdentityJwtBearerEvents()) // reads the token from the header or the cookie
     .AddTarsIdentityExternalScheme()   // TarsExternalCookie scheme (required)
     .AddGoogle(options =>
     {

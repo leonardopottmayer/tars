@@ -190,8 +190,9 @@ public class MyApiKeyValidator : IApiKeyValidator
 
 // Registration
 builder.Services.AddScoped<IApiKeyValidator, MyApiKeyValidator>();
-builder.Services.AddAuthentication()
-    .AddTarsIdentityJwtBearer()
+builder.Services.AddTarsIdentityAspNetCoreJwtBearer(); // JwtBearer validation and revocation check from the Tars options
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(o => o.ConfigureTarsIdentityJwtBearerEvents()) // reads the token from the header or the cookie
     .AddTarsIdentityApiKey(); // ApiKey scheme
 ```
 
