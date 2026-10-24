@@ -1,7 +1,7 @@
 <Project>
   <PropertyGroup>
-    <Version>0.0.17</Version>
-    <PackageVersion>0.0.17</PackageVersion>
+    <Version>0.0.18</Version>
+    <PackageVersion>0.0.18</PackageVersion>
     <AssemblyVersion>$(Version).0</AssemblyVersion>
     <FileVersion>$(Version).0</FileVersion>
     <InformationalVersion>$(Version)</InformationalVersion>
@@ -76,7 +76,7 @@
     </When>
     <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Communication.Telegram'">
       <PropertyGroup>
-        <Description>Telegram Bot API provider for the Pottmayer.Tars framework: HttpClient-backed ITelegramClient with sending, inline keyboards, long polling, file download, webhook management, options and DI registration.</Description>
+        <Description>Telegram Bot API provider for the Pottmayer.Tars framework: HttpClient-backed ITelegramClient with sending, inline keyboards, long polling, file download, webhook management, bot token masking in logs and traces, options and DI registration.</Description>
       </PropertyGroup>
     </When>
     <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Core.Cqrs'">
@@ -236,7 +236,7 @@
     </When>
     <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Observability.Abstractions'">
       <PropertyGroup>
-        <Description>Observability abstractions for the Pottmayer.Tars framework: shared telemetry naming conventions and correlation-id constants, with no dependencies so any building block can emit signals against them.</Description>
+        <Description>Observability abstractions for the Pottmayer.Tars framework: shared telemetry naming conventions, correlation-id constants and the redacted request URL option for clients whose URL carries a secret, with no dependencies so any building block can emit signals against them.</Description>
       </PropertyGroup>
     </When>
     <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Observability'">
