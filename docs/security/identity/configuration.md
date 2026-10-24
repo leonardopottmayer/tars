@@ -40,7 +40,7 @@ builder.Services.AddTarsIdentityAspNetCoreOptions(builder.Configuration);
 
 | Field | Type | Default | Description |
 |---|---|---|---|
-| `SigningKey` | string | — | **Required.** HMAC-SHA256 key (min. 32 characters). |
+| `SigningKey` | string | — | **Required.** HMAC-SHA256 key, at least 32 bytes in UTF-8. A shorter key stops the host at startup. |
 | `Issuer` | string | — | The JWT `iss` claim. |
 | `Audience` | string | — | The JWT `aud` claim. |
 | `AccessTokenLifetime` | TimeSpan | `00:15:00` | Access token lifetime. |
