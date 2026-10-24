@@ -32,6 +32,14 @@ public sealed class IdentityEndpointsOptions
     /// <summary>Default OAuth callback path (absolute; not relative to <see cref="BasePath"/>).</summary>
     public const string DefaultOAuthCallbackPath = "/identity/callback/oauth";
 
+    /// <summary>
+    /// Name of an ASP.NET Core rate limiting policy applied to the anonymous credential endpoints: password and
+    /// API key sign-in, magic link request and consume, refresh and OAuth challenge. <c>null</c> (the default)
+    /// applies none. The application defines the policy with <c>AddRateLimiter</c> and calls
+    /// <c>UseRateLimiter</c>; the limits themselves are its decision.
+    /// </summary>
+    public string? RateLimitingPolicy { get; init; }
+
     /// <summary>Base path all relative endpoint paths below are mapped under.</summary>
     public string BasePath { get; init; } = DefaultBasePath;
 

@@ -199,6 +199,37 @@ Result: `POST /api/v1/auth/login`, `POST /api/v1/auth/token/refresh`, etc.
 
 ---
 
+## Rate limiting
+
+The anonymous credential endpoints (password and API key sign-in, magic link request and consume, refresh and
+OAuth challenge) accept unlimited attempts unless you set a policy. Rate limiting is native to ASP.NET Core
+(`Microsoft.AspNetCore.RateLimiting`, no extra package); Tars only attaches the policy you name. The limits
+are an application decision:
+
+```csharp
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.AddPolicy("identity-auth", http => RateLimitPartition.GetFixedWindowLimiter(
+        http.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+        _ => new FixedWindowRateLimiterOptions { PermitLimit = 10, Window = TimeSpan.FromMinutes(1) }));
+});
+
+var app = builder.Build();
+app.UseRateLimiter();
+app.MapTarsIdentityEndpoints();
+```
+
+```json
+"Endpoints": {
+  "RateLimitingPolicy": "identity-auth"
+}
+```
+
+Behind a reverse proxy, configure forwarded headers first so `RemoteIpAddress` is the client, not the proxy.
+
+---
+
 ## Creating custom endpoints
 
 If you need behavior different from the built-in endpoints, implement your own:

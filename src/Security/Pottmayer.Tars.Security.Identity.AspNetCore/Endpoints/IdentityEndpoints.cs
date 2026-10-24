@@ -68,7 +68,8 @@ public static class IdentityEndpoints
         app.MapGroup(e.BasePath)
             .MapPost(e.SignInPasswordPath, SignInPassword)
             .WithName("TarsIdentity_SignInPassword")
-            .AllowAnonymous();
+            .AllowAnonymous()
+            .RequireIdentityRateLimiting(e);
         return app;
     }
 
@@ -79,7 +80,8 @@ public static class IdentityEndpoints
         app.MapGroup(e.BasePath)
             .MapPost(e.RequestMagicLinkPath, RequestMagicLink)
             .WithName("TarsIdentity_RequestMagicLink")
-            .AllowAnonymous();
+            .AllowAnonymous()
+            .RequireIdentityRateLimiting(e);
         return app;
     }
 
@@ -90,7 +92,8 @@ public static class IdentityEndpoints
         app.MapGroup(e.BasePath)
             .MapPost(e.ConsumeMagicLinkPath, ConsumeMagicLink)
             .WithName("TarsIdentity_ConsumeMagicLink")
-            .AllowAnonymous();
+            .AllowAnonymous()
+            .RequireIdentityRateLimiting(e);
         return app;
     }
 
@@ -101,7 +104,8 @@ public static class IdentityEndpoints
         app.MapGroup(e.BasePath)
             .MapPost(e.SignInApiKeyPath, SignInApiKey)
             .WithName("TarsIdentity_SignInApiKey")
-            .AllowAnonymous();
+            .AllowAnonymous()
+            .RequireIdentityRateLimiting(e);
         return app;
     }
 
@@ -112,7 +116,8 @@ public static class IdentityEndpoints
         app.MapGroup(e.BasePath)
             .MapPost(e.RefreshPath, Refresh)
             .WithName("TarsIdentity_Refresh")
-            .AllowAnonymous();
+            .AllowAnonymous()
+            .RequireIdentityRateLimiting(e);
         return app;
     }
 
@@ -134,7 +139,8 @@ public static class IdentityEndpoints
         app.MapGroup(e.BasePath)
             .MapGet(e.OAuthChallengePath, OAuthChallenge)
             .WithName("TarsIdentity_OAuthChallenge")
-            .AllowAnonymous();
+            .AllowAnonymous()
+            .RequireIdentityRateLimiting(e);
         return app;
     }
 
@@ -510,4 +516,8 @@ public static class IdentityEndpoints
         var separator = options.BaseUrl.Contains('?') ? "&" : "?";
         return $"{options.BaseUrl.TrimEnd('/')}{separator}{options.TokenQueryParameter}={Uri.EscapeDataString(token)}";
     }
+
+    /// <summary>Applies <see cref="IdentityEndpointsOptions.RateLimitingPolicy"/> when one is configured.</summary>
+    private static RouteHandlerBuilder RequireIdentityRateLimiting(this RouteHandlerBuilder builder, IdentityEndpointsOptions e)
+        => e.RateLimitingPolicy is { Length: > 0 } policy ? builder.RequireRateLimiting(policy) : builder;
 }
