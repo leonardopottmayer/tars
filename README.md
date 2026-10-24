@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/assets/logo.png" alt="Tars" width="220">
+</p>
+
 # Pottmayer.Tars
 
 Pottmayer.Tars is a modular .NET framework of reusable building blocks for backend applications: primitives and mediator, data access, messaging, identity, caching, observability and more. It ships as **53 small, focused NuGet packages** instead of a single monolith, so an application references only what it uses.
