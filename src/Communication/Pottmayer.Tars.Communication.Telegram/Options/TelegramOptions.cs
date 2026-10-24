@@ -22,6 +22,13 @@ public sealed class TelegramOptions
     public Dictionary<string, TelegramBotOptions> Bots { get; set; } = new(StringComparer.OrdinalIgnoreCase);
 
     /// <summary>
+    /// Masks the bot token (<c>/bot***/</c>) in the request URLs recorded by the HttpClient logs and, with
+    /// <c>AddTarsHttpClientTracing</c>, by the spans. The Bot API puts the token in the URL path, so turning
+    /// this off writes it to every log line and span. Default: <c>true</c>.
+    /// </summary>
+    public bool RedactBotToken { get; set; } = true;
+
+    /// <summary>
     /// Returns <c>true</c> when every configured bot is valid. An empty set is valid — the feature is
     /// simply off, and asking the factory for a bot that is not configured is what fails, at the call.
     /// </summary>

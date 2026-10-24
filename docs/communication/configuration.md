@@ -114,6 +114,12 @@ Per-bot fields (`TelegramBotOptions`):
 - `PollTimeoutGrace`: slack added on top of the caller's poll timeout before the HTTP request itself
   is cancelled, so a long poll is never killed by its own transport. Default: `10` seconds
 
+Shared field (`TelegramOptions`, next to `Bots`):
+
+- `RedactBotToken`: masks the bot token (`/bot***/`) in the request URLs recorded by the HttpClient logs
+  and by `AddTarsHttpClientTracing` spans. Default: `true`. Turning it off writes the token to every log
+  line and span; see [telegram.md](./telegram.md#registration)
+
 Bot names are matched **case-insensitively**. An empty `Bots` set is valid — the feature is simply
 off, and asking the factory for a bot that is not configured is what fails, at the call. Validation on
 start rejects any configured bot with a missing token or an invalid `ApiBaseUrl`/timeout.

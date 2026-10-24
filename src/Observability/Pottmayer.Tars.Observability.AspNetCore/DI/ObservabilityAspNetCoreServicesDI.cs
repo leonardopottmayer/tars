@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
+using Pottmayer.Tars.Observability.Abstractions;
 using Pottmayer.Tars.Observability.AspNetCore.Middleware;
 
 namespace Pottmayer.Tars.Observability.AspNetCore.DI;
@@ -31,11 +32,24 @@ public static class ObservabilityAspNetCoreServicesDI
     /// Adds outbound HttpClient instrumentation to the tracer (dependency-call spans).
     /// Requires <c>AddTarsTracing</c>.
     /// </summary>
+    /// <remarks>
+    /// A request carrying <see cref="TarsTelemetry.RedactedRequestUrl"/> has that URL recorded as the span's
+    /// <c>url.full</c>, so clients that put a secret in the URL (the Telegram bot token) do not leak it.
+    /// </remarks>
     public static IServiceCollection AddTarsHttpClientTracing(this IServiceCollection services)
     {
         services
             .AddOpenTelemetry()
-            .WithTracing(tracing => tracing.AddHttpClientInstrumentation());
+            .WithTracing(tracing => tracing.AddHttpClientInstrumentation(o =>
+            {
+                var enrich = o.EnrichWithHttpRequestMessage;
+                o.EnrichWithHttpRequestMessage = (activity, request) =>
+                {
+                    enrich?.Invoke(activity, request);
+                    if (request.Options.TryGetValue(TarsTelemetry.RedactedRequestUrl, out var url))
+                        activity.SetTag("url.full", url);
+                };
+            }));
         return services;
     }
 

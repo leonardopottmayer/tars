@@ -2,6 +2,7 @@ using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Pottmayer.Tars.Communication.Telegram;
 using Pottmayer.Tars.Communication.Telegram.Abstractions;
@@ -76,6 +77,86 @@ public class TelegramRegistrationTests
         var http = sp.GetRequiredService<IHttpClientFactory>().CreateClient(TelegramServicesDI.HttpClientName);
 
         http.Timeout.Should().Be(Timeout.InfiniteTimeSpan);
+    }
+
+    [Fact]
+    public async Task AddTarsTelegramHttpClient_logs_request_urls_with_the_bot_token_masked()
+    {
+        var (logs, requests) = await SendThroughTelegramHttpClient(redactBotToken: true);
+
+        logs.Should().NotContain(m => m.Contains("123:SECRET"));
+        logs.Should().Contain(m => m.Contains("https://api.telegram.org/bot***/getMe") && m.Contains("200"));
+        requests.Should().ContainSingle().Which.Options
+            .TryGetValue(Observability.Abstractions.TarsTelemetry.RedactedRequestUrl, out var url).Should().BeTrue();
+        url.Should().Be("https://api.telegram.org/bot***/getMe");
+    }
+
+    [Fact]
+    public async Task AddTarsTelegramHttpClient_logs_the_real_url_when_RedactBotToken_is_off()
+    {
+        var (logs, requests) = await SendThroughTelegramHttpClient(redactBotToken: false);
+
+        logs.Should().Contain(m => m.Contains("https://api.telegram.org/bot123:SECRET/getMe"));
+        requests.Should().ContainSingle().Which.Options
+            .TryGetValue(Observability.Abstractions.TarsTelemetry.RedactedRequestUrl, out _).Should().BeFalse();
+    }
+
+    [Theory]
+    [InlineData("https://api.telegram.org/bot123:SECRET/sendMessage", "https://api.telegram.org/bot***/sendMessage")]
+    [InlineData("https://api.telegram.org/file/bot123:SECRET/photos/a.jpg", "https://api.telegram.org/file/bot***/photos/a.jpg")]
+    [InlineData("http://localhost:8081/bot123:SECRET/getUpdates", "http://localhost:8081/bot***/getUpdates")]
+    public void Redact_masks_the_token_segment_of_method_and_file_urls(string url, string expected)
+    {
+        TelegramTokenRedactionHandler.Redact(new Uri(url)).Should().Be(expected);
+    }
+
+    private static async Task<(IReadOnlyCollection<string> Logs, IReadOnlyCollection<HttpRequestMessage> Requests)>
+        SendThroughTelegramHttpClient(bool redactBotToken)
+    {
+        var logs = new CapturingLoggerProvider();
+        var primary = new OkHandler();
+        var services = new ServiceCollection();
+        services.AddLogging(b => b.SetMinimumLevel(LogLevel.Trace).AddProvider(logs));
+        services.Configure<TelegramOptions>(o => o.RedactBotToken = redactBotToken);
+        services.AddTarsTelegramHttpClient();
+        services.AddHttpClient(TelegramServicesDI.HttpClientName).ConfigurePrimaryHttpMessageHandler(() => primary);
+
+        using var sp = services.BuildServiceProvider();
+        var http = sp.GetRequiredService<IHttpClientFactory>().CreateClient(TelegramServicesDI.HttpClientName);
+
+        await http.GetAsync("https://api.telegram.org/bot123:SECRET/getMe");
+
+        return (logs.Messages, primary.Requests);
+    }
+
+    private sealed class OkHandler : HttpMessageHandler
+    {
+        public List<HttpRequestMessage> Requests { get; } = [];
+
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            Requests.Add(request);
+            return Task.FromResult(new HttpResponseMessage(System.Net.HttpStatusCode.OK));
+        }
+    }
+
+    private sealed class CapturingLoggerProvider : ILoggerProvider
+    {
+        public System.Collections.Concurrent.ConcurrentQueue<string> Messages { get; } = new();
+
+        public ILogger CreateLogger(string categoryName) => new CapturingLogger(Messages);
+
+        public void Dispose() { }
+
+        private sealed class CapturingLogger(System.Collections.Concurrent.ConcurrentQueue<string> messages) : ILogger
+        {
+            public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
+
+            public bool IsEnabled(LogLevel logLevel) => true;
+
+            public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
+                => messages.Enqueue(formatter(state, exception));
+        }
     }
 
     [Fact]

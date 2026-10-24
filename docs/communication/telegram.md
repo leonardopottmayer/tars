@@ -62,6 +62,27 @@ purpose** — every call sets its own deadline, because a long poll legitimately
 default and would otherwise be cancelled by its own transport. The factory needs it, so register both:
 without the client the factory's bots fall back to a 100-second default that kills long polling.
 
+The Bot API puts the bot token in the URL path (`/bot{token}/sendMessage`), so a logged or traced request
+URL is a leaked token. The client **masks it by default**:
+
+- **Logs**: the default `IHttpClientFactory` request logging is replaced by one that logs the same
+  requests with the token masked (`POST https://api.telegram.org/bot***/sendMessage responded 200`),
+  under the usual `System.Net.Http.HttpClient.*` category.
+- **Traces**: the masked URL rides on the request as `TarsTelemetry.RedactedRequestUrl`, and
+  `AddTarsHttpClientTracing` records it as the span's `url.full`. A host that calls OpenTelemetry's
+  `AddHttpClientInstrumentation` directly does the same itself:
+
+```csharp
+tracing.AddHttpClientInstrumentation(o => o.EnrichWithHttpRequestMessage = (activity, request) =>
+{
+    if (request.Options.TryGetValue(TarsTelemetry.RedactedRequestUrl, out var url))
+        activity.SetTag("url.full", url);
+});
+```
+
+`RedactBotToken: false` (see [configuration.md](./configuration.md#telegramoptions)) turns the masking
+off: logs and spans then carry the real token.
+
 Resolve a bot by name through the factory (`ITelegramClient` is not registered directly):
 
 ```csharp

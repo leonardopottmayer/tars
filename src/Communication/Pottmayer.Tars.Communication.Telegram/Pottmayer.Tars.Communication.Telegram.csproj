@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Pottmayer.Tars.Communication.Telegram.Abstractions\Pottmayer.Tars.Communication.Telegram.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Observability\Pottmayer.Tars.Observability.Abstractions\Pottmayer.Tars.Observability.Abstractions.csproj" />
   </ItemGroup>
 
   <ItemGroup>

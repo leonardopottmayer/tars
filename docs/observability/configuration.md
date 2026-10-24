@@ -68,7 +68,7 @@ See [logging.md](./logging.md) for choosing between the two.
 
 | Method | Does |
 |---|---|
-| `AddTarsAspNetCoreTracing()` / `AddTarsHttpClientTracing()` | Request / dependency spans. Need `AddTarsTracing`. |
+| `AddTarsAspNetCoreTracing()` / `AddTarsHttpClientTracing()` | Request / dependency spans. Need `AddTarsTracing`. A request carrying `TarsTelemetry.RedactedRequestUrl` gets that URL as `url.full` (the Telegram client uses it to mask the bot token). |
 | `AddTarsAspNetCoreMetrics()` / `AddTarsHttpClientMetrics()` | Request / dependency metrics. Need `AddTarsMetrics`. |
 | `UseTarsCorrelationId()` | Correlation-id middleware; place it early in the pipeline. |
 

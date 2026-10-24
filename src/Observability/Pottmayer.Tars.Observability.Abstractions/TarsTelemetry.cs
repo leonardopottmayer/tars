@@ -26,4 +26,11 @@ public static class TarsTelemetry
     /// <c>"Pottmayer.Tars.Messaging"</c>.
     /// </summary>
     public static string Name(string family) => $"{RootName}.{family}";
+
+    /// <summary>
+    /// Request option a client sets when its URL carries a secret (e.g. a token in the path): the URL to
+    /// record in logs and spans instead of <see cref="HttpRequestMessage.RequestUri"/>. The tars HttpClient
+    /// tracing (<c>AddTarsHttpClientTracing</c>) writes it to the span's <c>url.full</c>.
+    /// </summary>
+    public static readonly HttpRequestOptionsKey<string> RedactedRequestUrl = new($"{RootName}.RedactedRequestUrl");
 }
