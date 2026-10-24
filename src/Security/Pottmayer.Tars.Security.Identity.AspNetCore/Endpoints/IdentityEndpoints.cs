@@ -158,11 +158,12 @@ public static class IdentityEndpoints
     private static IResult OAuthChallenge(
         string provider,
         HttpContext context,
-        [FromQuery] string? returnUrl)
+        [FromQuery] string? returnUrl,
+        [FromServices] IOptionsMonitor<IdentityAspNetCoreOptions> aspNetCoreOptionsMonitor)
     {
         var properties = new AuthenticationProperties
         {
-            RedirectUri = IdentityEndpointsOptions.DefaultOAuthCallbackPath,
+            RedirectUri = aspNetCoreOptionsMonitor.CurrentValue.Endpoints.OAuthCallbackPath,
             Items = { ["provider"] = provider }
         };
 
