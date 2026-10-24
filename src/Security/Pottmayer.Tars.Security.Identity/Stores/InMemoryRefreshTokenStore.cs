@@ -35,7 +35,10 @@ public sealed class InMemoryRefreshTokenStore : IRefreshTokenStore
         if (stored.ExpiresAt < DateTimeOffset.UtcNow || !HashesMatch(stored.TokenHash, tokenHash))
             return ValueTask.FromResult<RefreshTokenPayload?>(null);
 
-        _tokens.TryRemove(tokenId, out _);
+        // Compare-and-remove: of two concurrent consumers of the same token, only one wins.
+        if (!_tokens.TryRemove(new KeyValuePair<string, StoredRefreshToken>(tokenId, stored)))
+            return ValueTask.FromResult<RefreshTokenPayload?>(null);
+
         _consumedForReuse[tokenId] = stored.Subject;
         return ValueTask.FromResult<RefreshTokenPayload?>(new RefreshTokenPayload
         {

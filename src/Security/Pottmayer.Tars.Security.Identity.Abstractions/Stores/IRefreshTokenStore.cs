@@ -25,6 +25,8 @@ public interface IRefreshTokenStore
     /// Returns the payload and marks the token consumed only if it exists, is valid
     /// (not revoked, not expired) and <paramref name="tokenHash"/> matches the stored hash.
     /// Returns null otherwise. Used for rotation: invalidate old id after successful use.
+    /// The check and the removal must be atomic: when the same token is consumed concurrently,
+    /// exactly one call returns the payload (e.g. a single <c>DELETE ... RETURNING</c> in SQL).
     /// </summary>
     ValueTask<RefreshTokenPayload?> GetAndRemoveAsync(
         string tokenId,

@@ -71,6 +71,30 @@ public class RefreshTokenServiceTests
         consumed.Should().BeNull();
     }
 
+    [Fact]
+    public async Task With_rotation_concurrent_consumes_of_the_same_token_succeed_only_once()
+    {
+        var service = Create(new RefreshTokenOptions { RotationEnabled = true, ReuseDetectionEnabled = false });
+
+        for (var round = 0; round < 200; round++)
+        {
+            var issued = await service.IssueAsync("user-1", Claims(), metadata: null);
+            using var start = new ManualResetEventSlim();
+            var consumers = Enumerable.Range(0, 8)
+                .Select(_ => Task.Run(async () =>
+                {
+                    start.Wait();
+                    return await service.ConsumeAsync(issued.OpaqueToken);
+                }))
+                .ToArray();
+
+            start.Set();
+            var results = await Task.WhenAll(consumers);
+
+            results.Count(r => r is not null).Should().Be(1);
+        }
+    }
+
     [Theory]
     [InlineData("")]
     [InlineData("no-colon")]

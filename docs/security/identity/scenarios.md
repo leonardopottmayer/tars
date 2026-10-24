@@ -185,7 +185,9 @@ public class RedisRefreshTokenStore : IRefreshTokenStore
         await _redis.StringSetAsync($"rt:{tokenId}", JsonSerializer.Serialize(payload), ttl);
     }
 
-    // ... implement the remaining methods
+    // ... implement the remaining methods.
+    // GetAndRemoveAsync must check and remove atomically (GETDEL in Redis, DELETE ... RETURNING in SQL),
+    // otherwise two concurrent refreshes with the same token both succeed.
 }
 
 // Registration
