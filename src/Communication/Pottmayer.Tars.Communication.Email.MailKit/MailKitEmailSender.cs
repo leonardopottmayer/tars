@@ -29,7 +29,7 @@ public sealed class MailKitEmailSender(IOptions<MailKitEmailOptions> options) : 
             cancellationToken);
 
         if (!string.IsNullOrEmpty(settings.Username))
-            await client.AuthenticateAsync(settings.Username, settings.Password, cancellationToken);
+            await client.AuthenticateAsync(settings.Username, settings.Password ?? string.Empty, cancellationToken);
 
         var response = await client.SendAsync(mime, cancellationToken);
         await client.DisconnectAsync(true, cancellationToken);
