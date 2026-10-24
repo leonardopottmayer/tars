@@ -289,7 +289,7 @@ namespace Pottmayer.Tars.Caching.Redis
         private void FireAndForget(Task task, RedisKey key, string operation)
         {
             task.ContinueWith(
-                t => _logger.LogWarning(t.Exception, "Redis best-effort operation '{Operation}' failed for key '{Key}'.", operation, (string)key),
+                t => _logger.LogWarning(t.Exception, "Redis best-effort operation '{Operation}' failed for key '{Key}'.", operation, (string?)key),
                 CancellationToken.None,
                 TaskContinuationOptions.OnlyOnFaulted,
                 TaskScheduler.Default);
