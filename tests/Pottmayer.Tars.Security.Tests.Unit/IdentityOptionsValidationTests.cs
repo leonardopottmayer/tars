@@ -24,7 +24,7 @@ public class IdentityOptionsValidationTests
 
     [Fact]
     public void Signing_key_shorter_than_32_bytes_is_rejected()
-        => Resolve(new string('k', 31)).Should().Throw<OptionsValidationException>();
+        => Resolve(new string('k', 31)).Should().Throw<OptionsValidationException>().WithMessage("*at least 32 bytes*");
 
     [Fact]
     public void Signing_key_of_32_bytes_is_accepted()

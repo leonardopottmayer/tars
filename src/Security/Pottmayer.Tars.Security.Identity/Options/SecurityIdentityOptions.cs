@@ -9,7 +9,8 @@ public sealed class SecurityIdentityOptions
     public const string SectionName = "Tars:Security:Identity";
 
     /// <summary>Validation error message used when options validation fails.</summary>
-    public const string ValidationErrorMessage = "Invalid SecurityIdentityOptions.";
+    public const string ValidationErrorMessage =
+        "Invalid SecurityIdentityOptions. Jwt:SigningKey is required and must be at least 32 bytes in UTF-8; Jwt:AccessTokenLifetime must be positive; RefreshToken, TokenDelivery and Revocation must not be null.";
 
     /// <summary>JWT issuance and validation settings.</summary>
     public JwtOptions Jwt { get; init; } = new();
