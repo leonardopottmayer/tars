@@ -1,0 +1,41 @@
+name: CI (.NET)
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+
+# CI only reads the repository.
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-dotnet-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    # This name is the required check in the main and dev rulesets. Rename both together.
+    name: Build & Test (.NET)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore --configuration Release
+
+      - name: Test
+        run: dotnet test --no-build --configuration Release

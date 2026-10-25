@@ -228,3 +228,8 @@ nuget.config
 
 # Local NuGet pack output (see scripts/publish-github-packages.ps1)
 .artifacts/
+
+# Secrets
+.env
+.env.*
+!.env.example
