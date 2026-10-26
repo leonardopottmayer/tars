@@ -3,6 +3,7 @@ version: 2
 updates:
   - package-ecosystem: github-actions
     directory: /
+    target-branch: dev
     schedule:
       interval: weekly
     commit-message:
@@ -14,6 +15,7 @@ updates:
   # NuGet doesn't tell dev dependencies apart, so every update is a fix(deps).
   - package-ecosystem: nuget
     directory: /
+    target-branch: dev
     schedule:
       interval: weekly
     commit-message:
