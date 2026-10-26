@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
-using FluentAssertions;
+using AwesomeAssertions;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -148,7 +148,7 @@ public class MultiTransportInMemoryTests
     {
         var sink = new MessageSink();
         using var host = BuildHost(sink);
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         try
         {
@@ -156,7 +156,7 @@ public class MultiTransportInMemoryTests
             var bus = scope.ServiceProvider.GetRequiredService<IIntegrationEventBus>();
 
             // Published through the one seam. The map sends it to the event plane (the default).
-            await bus.PublishAsync(new PaymentProcessed(Guid.NewGuid(), DateTimeOffset.UtcNow, "order-42"));
+            await bus.PublishAsync(new PaymentProcessed(Guid.NewGuid(), DateTimeOffset.UtcNow, "order-42"), TestContext.Current.CancellationToken);
 
             var arrived = await sink.WaitForAsync(2, TimeSpan.FromSeconds(10));
 
@@ -166,7 +166,7 @@ public class MultiTransportInMemoryTests
         }
         finally
         {
-            await host.StopAsync();
+            await host.StopAsync(TestContext.Current.CancellationToken);
         }
     }
 
@@ -175,7 +175,7 @@ public class MultiTransportInMemoryTests
     {
         var sink = new MessageSink();
         using var host = BuildHost(sink);
-        await host.StartAsync();
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         try
         {
@@ -183,7 +183,7 @@ public class MultiTransportInMemoryTests
             var bus = scope.ServiceProvider.GetRequiredService<IIntegrationEventBus>();
 
             // One publish; AuditRecorded is mapped to both planes, so the handler runs once per plane.
-            await bus.PublishAsync(new AuditRecorded(Guid.NewGuid(), DateTimeOffset.UtcNow, "order-7"));
+            await bus.PublishAsync(new AuditRecorded(Guid.NewGuid(), DateTimeOffset.UtcNow, "order-7"), TestContext.Current.CancellationToken);
 
             var arrived = await sink.WaitForAsync(2, TimeSpan.FromSeconds(10));
 
@@ -192,7 +192,7 @@ public class MultiTransportInMemoryTests
         }
         finally
         {
-            await host.StopAsync();
+            await host.StopAsync(TestContext.Current.CancellationToken);
         }
     }
 

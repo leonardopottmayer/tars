@@ -1,4 +1,4 @@
-using FluentAssertions;
+using AwesomeAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Pottmayer.Tars.Multitenancy.Abstractions.Context;
 using Pottmayer.Tars.Multitenancy.Abstractions.Execution;
@@ -32,7 +32,7 @@ public class PipelineAndExecutionTests
         scope.ServiceProvider.GetRequiredService<ITenantExecutionRunner>().Should().NotBeNull();
 
         var result = await provider.GetRequiredService<ITenantResolverPipeline>()
-            .ResolveAsync(new TenantResolutionRequest());
+            .ResolveAsync(new TenantResolutionRequest(), TestContext.Current.CancellationToken);
 
         result.TenantKey.Should().Be("acme");
     }
@@ -47,7 +47,7 @@ public class PipelineAndExecutionTests
             new StaticTenantResolver("second"),
         ]);
 
-        var result = await pipeline.ResolveAsync(new TenantResolutionRequest());
+        var result = await pipeline.ResolveAsync(new TenantResolutionRequest(), TestContext.Current.CancellationToken);
 
         result.IsResolved.Should().BeTrue();
         result.TenantKey.Should().Be("first");
@@ -58,7 +58,7 @@ public class PipelineAndExecutionTests
     {
         var pipeline = new TenantResolverPipeline([new NullTenantResolver(), new NullTenantResolver()]);
 
-        var result = await pipeline.ResolveAsync(new TenantResolutionRequest());
+        var result = await pipeline.ResolveAsync(new TenantResolutionRequest(), TestContext.Current.CancellationToken);
 
         result.IsResolved.Should().BeFalse();
     }
@@ -69,7 +69,7 @@ public class PipelineAndExecutionTests
         var catalog = new InMemoryTenantCatalog(["a", "b", "c"]);
 
         var keys = new List<string?>();
-        await foreach (var t in catalog.ListAsync())
+        await foreach (var t in catalog.ListAsync(TestContext.Current.CancellationToken))
             keys.Add(t.TenantKey);
 
         keys.Should().Equal("a", "b", "c");
@@ -83,9 +83,7 @@ public class PipelineAndExecutionTests
         var runner = new TenantExecutionRunner(provider, accessor);
         string? observed = null;
 
-        await runner.RunForTenantAsync(
-            TenantContext.Create("acme"),
-            (sp, ct) => { observed = accessor.Current?.TenantKey; return Task.CompletedTask; });
+        await runner.RunForTenantAsync(TenantContext.Create("acme"), (sp, ct) => { observed = accessor.Current?.TenantKey; return Task.CompletedTask; }, TestContext.Current.CancellationToken);
 
         observed.Should().Be("acme");
         accessor.Current.Should().BeNull();
@@ -100,9 +98,7 @@ public class PipelineAndExecutionTests
         var catalog = new InMemoryTenantCatalog(["a", "b"]);
         var seen = new List<string?>();
 
-        await runner.RunForEachTenantAsync(
-            catalog.ListAsync(),
-            (sp, tenant, ct) => { lock (seen) seen.Add(tenant.TenantKey); return Task.CompletedTask; });
+        await runner.RunForEachTenantAsync(catalog.ListAsync(TestContext.Current.CancellationToken), (sp, tenant, ct) => { lock (seen) seen.Add(tenant.TenantKey); return Task.CompletedTask; }, cancellationToken: TestContext.Current.CancellationToken);
 
         seen.Should().BeEquivalentTo("a", "b");
     }

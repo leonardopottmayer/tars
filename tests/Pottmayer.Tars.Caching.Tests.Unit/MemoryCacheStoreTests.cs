@@ -1,4 +1,4 @@
-using FluentAssertions;
+using AwesomeAssertions;
 using Microsoft.Extensions.Caching.Memory;
 using Pottmayer.Tars.Caching;
 using Pottmayer.Tars.Caching.Memory;
@@ -18,9 +18,9 @@ public class MemoryCacheStoreTests
     {
         var store = Create();
 
-        await store.SetAsync("k", 123);
+        await store.SetAsync("k", 123, ct: TestContext.Current.CancellationToken);
 
-        (await store.GetAsync<int>("k")).Should().Be(123);
+        (await store.GetAsync<int>("k", TestContext.Current.CancellationToken)).Should().Be(123);
     }
 
     [Fact]
@@ -28,17 +28,17 @@ public class MemoryCacheStoreTests
     {
         var store = Create();
 
-        (await store.GetAsync<int>("missing")).Should().Be(0);
+        (await store.GetAsync<int>("missing", TestContext.Current.CancellationToken)).Should().Be(0);
     }
 
     [Fact]
     public async Task TryGet_reports_found_state()
     {
         var store = Create();
-        await store.SetAsync("k", "v");
+        await store.SetAsync("k", "v", ct: TestContext.Current.CancellationToken);
 
-        var hit = await store.TryGetAsync<string>("k");
-        var miss = await store.TryGetAsync<string>("nope");
+        var hit = await store.TryGetAsync<string>("k", TestContext.Current.CancellationToken);
+        var miss = await store.TryGetAsync<string>("nope", TestContext.Current.CancellationToken);
 
         hit.Found.Should().BeTrue();
         hit.Value.Should().Be("v");
@@ -49,11 +49,11 @@ public class MemoryCacheStoreTests
     public async Task Remove_and_Exists_behave_consistently()
     {
         var store = Create();
-        await store.SetAsync("k", "v");
+        await store.SetAsync("k", "v", ct: TestContext.Current.CancellationToken);
 
-        (await store.ExistsAsync("k")).Should().BeTrue();
-        await store.RemoveAsync("k");
-        (await store.ExistsAsync("k")).Should().BeFalse();
+        (await store.ExistsAsync("k", TestContext.Current.CancellationToken)).Should().BeTrue();
+        await store.RemoveAsync("k", TestContext.Current.CancellationToken);
+        (await store.ExistsAsync("k", TestContext.Current.CancellationToken)).Should().BeFalse();
     }
 
     [Fact]
@@ -62,8 +62,8 @@ public class MemoryCacheStoreTests
         var store = Create();
         var calls = 0;
 
-        var first = await store.GetOrSetAsync("k", _ => { calls++; return Task.FromResult(99); });
-        var second = await store.GetOrSetAsync("k", _ => { calls++; return Task.FromResult(-1); });
+        var first = await store.GetOrSetAsync("k", _ => { calls++; return Task.FromResult(99); }, ct: TestContext.Current.CancellationToken);
+        var second = await store.GetOrSetAsync("k", _ => { calls++; return Task.FromResult(-1); }, ct: TestContext.Current.CancellationToken);
 
         first.Should().Be(99);
         second.Should().Be(99);

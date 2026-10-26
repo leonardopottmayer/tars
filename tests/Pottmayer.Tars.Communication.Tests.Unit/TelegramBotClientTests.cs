@@ -1,6 +1,6 @@
 using System.Net;
 using System.Text;
-using FluentAssertions;
+using AwesomeAssertions;
 using Pottmayer.Tars.Communication.Telegram;
 using Pottmayer.Tars.Communication.Telegram.Abstractions;
 using Pottmayer.Tars.Communication.Telegram.Abstractions.Models;
@@ -49,7 +49,7 @@ public class TelegramBotClientTests
         var (client, handler) = Build(
             """{"ok":true,"result":{"message_id":555,"date":1755000000,"chat":{"id":987,"type":"private"}}}""");
 
-        var result = await client.SendMessageAsync(new TelegramMessage("987", "oi"));
+        var result = await client.SendMessageAsync(new TelegramMessage("987", "oi"), TestContext.Current.CancellationToken);
 
         handler.Requests.Single().ToString().Should().Be("https://api.telegram.local/bot123:ABC/sendMessage");
         handler.Bodies.Single().Should().Contain("\"chat_id\":\"987\"").And.Contain("\"text\":\"oi\"");
@@ -127,7 +127,7 @@ public class TelegramBotClientTests
     {
         var (client, handler) = Build("""{"ok":true,"result":[]}""");
 
-        await client.GetUpdatesAsync(offset: 101, pollTimeout: TimeSpan.FromSeconds(30));
+        await client.GetUpdatesAsync(offset: 101, pollTimeout: TimeSpan.FromSeconds(30), cancellationToken: TestContext.Current.CancellationToken);
 
         handler.Requests.Single().ToString().Should().EndWith("/getUpdates");
         handler.Bodies.Single().Should().Contain("\"offset\":101").And.Contain("\"timeout\":30");
@@ -149,7 +149,7 @@ public class TelegramBotClientTests
             ]}
             """);
 
-        var updates = await client.GetUpdatesAsync(0, TimeSpan.FromSeconds(1));
+        var updates = await client.GetUpdatesAsync(0, TimeSpan.FromSeconds(1), TestContext.Current.CancellationToken);
 
         updates.Should().HaveCount(2);
         updates[0].Message!.Text.Should().Be("/start abc");
@@ -170,7 +170,7 @@ public class TelegramBotClientTests
             ]}
             """);
 
-        var media = (await client.GetUpdatesAsync(0, TimeSpan.FromSeconds(1)))[0].Message!.Media!;
+        var media = (await client.GetUpdatesAsync(0, TimeSpan.FromSeconds(1), TestContext.Current.CancellationToken))[0].Message!.Media!;
 
         media.Kind.Should().Be(TelegramMediaKind.Voice);
         media.FileId.Should().Be("voice-1");
@@ -193,7 +193,7 @@ public class TelegramBotClientTests
     {
         var (client, handler) = Build("""{"ok":true,"result":true}""");
 
-        await client.AnswerCallbackQueryAsync("cbq-1", "Feito!");
+        await client.AnswerCallbackQueryAsync("cbq-1", "Feito!", TestContext.Current.CancellationToken);
 
         handler.Requests.Single().ToString().Should().EndWith("/answerCallbackQuery");
         handler.Bodies.Single().Should().Contain("\"callback_query_id\":\"cbq-1\"").And.Contain("Feito!");
@@ -204,7 +204,7 @@ public class TelegramBotClientTests
     {
         var (client, handler) = Build("""{"ok":true,"result":true}""");
 
-        await client.SetWebhookAsync(new Uri("https://tars.local/hook"), "s3cr3t");
+        await client.SetWebhookAsync(new Uri("https://tars.local/hook"), "s3cr3t", TestContext.Current.CancellationToken);
 
         handler.Bodies.Single().Should()
             .Contain("\"url\":\"https://tars.local/hook\"")

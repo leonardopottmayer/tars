@@ -1,4 +1,4 @@
-using FluentAssertions;
+using AwesomeAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Pottmayer.Tars.Core.Mediator.Abstractions;
 using Pottmayer.Tars.Core.Mediator.Abstractions.Messaging;
@@ -47,7 +47,7 @@ public class MediatorTests
             .BuildServiceProvider();
         var mediator = new global::Pottmayer.Tars.Core.Mediator.Mediator(provider);
 
-        var response = await mediator.Send(new Ping("hi"));
+        var response = await mediator.Send(new Ping("hi"), TestContext.Current.CancellationToken);
 
         response.Should().Be("pong:hi");
     }
@@ -63,7 +63,7 @@ public class MediatorTests
             .BuildServiceProvider();
         var mediator = new global::Pottmayer.Tars.Core.Mediator.Mediator(provider);
 
-        var response = await mediator.Send(new Ping("x"));
+        var response = await mediator.Send(new Ping("x"), TestContext.Current.CancellationToken);
 
         // A is registered first => outermost
         log.Should().Equal("before:A", "before:B", "after:B", "after:A");
@@ -91,7 +91,7 @@ public class MediatorTests
             .BuildServiceProvider();
         var mediator = new global::Pottmayer.Tars.Core.Mediator.Mediator(provider);
 
-        await mediator.Publish(new Notified());
+        await mediator.Publish(new Notified(), TestContext.Current.CancellationToken);
 
         log.Should().BeEquivalentTo("h1", "h2");
     }

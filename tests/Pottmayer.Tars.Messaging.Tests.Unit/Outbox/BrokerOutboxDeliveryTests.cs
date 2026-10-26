@@ -1,4 +1,4 @@
-using FluentAssertions;
+using AwesomeAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Pottmayer.Tars.Messaging.Abstractions;
 using Pottmayer.Tars.Messaging.EntityFrameworkCore.Relay;
@@ -26,7 +26,7 @@ public class BrokerOutboxDeliveryTests
         var delivery = new BrokerOutboxDelivery(
             provider.GetRequiredService<IServiceScopeFactory>(), "events");
 
-        await delivery.DeliverAsync(Event);
+        await delivery.DeliverAsync(Event, TestContext.Current.CancellationToken);
 
         transport.Published.Should().ContainSingle().Which.Should().BeSameAs(Event);
     }

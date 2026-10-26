@@ -1,5 +1,5 @@
 using System.Security.Claims;
-using FluentAssertions;
+using AwesomeAssertions;
 using Pottmayer.Tars.Multitenancy.Abstractions.Resolvers;
 using Pottmayer.Tars.Multitenancy.Resolvers;
 
@@ -13,7 +13,7 @@ public class ResolversTests
     [Fact]
     public async Task StaticResolver_always_resolves_the_same_key()
     {
-        var result = await new StaticTenantResolver("acme").ResolveAsync(Request());
+        var result = await new StaticTenantResolver("acme").ResolveAsync(Request(), TestContext.Current.CancellationToken);
 
         result.IsResolved.Should().BeTrue();
         result.TenantKey.Should().Be("acme");
@@ -31,7 +31,7 @@ public class ResolversTests
     [Fact]
     public async Task NullResolver_never_resolves()
     {
-        var result = await new NullTenantResolver().ResolveAsync(Request());
+        var result = await new NullTenantResolver().ResolveAsync(Request(), TestContext.Current.CancellationToken);
 
         result.IsResolved.Should().BeFalse();
     }
@@ -41,7 +41,7 @@ public class ResolversTests
     {
         var principal = new ClaimsPrincipal(new ClaimsIdentity([new Claim("tenant_key", "globex")]));
 
-        var result = await new ClaimTenantResolver().ResolveAsync(Request(principal));
+        var result = await new ClaimTenantResolver().ResolveAsync(Request(principal), TestContext.Current.CancellationToken);
 
         result.IsResolved.Should().BeTrue();
         result.TenantKey.Should().Be("globex");
@@ -50,7 +50,7 @@ public class ResolversTests
     [Fact]
     public async Task ClaimResolver_unresolved_without_principal()
     {
-        var result = await new ClaimTenantResolver().ResolveAsync(Request(principal: null));
+        var result = await new ClaimTenantResolver().ResolveAsync(Request(principal: null), TestContext.Current.CancellationToken);
 
         result.IsResolved.Should().BeFalse();
     }
@@ -60,7 +60,7 @@ public class ResolversTests
     {
         var principal = new ClaimsPrincipal(new ClaimsIdentity([new Claim("other", "x")]));
 
-        var result = await new ClaimTenantResolver("tenant_key").ResolveAsync(Request(principal));
+        var result = await new ClaimTenantResolver("tenant_key").ResolveAsync(Request(principal), TestContext.Current.CancellationToken);
 
         result.IsResolved.Should().BeFalse();
     }

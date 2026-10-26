@@ -1,4 +1,4 @@
-using FluentAssertions;
+using AwesomeAssertions;
 using Pottmayer.Tars.Ai.Chat.Gemini.Options;
 
 namespace Pottmayer.Tars.Ai.Chat.Tests.Unit.Gemini;

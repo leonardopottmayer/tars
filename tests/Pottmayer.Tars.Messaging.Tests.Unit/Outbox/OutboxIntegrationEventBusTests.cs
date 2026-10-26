@@ -1,4 +1,4 @@
-using FluentAssertions;
+using AwesomeAssertions;
 using Pottmayer.Tars.Messaging.EntityFrameworkCore.Outbox;
 
 namespace Pottmayer.Tars.Messaging.Tests.Unit.Outbox;
@@ -15,7 +15,7 @@ public class OutboxIntegrationEventBusTests
         var bus = new OutboxIntegrationEventBus(accessor, new JsonIntegrationEventSerializer(), new ControllableClock(Now));
 
         var @event = new ThingHappened(Guid.NewGuid(), Now, "hi");
-        await bus.PublishAsync(@event);
+        await bus.PublishAsync(@event, TestContext.Current.CancellationToken);
 
         repo.Store.Should().ContainSingle();
         var row = repo.Store[0];

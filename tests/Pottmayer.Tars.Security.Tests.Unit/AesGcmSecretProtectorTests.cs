@@ -1,5 +1,5 @@
 using System.Security.Cryptography;
-using FluentAssertions;
+using AwesomeAssertions;
 using Microsoft.Extensions.Options;
 using Pottmayer.Tars.Security.DataProtection;
 using Pottmayer.Tars.Security.DataProtection.Abstractions;

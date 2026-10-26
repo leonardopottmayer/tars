@@ -1,4 +1,4 @@
-using FluentAssertions;
+using AwesomeAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Pottmayer.Tars.Data.Relational.Abstractions.DataConnection;
@@ -26,7 +26,7 @@ public class ConfigurationDataConnectionResolverTests
             ["Tars:Data:Connections:central:Provider"] = "PostgreSQL",
         });
 
-        var descriptor = await resolver.ResolveAsync(Context("central"));
+        var descriptor = await resolver.ResolveAsync(Context("central"), TestContext.Current.CancellationToken);
 
         descriptor.Should().NotBeNull();
         descriptor!.ConnectionString.Should().Be("Host=central");
@@ -44,7 +44,7 @@ public class ConfigurationDataConnectionResolverTests
             ["Tars:Data:Connections:primary:ConnectionString"] = "Host=static",
         });
 
-        var descriptor = await resolver.ResolveAsync(Context("primary", tenant: "acme"));
+        var descriptor = await resolver.ResolveAsync(Context("primary", tenant: "acme"), TestContext.Current.CancellationToken);
 
         descriptor!.ConnectionString.Should().Be("Host=acme-primary");
         descriptor.IsTenantScoped.Should().BeTrue();
@@ -61,7 +61,7 @@ public class ConfigurationDataConnectionResolverTests
             ["Tars:Data:Connections:primary:ConnectionString"] = "Host=static",
         });
 
-        var descriptor = await resolver.ResolveAsync(Context("primary", tenant: "globex"));
+        var descriptor = await resolver.ResolveAsync(Context("primary", tenant: "globex"), TestContext.Current.CancellationToken);
 
         descriptor!.ConnectionString.Should().Be("Host=globex-db");
         descriptor.Provider.Should().Be(DbProvider.SqlServer);
@@ -76,7 +76,7 @@ public class ConfigurationDataConnectionResolverTests
             ["Tars:Data:Connections:primary:ConnectionString"] = "Host=shared",
         });
 
-        var descriptor = await resolver.ResolveAsync(Context("primary", tenant: "acme"));
+        var descriptor = await resolver.ResolveAsync(Context("primary", tenant: "acme"), TestContext.Current.CancellationToken);
 
         descriptor!.ConnectionString.Should().Be("Host=shared");
     }
@@ -86,7 +86,7 @@ public class ConfigurationDataConnectionResolverTests
     {
         var resolver = Resolver(new());
 
-        (await resolver.ResolveAsync(Context("unknown"))).Should().BeNull();
+        (await resolver.ResolveAsync(Context("unknown"), TestContext.Current.CancellationToken)).Should().BeNull();
     }
 
     [Fact]
@@ -98,7 +98,7 @@ public class ConfigurationDataConnectionResolverTests
             ["Tars:Data:Connections:default:Provider"] = "Cassandra",
         });
 
-        var descriptor = await resolver.ResolveAsync(Context("default"));
+        var descriptor = await resolver.ResolveAsync(Context("default"), TestContext.Current.CancellationToken);
 
         descriptor!.Provider.Should().Be(DbProvider.Unknown);
     }

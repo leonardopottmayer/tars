@@ -1,4 +1,4 @@
-using FluentAssertions;
+using AwesomeAssertions;
 using Pottmayer.Tars.Messaging.EntityFrameworkCore.Outbox;
 
 namespace Pottmayer.Tars.Messaging.Tests.Unit.Outbox;

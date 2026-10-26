@@ -1,4 +1,4 @@
-using FluentAssertions;
+using AwesomeAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using Pottmayer.Tars.Messaging.Abstractions;
@@ -66,7 +66,7 @@ public class ScopedIntegrationEventDispatcherTests
     {
         var (dispatcher, recorder) = Build(typeof(FirstHandler), typeof(NeverReachedHandler));
 
-        await dispatcher.DispatchAsync(Event());
+        await dispatcher.DispatchAsync(Event(), TestContext.Current.CancellationToken);
 
         recorder.Calls.Should().Equal(nameof(FirstHandler), nameof(NeverReachedHandler));
     }
@@ -101,7 +101,7 @@ public class ScopedIntegrationEventDispatcherTests
         // A queue can legitimately receive an event this service does not act on.
         var (dispatcher, recorder) = Build();
 
-        await dispatcher.DispatchAsync(Event());
+        await dispatcher.DispatchAsync(Event(), TestContext.Current.CancellationToken);
 
         recorder.Calls.Should().BeEmpty();
     }

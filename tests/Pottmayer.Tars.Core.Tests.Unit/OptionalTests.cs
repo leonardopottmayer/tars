@@ -1,4 +1,4 @@
-using FluentAssertions;
+using AwesomeAssertions;
 using Pottmayer.Tars.Core.Primitives;
 
 namespace Pottmayer.Tars.Core.Tests.Unit;

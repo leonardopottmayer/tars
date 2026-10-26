@@ -1,4 +1,4 @@
-using FluentAssertions;
+using AwesomeAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using Pottmayer.Tars.Data.Abstractions.UnitOfWork;
@@ -50,7 +50,7 @@ public class OutboxRelayProcessorTests
         var dispatcher = new RecordingDispatcher();
         var processor = CreateProcessor(dispatcher);
 
-        var delivered = await processor.DrainOnceAsync();
+        var delivered = await processor.DrainOnceAsync(TestContext.Current.CancellationToken);
 
         delivered.Should().Be(2);
         dispatcher.Dispatched.Should().HaveCount(2);
@@ -70,7 +70,7 @@ public class OutboxRelayProcessorTests
         };
         var processor = CreateProcessor(dispatcher);
 
-        var delivered = await processor.DrainOnceAsync();
+        var delivered = await processor.DrainOnceAsync(TestContext.Current.CancellationToken);
 
         delivered.Should().Be(1);
         var poisonRow = _repo.Store.Single(m => m.Id == poison.Id);
@@ -89,7 +89,7 @@ public class OutboxRelayProcessorTests
         _repo.Store.Add(unknown);
         var processor = CreateProcessor(new RecordingDispatcher());
 
-        var delivered = await processor.DrainOnceAsync();
+        var delivered = await processor.DrainOnceAsync(TestContext.Current.CancellationToken);
 
         delivered.Should().Be(0);
         var row = _repo.Store.Single();
@@ -106,7 +106,7 @@ public class OutboxRelayProcessorTests
         future.MarkFailed("transient", maxAttempts: 8, backoff: _ => TimeSpan.FromMinutes(5), _clock);
         var processor = CreateProcessor(new RecordingDispatcher());
 
-        var delivered = await processor.DrainOnceAsync();
+        var delivered = await processor.DrainOnceAsync(TestContext.Current.CancellationToken);
 
         delivered.Should().Be(0, "the only message is scheduled for the future");
     }
@@ -121,7 +121,7 @@ public class OutboxRelayProcessorTests
         var processor = CreateProcessor(new RecordingDispatcher(),
             new OutboxDatabaseOptions("test") { RetentionPeriod = TimeSpan.FromDays(7) });
 
-        var purged = await processor.PurgeOnceAsync();
+        var purged = await processor.PurgeOnceAsync(TestContext.Current.CancellationToken);
 
         purged.Should().Be(1);
         _repo.Store.Should().BeEmpty();

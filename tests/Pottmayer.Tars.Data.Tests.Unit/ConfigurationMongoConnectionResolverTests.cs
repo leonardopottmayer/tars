@@ -1,4 +1,4 @@
-using FluentAssertions;
+using AwesomeAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Pottmayer.Tars.Data.Document.Abstractions.Connection;
@@ -29,7 +29,7 @@ public class ConfigurationMongoConnectionResolverTests
             ["Tars:Data:Mongo:Connections:catalog:Database"] = "catalog_db",
         });
 
-        var descriptor = await resolver.ResolveAsync(Context("catalog"));
+        var descriptor = await resolver.ResolveAsync(Context("catalog"), TestContext.Current.CancellationToken);
 
         descriptor.Should().NotBeNull();
         descriptor!.ConnectionString.Should().Be("mongodb://localhost:27017");
@@ -48,7 +48,7 @@ public class ConfigurationMongoConnectionResolverTests
             ["Tars:Data:Mongo:Connections:primary:Database"] = "static_db",
         });
 
-        var descriptor = await resolver.ResolveAsync(Context("primary", tenant: "acme"));
+        var descriptor = await resolver.ResolveAsync(Context("primary", tenant: "acme"), TestContext.Current.CancellationToken);
 
         descriptor!.ConnectionString.Should().Be("mongodb://acme");
         descriptor.DatabaseName.Should().Be("acme_db");
@@ -65,7 +65,7 @@ public class ConfigurationMongoConnectionResolverTests
             ["Tars:Data:Mongo:TenantConnectionTemplates:primary:Database"] = "{tenantKey}_primary",
         });
 
-        var descriptor = await resolver.ResolveAsync(Context("primary", tenant: "globex"));
+        var descriptor = await resolver.ResolveAsync(Context("primary", tenant: "globex"), TestContext.Current.CancellationToken);
 
         descriptor!.ConnectionString.Should().Be("mongodb://globex-host");
         descriptor.DatabaseName.Should().Be("globex_primary");
@@ -81,7 +81,7 @@ public class ConfigurationMongoConnectionResolverTests
             ["Tars:Data:Mongo:Connections:primary:Database"] = "shared_db",
         });
 
-        var descriptor = await resolver.ResolveAsync(Context("primary", tenant: "acme"));
+        var descriptor = await resolver.ResolveAsync(Context("primary", tenant: "acme"), TestContext.Current.CancellationToken);
 
         descriptor!.ConnectionString.Should().Be("mongodb://shared");
         descriptor.DatabaseName.Should().Be("shared_db");
@@ -92,7 +92,7 @@ public class ConfigurationMongoConnectionResolverTests
     {
         var resolver = Resolver(new());
 
-        (await resolver.ResolveAsync(Context("unknown"))).Should().BeNull();
+        (await resolver.ResolveAsync(Context("unknown"), TestContext.Current.CancellationToken)).Should().BeNull();
     }
 
     [Fact]

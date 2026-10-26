@@ -1,6 +1,6 @@
 using System.Security.Claims;
 using System.Text;
-using FluentAssertions;
+using AwesomeAssertions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;

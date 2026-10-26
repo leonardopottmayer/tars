@@ -124,7 +124,7 @@ dotnet build Pottmayer.Tars.slnx
 dotnet test Pottmayer.Tars.slnx
 ```
 
-Unit tests live under `tests/`, one project per family (xUnit, FluentAssertions and Moq).
+Unit tests live under `tests/`, one project per family (xUnit v3 on Microsoft.Testing.Platform, AwesomeAssertions and Moq).
 
 ## License
 

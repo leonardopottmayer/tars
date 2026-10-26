@@ -1,5 +1,5 @@
 using System.Globalization;
-using FluentAssertions;
+using AwesomeAssertions;
 using Pottmayer.Tars.Core.Localization;
 using Pottmayer.Tars.Core.Localization.Abstractions;
 

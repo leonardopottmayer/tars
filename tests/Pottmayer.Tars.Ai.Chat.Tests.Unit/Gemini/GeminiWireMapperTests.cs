@@ -1,5 +1,5 @@
 using System.Text.Json;
-using FluentAssertions;
+using AwesomeAssertions;
 using Pottmayer.Tars.Ai.Chat.Abstractions.Models;
 using Pottmayer.Tars.Ai.Chat.Gemini.Wire;
 

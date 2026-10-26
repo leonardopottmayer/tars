@@ -1,5 +1,5 @@
 using System.Text.Json;
-using FluentAssertions;
+using AwesomeAssertions;
 using Pottmayer.Tars.Communication.Telegram;
 using Pottmayer.Tars.Communication.Telegram.Abstractions.Models;
 using Pottmayer.Tars.Communication.Telegram.Wire;

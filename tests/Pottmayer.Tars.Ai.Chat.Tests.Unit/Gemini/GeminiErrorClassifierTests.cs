@@ -1,5 +1,5 @@
 using System.Net;
-using FluentAssertions;
+using AwesomeAssertions;
 using Pottmayer.Tars.Ai.Chat.Gemini;
 
 namespace Pottmayer.Tars.Ai.Chat.Tests.Unit.Gemini;

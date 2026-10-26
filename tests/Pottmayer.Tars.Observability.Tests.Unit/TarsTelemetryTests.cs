@@ -1,4 +1,4 @@
-using FluentAssertions;
+using AwesomeAssertions;
 using Pottmayer.Tars.Observability.Abstractions;
 
 namespace Pottmayer.Tars.Observability.Tests.Unit;

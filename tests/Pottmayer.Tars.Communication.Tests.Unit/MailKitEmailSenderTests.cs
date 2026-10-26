@@ -1,4 +1,4 @@
-using FluentAssertions;
+using AwesomeAssertions;
 using MimeKit;
 using Pottmayer.Tars.Communication.Email.Abstractions;
 using Pottmayer.Tars.Communication.Email.MailKit;

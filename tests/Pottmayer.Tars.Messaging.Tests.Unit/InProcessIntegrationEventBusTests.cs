@@ -1,4 +1,4 @@
-using FluentAssertions;
+using AwesomeAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Pottmayer.Tars.Messaging.Abstractions;
 using Pottmayer.Tars.Messaging.DI;
@@ -26,7 +26,7 @@ public class InProcessIntegrationEventBusTests
         using var sp = Build(s =>
             s.AddScoped<IIntegrationEventHandler<TestEvent>, FirstHandler>());
 
-        await sp.GetRequiredService<IIntegrationEventBus>().PublishAsync(Event("hello"));
+        await sp.GetRequiredService<IIntegrationEventBus>().PublishAsync(Event("hello"), TestContext.Current.CancellationToken);
 
         sp.GetRequiredService<Recorder>().Handled.Should().ContainSingle().Which.Should().Be("A:hello");
     }
@@ -40,7 +40,7 @@ public class InProcessIntegrationEventBusTests
             s.AddScoped<IIntegrationEventHandler<TestEvent>, SecondHandler>();
         });
 
-        await sp.GetRequiredService<IIntegrationEventBus>().PublishAsync(Event("x"));
+        await sp.GetRequiredService<IIntegrationEventBus>().PublishAsync(Event("x"), TestContext.Current.CancellationToken);
 
         sp.GetRequiredService<Recorder>().Handled.Should().BeEquivalentTo("A:x", "B:x");
     }

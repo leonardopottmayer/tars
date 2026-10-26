@@ -1,5 +1,5 @@
 using System.Diagnostics;
-using FluentAssertions;
+using AwesomeAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Pottmayer.Tars.Core.Primitives.Outcomes;
 using Pottmayer.Tars.Web.Http;

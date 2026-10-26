@@ -1,4 +1,4 @@
-using FluentAssertions;
+using AwesomeAssertions;
 using Microsoft.Extensions.Options;
 using Moq;
 using Pottmayer.Tars.Security.Identity.Abstractions.Stores;
@@ -28,7 +28,7 @@ public class MagicLinkTokenServiceTests
             .Callback<string, IReadOnlyDictionary<string, object?>, DateTimeOffset, CancellationToken>((key, _, _, _) => storedKey = key)
             .Returns(ValueTask.CompletedTask);
 
-        var issued = await Create(store.Object).IssueAsync(Payload());
+        var issued = await Create(store.Object).IssueAsync(Payload(), TestContext.Current.CancellationToken);
 
         storedKey.Should().NotBeNullOrEmpty();
         storedKey.Should().NotBe(issued.Token);
@@ -39,10 +39,10 @@ public class MagicLinkTokenServiceTests
     public async Task Issued_token_can_be_consumed_once()
     {
         var service = Create(new InMemoryMagicLinkTokenStore());
-        var issued = await service.IssueAsync(Payload());
+        var issued = await service.IssueAsync(Payload(), TestContext.Current.CancellationToken);
 
-        var first = await service.ConsumeAsync(issued.Token);
-        var second = await service.ConsumeAsync(issued.Token);
+        var first = await service.ConsumeAsync(issued.Token, TestContext.Current.CancellationToken);
+        var second = await service.ConsumeAsync(issued.Token, TestContext.Current.CancellationToken);
 
         first.Should().NotBeNull();
         first!["target"].Should().Be("user@example.com");

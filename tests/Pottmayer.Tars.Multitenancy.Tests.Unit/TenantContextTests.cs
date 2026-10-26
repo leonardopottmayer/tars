@@ -1,4 +1,4 @@
-using FluentAssertions;
+using AwesomeAssertions;
 using Pottmayer.Tars.Multitenancy.Abstractions.Resolvers;
 using Pottmayer.Tars.Multitenancy.Context;
 

@@ -1,6 +1,6 @@
 using System.Net;
 using System.Text;
-using FluentAssertions;
+using AwesomeAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -31,7 +31,7 @@ public class GeminiResilienceTests
 
         var client = BuildClient(handler, maxRetryAttempts: 3);
 
-        var result = await client.CompleteAsync(new ChatRequest("m", [ChatMessage.User("hi")]));
+        var result = await client.CompleteAsync(new ChatRequest("m", [ChatMessage.User("hi")]), TestContext.Current.CancellationToken);
 
         result.Message.Content.Should().Be("ok");
         handler.Calls.Should().Be(3, "two 503s should be retried before the third attempt succeeds");
@@ -46,7 +46,7 @@ public class GeminiResilienceTests
 
         var client = BuildClient(handler, maxRetryAttempts: 3);
 
-        await client.CompleteAsync(new ChatRequest("m", [ChatMessage.User("hi")]));
+        await client.CompleteAsync(new ChatRequest("m", [ChatMessage.User("hi")]), TestContext.Current.CancellationToken);
 
         handler.Calls.Should().Be(2);
     }
