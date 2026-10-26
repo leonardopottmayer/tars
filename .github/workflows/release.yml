@@ -3,6 +3,12 @@ name: Release
 on:
   push:
     branches: [main]
+  # Publishes an existing release again, for when publishing failed after the tag was created.
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version to publish again, without the "v" (for example 1.4.0)
+        required: true
 
 # Every job asks for what it needs; the default is read-only.
 permissions:
@@ -74,3 +80,33 @@ jobs:
             --body "Brings the release commit of v$VERSION back to dev. Merged automatically, with a merge commit, once CI passes.")
           gh pr merge "$url" --auto --merge
 
+  # Publishes every package of the release to GitHub Packages (nuget.org later).
+  publish:
+    name: Publish
+    needs: release
+    if: always() && (needs.release.outputs.version != '' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write   # GitHub Packages
+    env:
+      VERSION: ${{ needs.release.outputs.version || inputs.version }}
+
+    steps:
+      - name: Checkout the release tag
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: v${{ env.VERSION }}
+          persist-credentials: false
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          global-json-file: global.json
+
+      # The version comes from Directory.Build.props, already bumped in the tagged commit.
+      - name: Pack
+        run: dotnet pack --configuration Release --output ./packages
+
+      - name: Push to GitHub Packages (NuGet)
+        run: dotnet nuget push "./packages/*.nupkg" --api-key "${{ secrets.GITHUB_TOKEN }}" --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" --skip-duplicate
