@@ -1,77 +1,33 @@
 # Publishing Packages
 
-This repository can publish its NuGet packages to a private GitHub Packages feed.
+The packages are published to the GitHub Packages NuGet feed by the release workflow ([`.github/workflows/release.yml`](../../.github/workflows/release.yml)), never from a developer machine.
 
-All packages share the version defined in [`Directory.Build.props`](../../Directory.Build.props) (currently `0.0.1`). The publish scripts can override it per run with `-Version`.
+## How a release publishes
 
-## Requirements
+1. Changes reach `dev` through pull requests (squash-merged, Conventional Commit titles).
+2. A pull request from `dev` to `main` gets a release preview comment with the next version. Merging it (merge commit) is the release.
+3. The release bot (semantic-release, as a GitHub App) computes the version from the commits since the last tag, writes it to `<Version>` in [`Directory.Build.props`](../../Directory.Build.props) and to `CHANGELOG.md`, commits to `main`, tags `v<version>` and creates the GitHub Release.
+4. The `publish` job checks out that tag, runs `dotnet pack` and pushes every package to `https://nuget.pkg.github.com/leonardopottmayer/index.json` with `GITHUB_TOKEN`.
+5. The bot opens a `main` → `dev` pull request with the version bump, merged automatically once CI passes.
 
-- A GitHub repository under your personal account or organization
-- A GitHub Personal Access Token with:
-  - `write:packages` to publish
-  - `read:packages` to consume
-  - `repo` if the repository is private
+All packages share the one `<Version>` (lockstep). Only `feat`, `fix`, `perf` and breaking changes release; a merge with only `docs`, `ci`, `build`, `test`, `refactor` or `chore` commits releases nothing. Never edit `<Version>`, `CHANGELOG.md` or tags by hand.
 
-## Feed URL
+## Publishing a release again
 
-Replace `OWNER_OR_ORG` with your GitHub username or organization:
+If the release was created but publishing failed, fix the cause and run the workflow by hand with the version (without the `v`):
 
-```text
-https://nuget.pkg.github.com/OWNER_OR_ORG/index.json
+```bash
+gh workflow run release.yml -f version=0.0.19
 ```
 
-## Pack And Publish All Packages
+Versions already on the feed are skipped.
 
-From the repository root:
+## Testing a package before releasing
 
-```powershell
-.\scripts\publish-github-packages.ps1 `
-  -Owner "OWNER_OR_ORG" `
-  -Username "GITHUB_USERNAME" `
-  -Token "GITHUB_PAT" `
-  -Version "0.0.1" `
-  -SkipDuplicate
-```
+Pack into a local feed with a pre-release version and point the consuming project at it, instead of publishing:
 
-## Pack Only
-
-```powershell
-.\scripts\publish-github-packages.ps1 `
-  -Owner "OWNER_OR_ORG" `
-  -Username "GITHUB_USERNAME" `
-  -Token "GITHUB_PAT" `
-  -Version "0.0.1" `
-  -PackOnly
-```
-
-Packages are generated into:
-
-```text
-.artifacts/github-packages
-```
-
-## Publish Only A Few Packages
-
-```powershell
-.\scripts\publish-github-packages.ps1 `
-  -Owner "OWNER_OR_ORG" `
-  -Username "GITHUB_USERNAME" `
-  -Token "GITHUB_PAT" `
-  -Version "0.0.1" `
-  -IncludePackages "Pottmayer.Tars.Core.Primitives","Pottmayer.Tars.Core.Cqrs"
-```
-
-## Exclude Packages
-
-Use this to skip any package you do not want to publish in a given run:
-
-```powershell
-.\scripts\publish-github-packages.ps1 `
-  -Owner "OWNER_OR_ORG" `
-  -Username "GITHUB_USERNAME" `
-  -Token "GITHUB_PAT" `
-  -Version "0.0.1" `
-  -ExcludePackages "Pottmayer.Tars.Web.Http.AspNetCore"
+```bash
+dotnet pack -c Release -o ~/local-feed -p:PackageVersion=0.0.19-local.$(date +%Y%m%d%H%M%S)
 ```
 
 ## Delete Published Packages
@@ -160,9 +116,6 @@ dotnet add package Pottmayer.Tars.Core.Primitives --source github
 
 ## Notes
 
-- The script packs the solution and then pushes each generated package.
-- The current solution includes every project tracked in [`Pottmayer.Tars.slnx`](../../Pottmayer.Tars.slnx) (at the repository root).
-- Use `-ExcludePackages` to skip any package you do not want to publish.
 - The deletion script uses the GitHub Packages REST API for package metadata and deletion:
   https://docs.github.com/en/enterprise-cloud@latest/rest/packages/packages
 ```

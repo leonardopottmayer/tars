@@ -61,7 +61,7 @@ This folder gathers the functional documentation of the `Pottmayer.Tars` framewo
 - [Reference](./reference/package-matrix.md): global maps, application blueprint and crosswalk with the example apps
   - [Package taxonomy](./reference/taxonomy.md): the four levels (Abstractions, Runtime, Provider, Host Integration) and naming rules
   - [Coding conventions](./reference/conventions.md): code-level idioms — `Options` vs `Configuration`, one-method-per-registration DI, `TryAdd`/override, `AddTars*`/`AddTarsKeyed*` naming, fail-fast at startup
-  - [Publishing](./reference/publishing.md): packaging and publishing the NuGet packages (GitHub Packages), versioning and scripts
+  - [Publishing](./reference/publishing.md): how releases publish the NuGet packages to GitHub Packages, and the package deletion script
 
 ## Architectural principles of the repository
 
