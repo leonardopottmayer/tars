@@ -16,6 +16,12 @@ updates:
   - package-ecosystem: nuget
     directory: /
     target-branch: dev
+    # Major versions need their own review: MassTransit 9 is commercially licensed, StackExchange.Redis 3 has breaking changes.
+    ignore:
+      - dependency-name: "MassTransit*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "StackExchange.Redis"
+        update-types: ["version-update:semver-major"]
     schedule:
       interval: weekly
     commit-message:
