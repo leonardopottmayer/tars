@@ -1,4 +1,4 @@
-using FluentAssertions;
+using AwesomeAssertions;
 using Microsoft.Extensions.Options;
 using Moq;
 using Pottmayer.Tars.Security.Identity.Abstractions.Results;
@@ -24,8 +24,8 @@ public class RefreshTokenServiceTests
     {
         var service = Create(new RefreshTokenOptions { RotationEnabled = true });
 
-        var issued = await service.IssueAsync("user-1", Claims(), metadata: null);
-        var consumed = await service.ConsumeAsync(issued.OpaqueToken);
+        var issued = await service.IssueAsync("user-1", Claims(), metadata: null, cancellationToken: TestContext.Current.CancellationToken);
+        var consumed = await service.ConsumeAsync(issued.OpaqueToken, TestContext.Current.CancellationToken);
 
         issued.OpaqueToken.Should().Contain(":");
         consumed.Should().NotBeNull();
@@ -37,10 +37,10 @@ public class RefreshTokenServiceTests
     public async Task With_rotation_a_second_consume_fails()
     {
         var service = Create(new RefreshTokenOptions { RotationEnabled = true, ReuseDetectionEnabled = false });
-        var issued = await service.IssueAsync("user-1", Claims(), metadata: null);
+        var issued = await service.IssueAsync("user-1", Claims(), metadata: null, cancellationToken: TestContext.Current.CancellationToken);
 
-        await service.ConsumeAsync(issued.OpaqueToken);
-        var second = await service.ConsumeAsync(issued.OpaqueToken);
+        await service.ConsumeAsync(issued.OpaqueToken, TestContext.Current.CancellationToken);
+        var second = await service.ConsumeAsync(issued.OpaqueToken, TestContext.Current.CancellationToken);
 
         second.Should().BeNull();
     }
@@ -49,10 +49,10 @@ public class RefreshTokenServiceTests
     public async Task Without_rotation_token_is_reusable()
     {
         var service = Create(new RefreshTokenOptions { RotationEnabled = false });
-        var issued = await service.IssueAsync("user-1", Claims(), metadata: null);
+        var issued = await service.IssueAsync("user-1", Claims(), metadata: null, cancellationToken: TestContext.Current.CancellationToken);
 
-        var first = await service.ConsumeAsync(issued.OpaqueToken);
-        var second = await service.ConsumeAsync(issued.OpaqueToken);
+        var first = await service.ConsumeAsync(issued.OpaqueToken, TestContext.Current.CancellationToken);
+        var second = await service.ConsumeAsync(issued.OpaqueToken, TestContext.Current.CancellationToken);
 
         first.Should().NotBeNull();
         second.Should().NotBeNull();
@@ -63,10 +63,10 @@ public class RefreshTokenServiceTests
     public async Task Revoked_token_cannot_be_consumed()
     {
         var service = Create(new RefreshTokenOptions { RotationEnabled = true });
-        var issued = await service.IssueAsync("user-1", Claims(), metadata: null);
+        var issued = await service.IssueAsync("user-1", Claims(), metadata: null, cancellationToken: TestContext.Current.CancellationToken);
 
-        await service.RevokeAsync(issued.OpaqueToken);
-        var consumed = await service.ConsumeAsync(issued.OpaqueToken);
+        await service.RevokeAsync(issued.OpaqueToken, TestContext.Current.CancellationToken);
+        var consumed = await service.ConsumeAsync(issued.OpaqueToken, TestContext.Current.CancellationToken);
 
         consumed.Should().BeNull();
     }
@@ -78,7 +78,7 @@ public class RefreshTokenServiceTests
 
         for (var round = 0; round < 200; round++)
         {
-            var issued = await service.IssueAsync("user-1", Claims(), metadata: null);
+            var issued = await service.IssueAsync("user-1", Claims(), metadata: null, cancellationToken: TestContext.Current.CancellationToken);
             using var start = new ManualResetEventSlim();
             var consumers = Enumerable.Range(0, 8)
                 .Select(_ => Task.Run(async () =>
@@ -103,6 +103,6 @@ public class RefreshTokenServiceTests
     {
         var service = Create(new RefreshTokenOptions());
 
-        (await service.ConsumeAsync(token)).Should().BeNull();
+        (await service.ConsumeAsync(token, TestContext.Current.CancellationToken)).Should().BeNull();
     }
 }

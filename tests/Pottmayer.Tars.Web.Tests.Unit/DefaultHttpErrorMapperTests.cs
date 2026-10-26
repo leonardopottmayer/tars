@@ -1,4 +1,4 @@
-using FluentAssertions;
+using AwesomeAssertions;
 using Moq;
 using Pottmayer.Tars.Core.Localization.Abstractions;
 using Pottmayer.Tars.Core.Primitives.Outcomes;

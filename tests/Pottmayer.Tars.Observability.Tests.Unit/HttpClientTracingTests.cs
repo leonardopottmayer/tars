@@ -1,5 +1,5 @@
 using System.Diagnostics;
-using FluentAssertions;
+using AwesomeAssertions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server;
@@ -24,7 +24,7 @@ public class HttpClientTracingTests
         builder.WebHost.UseUrls("http://127.0.0.1:0");
         await using var app = builder.Build();
         app.MapGet("/bot123:SECRET/getMe", () => "ok");
-        await app.StartAsync();
+        await app.StartAsync(TestContext.Current.CancellationToken);
         var baseUrl = app.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>()!.Addresses.First();
 
         var spans = new List<Activity>();
@@ -38,7 +38,7 @@ public class HttpClientTracingTests
         using var request = new HttpRequestMessage(HttpMethod.Get, $"{baseUrl}/bot123:SECRET/getMe");
         if (redacted)
             request.Options.Set(TarsTelemetry.RedactedRequestUrl, $"{baseUrl}/bot***/getMe");
-        (await http.SendAsync(request)).EnsureSuccessStatusCode();
+        (await http.SendAsync(request, TestContext.Current.CancellationToken)).EnsureSuccessStatusCode();
 
         var url = spans.Should().ContainSingle().Which.GetTagItem("url.full");
         url.Should().Be(redacted ? $"{baseUrl}/bot***/getMe" : $"{baseUrl}/bot123:SECRET/getMe");

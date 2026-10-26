@@ -1,4 +1,4 @@
-using FluentAssertions;
+using AwesomeAssertions;
 using Pottmayer.Tars.Messaging.Abstractions;
 using Pottmayer.Tars.Messaging.Broker;
 using Pottmayer.Tars.Messaging.Broker.Options;

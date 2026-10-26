@@ -1,4 +1,4 @@
-using FluentAssertions;
+using AwesomeAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Pottmayer.Tars.Communication.Email;
@@ -16,7 +16,7 @@ public class LoggingEmailSenderTests
     {
         var sender = new LoggingEmailSender(Mock.Of<ILogger<LoggingEmailSender>>());
 
-        var result = await sender.SendAsync(Message());
+        var result = await sender.SendAsync(Message(), TestContext.Current.CancellationToken);
 
         result.Provider.Should().Be(LoggingEmailSender.ProviderName);
         result.ProviderMessageId.Should().NotBeNullOrWhiteSpace();
@@ -32,7 +32,7 @@ public class LoggingEmailSenderTests
             Body: "Body",
             Cc: ["cc@tars.local"]);
 
-        var result = await new LoggingEmailSender(logger.Object).SendAsync(message);
+        var result = await new LoggingEmailSender(logger.Object).SendAsync(message, TestContext.Current.CancellationToken);
 
         result.Provider.Should().Be(LoggingEmailSender.ProviderName);
         logger.Verify(
@@ -53,7 +53,7 @@ public class LoggingEmailSenderTests
     {
         var logger = new Mock<ILogger<LoggingEmailSender>>();
 
-        await new LoggingEmailSender(logger.Object).SendAsync(Message());
+        await new LoggingEmailSender(logger.Object).SendAsync(Message(), TestContext.Current.CancellationToken);
 
         logger.Verify(
             l => l.Log(

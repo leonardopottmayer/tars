@@ -224,8 +224,6 @@ AppPackages/
 # End of core ignore list, below put you custom 'per project' settings (patterns or path)
 #####
 
-nuget.config
-
 # Local NuGet pack output (see scripts/publish-github-packages.ps1)
 .artifacts/
 

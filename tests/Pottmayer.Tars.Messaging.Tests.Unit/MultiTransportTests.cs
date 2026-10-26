@@ -1,4 +1,4 @@
-using FluentAssertions;
+using AwesomeAssertions;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Pottmayer.Tars.Messaging.Abstractions;
@@ -206,8 +206,8 @@ public class CompositeIntegrationEventBusTests
             o.Route<ShipOrderCommand>("rabbitmq");
         }));
 
-        await bus.PublishAsync(new PaymentProcessed(Guid.NewGuid(), DateTimeOffset.UtcNow, "o-1"));
-        await bus.PublishAsync(new ShipOrderCommand(Guid.NewGuid(), DateTimeOffset.UtcNow, "o-1"));
+        await bus.PublishAsync(new PaymentProcessed(Guid.NewGuid(), DateTimeOffset.UtcNow, "o-1"), TestContext.Current.CancellationToken);
+        await bus.PublishAsync(new ShipOrderCommand(Guid.NewGuid(), DateTimeOffset.UtcNow, "o-1"), TestContext.Current.CancellationToken);
 
         kafka.Published.Should().ContainSingle().Which.Should().BeOfType<PaymentProcessed>();
         rabbit.Published.Should().ContainSingle().Which.Should().BeOfType<ShipOrderCommand>();
@@ -250,7 +250,7 @@ public class CompositeIntegrationEventBusTests
         }));
 
         // One call by the producer; the composite hits both buses.
-        await bus.PublishAsync(new PaymentProcessed(Guid.NewGuid(), DateTimeOffset.UtcNow, "o-1"));
+        await bus.PublishAsync(new PaymentProcessed(Guid.NewGuid(), DateTimeOffset.UtcNow, "o-1"), TestContext.Current.CancellationToken);
 
         rabbit.Published.Should().ContainSingle();
         kafka.Published.Should().ContainSingle();

@@ -1,6 +1,6 @@
 using System.Net;
 using System.Text;
-using FluentAssertions;
+using AwesomeAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
@@ -26,7 +26,7 @@ public class GeminiAiChatCompletionClientTests
         var handler = new StubHandler(_ => Ok(json));
         var client = Client(handler, defaultKey: "k");
 
-        var result = await client.CompleteAsync(new ChatRequest("gemini-2.0-flash", [ChatMessage.User("hi")]));
+        var result = await client.CompleteAsync(new ChatRequest("gemini-2.0-flash", [ChatMessage.User("hi")]), TestContext.Current.CancellationToken);
 
         handler.LastRequest!.Method.Should().Be(HttpMethod.Post);
         handler.LastRequest.RequestUri!.AbsolutePath.Should().Be("/v1beta/models/gemini-2.0-flash:generateContent");
@@ -41,7 +41,7 @@ public class GeminiAiChatCompletionClientTests
         var handler = new StubHandler(_ => Ok(EmptyReply));
         var client = Client(handler, defaultKey: "options-key");
 
-        await client.CompleteAsync(new ChatRequest("m", [ChatMessage.User("hi")]));
+        await client.CompleteAsync(new ChatRequest("m", [ChatMessage.User("hi")]), TestContext.Current.CancellationToken);
 
         SentKey(handler).Should().Be("options-key");
     }
@@ -52,7 +52,7 @@ public class GeminiAiChatCompletionClientTests
         var handler = new StubHandler(_ => Ok(EmptyReply));
         var client = Client(handler, defaultKey: "options-key");
 
-        await client.CompleteAsync(new ChatRequest("m", [ChatMessage.User("hi")], ApiKey: "user-key"));
+        await client.CompleteAsync(new ChatRequest("m", [ChatMessage.User("hi")], ApiKey: "user-key"), TestContext.Current.CancellationToken);
 
         SentKey(handler).Should().Be("user-key");
     }

@@ -1,4 +1,4 @@
-using FluentAssertions;
+using AwesomeAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Pottmayer.Tars.Core.Ddd;
 using Pottmayer.Tars.Messaging.EntityFrameworkCore.Outbox;
@@ -36,7 +36,7 @@ public class OutboxDomainEventDispatcherTests
         var dispatcher = new OutboxDomainEventDispatcher(provider);
         var evt = new UserRegistered(Guid.NewGuid());
 
-        await dispatcher.DispatchAsync([evt]);
+        await dispatcher.DispatchAsync([evt], TestContext.Current.CancellationToken);
 
         handler.Handled.Should().ContainSingle().Which.Should().Be(evt);
     }

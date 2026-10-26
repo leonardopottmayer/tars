@@ -1,4 +1,4 @@
-using FluentAssertions;
+using AwesomeAssertions;
 using Pottmayer.Tars.Ai.Chat.Abstractions.Models;
 
 namespace Pottmayer.Tars.Ai.Chat.Tests.Unit;

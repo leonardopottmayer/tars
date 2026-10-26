@@ -1,4 +1,4 @@
-using FluentAssertions;
+using AwesomeAssertions;
 using Pottmayer.Tars.Caching;
 using Pottmayer.Tars.Caching.Options;
 

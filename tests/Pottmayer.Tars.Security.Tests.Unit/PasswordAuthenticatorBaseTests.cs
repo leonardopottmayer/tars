@@ -1,4 +1,4 @@
-using FluentAssertions;
+using AwesomeAssertions;
 using Moq;
 using Pottmayer.Tars.Security.Identity.Abstractions.Dtos;
 using Pottmayer.Tars.Security.Identity.Abstractions.Results;
@@ -45,7 +45,7 @@ public class PasswordAuthenticatorBaseTests
     {
         var authenticator = Create(user: null);
 
-        var result = await authenticator.AuthenticateAsync(Request("guess"));
+        var result = await authenticator.AuthenticateAsync(Request("guess"), TestContext.Current.CancellationToken);
 
         result.Should().BeNull();
         authenticator.DummyVerifications.Should().Equal("guess");
@@ -56,7 +56,7 @@ public class PasswordAuthenticatorBaseTests
     {
         var authenticator = Create(new TestUser("user-1"));
 
-        var result = await authenticator.AuthenticateAsync(Request("right"));
+        var result = await authenticator.AuthenticateAsync(Request("right"), TestContext.Current.CancellationToken);
 
         result!.Subject.Should().Be("user-1");
         authenticator.DummyVerifications.Should().BeEmpty();

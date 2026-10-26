@@ -1,4 +1,4 @@
-using FluentAssertions;
+using AwesomeAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Pottmayer.Tars.Data.Abstractions.DataContext;
 using Pottmayer.Tars.Data.Abstractions.UnitOfWork;
@@ -29,7 +29,7 @@ public class UnitOfWorkTests
     {
         var (factory, contexts) = Build();
 
-        await factory.ExecuteAsync("orders", (ctx, ct) => Task.CompletedTask);
+        await factory.ExecuteAsync("orders", (ctx, ct) => Task.CompletedTask, cancellationToken: TestContext.Current.CancellationToken);
 
         var ctx = contexts.Created["orders"];
         ctx.CommitCount.Should().Be(1);
@@ -41,8 +41,7 @@ public class UnitOfWorkTests
     {
         var (factory, contexts) = Build();
 
-        await factory.ExecuteAsync("orders", (ctx, ct) => Task.CompletedTask,
-            new UnitOfWorkOptions { CommitOnSuccess = false });
+        await factory.ExecuteAsync("orders", (ctx, ct) => Task.CompletedTask, new UnitOfWorkOptions { CommitOnSuccess = false }, TestContext.Current.CancellationToken);
 
         contexts.Created["orders"].CommitCount.Should().Be(0);
     }
@@ -64,7 +63,7 @@ public class UnitOfWorkTests
         {
             seen = accessor.Current;
             return Task.CompletedTask;
-        });
+        }, cancellationToken: TestContext.Current.CancellationToken);
 
         seen.Should().BeSameAs(contexts.Created["orders"]);
         accessor.Current.Should().BeNull("ambient context is restored after the unit of work");
@@ -76,8 +75,8 @@ public class UnitOfWorkTests
         var (factory, contexts) = Build();
 
         await using var uow = factory.Create("orders");
-        await uow.GetContextAsync();
-        await uow.CommitAsync();
+        await uow.GetContextAsync(TestContext.Current.CancellationToken);
+        await uow.CommitAsync(TestContext.Current.CancellationToken);
 
         contexts.Created["orders"].CommitCount.Should().Be(1);
     }

@@ -1,4 +1,4 @@
-using FluentAssertions;
+using AwesomeAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Pottmayer.Tars.Messaging.Abstractions;
 using Pottmayer.Tars.Messaging.DI;

@@ -1,5 +1,5 @@
 using System.Security.Claims;
-using FluentAssertions;
+using AwesomeAssertions;
 using Microsoft.Extensions.Options;
 using Moq;
 using Pottmayer.Tars.Security.Identity.Abstractions.Results;
@@ -36,8 +36,8 @@ public class JwtTokenTests
         var issuer = new JwtTokenIssuer(options);
         var validator = new JwtTokenValidator(options);
 
-        var issued = await issuer.IssueAsync(Auth());
-        var principal = await validator.ValidateAsync(issued.AccessToken);
+        var issued = await issuer.IssueAsync(Auth(), TestContext.Current.CancellationToken);
+        var principal = await validator.ValidateAsync(issued.AccessToken, TestContext.Current.CancellationToken);
 
         issued.AccessToken.Should().NotBeNullOrWhiteSpace();
         issued.Jti.Should().NotBeNullOrWhiteSpace();
@@ -63,7 +63,7 @@ public class JwtTokenTests
             SigningCredentials = new Microsoft.IdentityModel.Tokens.SigningCredentials(key, Microsoft.IdentityModel.Tokens.SecurityAlgorithms.HmacSha512),
         }));
 
-        var principal = await new JwtTokenValidator(Options()).ValidateAsync(token);
+        var principal = await new JwtTokenValidator(Options()).ValidateAsync(token, TestContext.Current.CancellationToken);
 
         principal.Should().BeNull();
     }
@@ -71,14 +71,14 @@ public class JwtTokenTests
     [Fact]
     public async Task Validation_fails_for_token_signed_with_different_key()
     {
-        var issued = await new JwtTokenIssuer(Options()).IssueAsync(Auth());
+        var issued = await new JwtTokenIssuer(Options()).IssueAsync(Auth(), TestContext.Current.CancellationToken);
 
         var otherValidator = new JwtTokenValidator(Options(new SecurityIdentityOptions
         {
             Jwt = new JwtOptions { SigningKey = "a-completely-different-signing-key-0123456789-abcdefghij", Issuer = "tars-test", Audience = "tars-test" },
         }));
 
-        (await otherValidator.ValidateAsync(issued.AccessToken)).Should().BeNull();
+        (await otherValidator.ValidateAsync(issued.AccessToken, TestContext.Current.CancellationToken)).Should().BeNull();
     }
 
     [Theory]
@@ -87,18 +87,18 @@ public class JwtTokenTests
     [InlineData("not-a-jwt")]
     public async Task Validation_returns_null_for_invalid_input(string token)
     {
-        (await new JwtTokenValidator(Options()).ValidateAsync(token)).Should().BeNull();
+        (await new JwtTokenValidator(Options()).ValidateAsync(token, TestContext.Current.CancellationToken)).Should().BeNull();
     }
 
     [Fact]
     public async Task IsValidAsync_reflects_validation_result()
     {
         var options = Options();
-        var issued = await new JwtTokenIssuer(options).IssueAsync(Auth());
+        var issued = await new JwtTokenIssuer(options).IssueAsync(Auth(), TestContext.Current.CancellationToken);
         var validator = new JwtTokenValidator(options);
 
-        (await validator.IsValidAsync(issued.AccessToken)).Should().BeTrue();
-        (await validator.IsValidAsync("garbage")).Should().BeFalse();
+        (await validator.IsValidAsync(issued.AccessToken, TestContext.Current.CancellationToken)).Should().BeTrue();
+        (await validator.IsValidAsync("garbage", TestContext.Current.CancellationToken)).Should().BeFalse();
     }
 
     [Fact]

@@ -1,4 +1,4 @@
-using FluentAssertions;
+using AwesomeAssertions;
 using Pottmayer.Tars.Web.Http.Abstractions;
 using Pottmayer.Tars.Web.Http.AspNetCore.Options;
 using Pottmayer.Tars.Web.Http.Options;

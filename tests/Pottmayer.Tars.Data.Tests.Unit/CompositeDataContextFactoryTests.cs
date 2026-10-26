@@ -1,4 +1,4 @@
-using FluentAssertions;
+using AwesomeAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Pottmayer.Tars.Data.Abstractions.DataContext;
 using Pottmayer.Tars.Data.DI;
@@ -29,9 +29,9 @@ public class CompositeDataContextFactoryTests
             ("sql-primary", "relational"),
             ("mongo-catalog", "document"));
 
-        var central = (FakeDataContext)await factory.CreateIsolatedAsync("sql-central");
-        var primary = (FakeDataContext)await factory.CreateIsolatedAsync("sql-primary");
-        var catalog = (FakeDataContext)await factory.CreateIsolatedAsync("mongo-catalog");
+        var central = (FakeDataContext)await factory.CreateIsolatedAsync("sql-central", TestContext.Current.CancellationToken);
+        var primary = (FakeDataContext)await factory.CreateIsolatedAsync("sql-primary", TestContext.Current.CancellationToken);
+        var catalog = (FakeDataContext)await factory.CreateIsolatedAsync("mongo-catalog", TestContext.Current.CancellationToken);
 
         central.Label.Should().Be("relational");
         primary.Label.Should().Be("relational");
@@ -46,9 +46,9 @@ public class CompositeDataContextFactoryTests
             ("mongo-b", "document"),
             ("sql", "relational"));
 
-        (await factory.CreateIsolatedAsync("mongo-a")).Should().BeOfType<FakeDataContext>();
-        (await factory.CreateIsolatedAsync("mongo-b")).Should().BeOfType<FakeDataContext>();
-        (await factory.CreateIsolatedAsync("sql")).Should().BeOfType<FakeDataContext>();
+        (await factory.CreateIsolatedAsync("mongo-a", TestContext.Current.CancellationToken)).Should().BeOfType<FakeDataContext>();
+        (await factory.CreateIsolatedAsync("mongo-b", TestContext.Current.CancellationToken)).Should().BeOfType<FakeDataContext>();
+        (await factory.CreateIsolatedAsync("sql", TestContext.Current.CancellationToken)).Should().BeOfType<FakeDataContext>();
     }
 
     [Fact]

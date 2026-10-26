@@ -1,4 +1,4 @@
-using FluentAssertions;
+using AwesomeAssertions;
 using Pottmayer.Tars.Data.DataContext;
 using Pottmayer.Tars.Data.Tests.Unit.Infrastructure;
 

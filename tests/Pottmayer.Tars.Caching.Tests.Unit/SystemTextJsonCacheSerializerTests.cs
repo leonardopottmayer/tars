@@ -1,4 +1,4 @@
-using FluentAssertions;
+using AwesomeAssertions;
 using Pottmayer.Tars.Caching;
 
 namespace Pottmayer.Tars.Caching.Tests.Unit;

@@ -1,4 +1,4 @@
-using FluentAssertions;
+using AwesomeAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Pottmayer.Tars.Data.Abstractions.UnitOfWork;
@@ -36,14 +36,12 @@ public class MultiDatabaseCoordinatorTests
     {
         var (coordinator, units) = Build();
 
-        await coordinator.ExecuteAsync(
-            ["central", "primary"],
-            (ctx, ct) =>
+        await coordinator.ExecuteAsync(["central", "primary"], (ctx, ct) =>
             {
                 ctx.GetUnitOfWork("central");
                 ctx.GetUnitOfWork("primary");
                 return Task.CompletedTask;
-            });
+            }, cancellationToken: TestContext.Current.CancellationToken);
 
         units["central"].Verify(u => u.CommitAsync(It.IsAny<CancellationToken>()), Times.Once);
         units["primary"].Verify(u => u.CommitAsync(It.IsAny<CancellationToken>()), Times.Once);

@@ -1,4 +1,4 @@
-using FluentAssertions;
+using AwesomeAssertions;
 using Pottmayer.Tars.Core.Cqrs.Behaviors;
 using Pottmayer.Tars.Core.Mediator.Abstractions.Messaging;
 using Pottmayer.Tars.Core.Primitives.Outcomes;
@@ -20,7 +20,7 @@ public class ExceptionMappingBehaviorTests
     {
         var behavior = new ExceptionMappingBehavior<Cmd, Result<int>>();
 
-        var result = await behavior.Handle(new Cmd(), () => ValueTask.FromResult(Result<int>.Success(5)), default);
+        var result = await behavior.Handle(new Cmd(), () => ValueTask.FromResult(Result<int>.Success(5)), TestContext.Current.CancellationToken);
 
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().Be(5);
@@ -32,10 +32,7 @@ public class ExceptionMappingBehaviorTests
         var error = Error.Validation("FIELD", "invalid");
         var behavior = new ExceptionMappingBehavior<Cmd, Result<int>>();
 
-        var result = await behavior.Handle(
-            new Cmd(),
-            () => throw new ExpectedFailure(error),
-            default);
+        var result = await behavior.Handle(new Cmd(), () => throw new ExpectedFailure(error), TestContext.Current.CancellationToken);
 
         result.IsFailure.Should().BeTrue();
         result.Errors.Should().ContainSingle().Which.Should().Be(error);
@@ -47,10 +44,7 @@ public class ExceptionMappingBehaviorTests
         var error = Error.Business("B", "x");
         var behavior = new ExceptionMappingBehavior<VoidCmd, Result>();
 
-        var result = await behavior.Handle(
-            new VoidCmd(),
-            () => throw new ExpectedFailure(error),
-            default);
+        var result = await behavior.Handle(new VoidCmd(), () => throw new ExpectedFailure(error), TestContext.Current.CancellationToken);
 
         result.IsFailure.Should().BeTrue();
         result.Errors.Should().ContainSingle().Which.Should().Be(error);
@@ -78,10 +72,7 @@ public class ExceptionMappingBehaviorTests
         };
         var behavior = new ExceptionMappingBehavior<Cmd, Result<int>>(config);
 
-        var result = await behavior.Handle(
-            new Cmd(),
-            () => throw new InvalidOperationException("conflict!"),
-            default);
+        var result = await behavior.Handle(new Cmd(), () => throw new InvalidOperationException("conflict!"), TestContext.Current.CancellationToken);
 
         result.IsFailure.Should().BeTrue();
         result.Errors[0].Code.Should().Be("MAPPED");

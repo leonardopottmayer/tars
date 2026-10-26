@@ -1,5 +1,5 @@
 using System.Security.Claims;
-using FluentAssertions;
+using AwesomeAssertions;
 using Pottmayer.Tars.UserContext;
 
 namespace Pottmayer.Tars.UserContext.Tests.Unit;

@@ -1,4 +1,4 @@
-using FluentAssertions;
+using AwesomeAssertions;
 using Pottmayer.Tars.Web.Http;
 using Pottmayer.Tars.Web.Http.Abstractions;
 
