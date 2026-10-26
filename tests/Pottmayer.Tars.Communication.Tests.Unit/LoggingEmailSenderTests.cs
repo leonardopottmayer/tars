@@ -40,7 +40,7 @@ public class LoggingEmailSenderTests
                 LogLevel.Information,
                 It.IsAny<EventId>(),
                 It.Is<It.IsAnyType>((v, _) =>
-                    v.ToString()!.Contains("a@tars.local")
+                    v!.ToString()!.Contains("a@tars.local")
                     && v.ToString()!.Contains("b@tars.local")
                     && v.ToString()!.Contains("cc@tars.local")),
                 It.IsAny<Exception?>(),
