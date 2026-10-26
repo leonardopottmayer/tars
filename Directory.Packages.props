@@ -31,15 +31,15 @@
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.14" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.14" />
     <PackageVersion Include="MongoDB.Driver" Version="3.13.0" />
-    <PackageVersion Include="StackExchange.Redis" Version="2.13.17" />
+    <PackageVersion Include="StackExchange.Redis" Version="3.4.20" />
   </ItemGroup>
 
   <!-- Messaging -->
   <ItemGroup>
-    <PackageVersion Include="MassTransit" Version="8.5.12" />
-    <PackageVersion Include="MassTransit.EntityFrameworkCore" Version="8.5.12" />
-    <PackageVersion Include="MassTransit.Kafka" Version="8.5.12" />
-    <PackageVersion Include="MassTransit.RabbitMQ" Version="8.5.12" />
+    <PackageVersion Include="MassTransit" Version="9.2.4" />
+    <PackageVersion Include="MassTransit.EntityFrameworkCore" Version="9.2.4" />
+    <PackageVersion Include="MassTransit.Kafka" Version="9.2.4" />
+    <PackageVersion Include="MassTransit.RabbitMQ" Version="9.2.4" />
   </ItemGroup>
 
   <!-- Security -->
