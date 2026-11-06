@@ -35,9 +35,15 @@ builder.Services.AddTarsPermissionDefinitions(p => p
     .Module("finances", feature: "finances")
         .Resource("cards").Crud()                                   // read, create, update, delete
         .Resource("imports", feature: "finances.import").Actions("run", "read")
-        .Resource("transactions").Crud().Actions("approve"));
+        .Resource("transactions").Crud().Actions("approve")
+        .Resource("statements").Read().Update());                  // single standard actions
 ```
 
+- `Crud()` declares the four standard actions; `Read()`, `Create()`, `Update()` and `Delete()` declare
+  one each. `Actions(...)` takes any other action.
+- `PermissionActions` holds the standard action segments as constants. Build your module's keys as
+  constants from them (`"finances.cards." + PermissionActions.Delete`), so the same key serves the
+  declaration, `[RequiresPermission]` and any other check, with no repeated string.
 - Keys are `module.resource.action`. Segments cannot be blank or contain `.` or `*`.
 - Every action of a resource that declares `read` lists it in `Requires`, so a management screen can
   refuse `delete` without `read`. The check itself does not enforce dependencies.

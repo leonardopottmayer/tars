@@ -74,6 +74,15 @@ public class AuthorizationTests
         catalog.Find("finances.cards.delete")!.Feature.Should().Be("finances");
     }
 
+    [Fact]
+    public void Single_action_shortcuts_declare_the_standard_actions()
+    {
+        using var sp = Build(new FakeStore(), p => p.Module("notes").Resource("pages").Read().Create().Update().Delete());
+
+        sp.GetRequiredService<IPermissionCatalog>().Definitions.Select(d => d.Key).Should().Equal(
+            "notes.pages.read", "notes.pages.create", "notes.pages.update", "notes.pages.delete");
+    }
+
     [Theory]
     [InlineData("duplicate", "*'notes.pages.read' is declared more than once*")]
     [InlineData("segment", "*'notes.pa.ges.read' has a blank segment*")]

@@ -77,7 +77,20 @@ public sealed class PermissionResourceBuilder
     }
 
     /// <summary>Declares <c>read</c>, <c>create</c>, <c>update</c> and <c>delete</c>.</summary>
-    public PermissionResourceBuilder Crud() => Actions("read", "create", "update", "delete");
+    public PermissionResourceBuilder Crud()
+        => Actions(PermissionActions.Read, PermissionActions.Create, PermissionActions.Update, PermissionActions.Delete);
+
+    /// <summary>Declares <c>read</c>.</summary>
+    public PermissionResourceBuilder Read() => Actions(PermissionActions.Read);
+
+    /// <summary>Declares <c>create</c>.</summary>
+    public PermissionResourceBuilder Create() => Actions(PermissionActions.Create);
+
+    /// <summary>Declares <c>update</c>.</summary>
+    public PermissionResourceBuilder Update() => Actions(PermissionActions.Update);
+
+    /// <summary>Declares <c>delete</c>.</summary>
+    public PermissionResourceBuilder Delete() => Actions(PermissionActions.Delete);
 
     /// <summary>Declares actions. Every action of a resource that has <c>read</c> requires it.</summary>
     public PermissionResourceBuilder Actions(params string[] actions)
