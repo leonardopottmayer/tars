@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- xUnit v3 test projects are executables, run by Microsoft.Testing.Platform (see global.json). -->
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <RootNamespace>Pottmayer.Tars.FeatureFlags.Tests.Unit</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AwesomeAssertions" />
+    <PackageReference Include="Moq" />
+    <PackageReference Include="xunit.v3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\FeatureFlags\Pottmayer.Tars.FeatureFlags.Abstractions\Pottmayer.Tars.FeatureFlags.Abstractions.csproj" />
+    <ProjectReference Include="..\..\src\FeatureFlags\Pottmayer.Tars.FeatureFlags\Pottmayer.Tars.FeatureFlags.csproj" />
+    <ProjectReference Include="..\..\src\FeatureFlags\Pottmayer.Tars.FeatureFlags.AspNetCore\Pottmayer.Tars.FeatureFlags.AspNetCore.csproj" />
+  </ItemGroup>
+
+</Project>

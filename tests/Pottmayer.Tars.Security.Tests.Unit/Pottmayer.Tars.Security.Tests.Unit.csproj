@@ -24,6 +24,10 @@
     <ProjectReference Include="..\..\src\Security\Pottmayer.Tars.Security.Identity.AspNetCore\Pottmayer.Tars.Security.Identity.AspNetCore.csproj" />
     <ProjectReference Include="..\..\src\Security\Pottmayer.Tars.Security.DataProtection.Abstractions\Pottmayer.Tars.Security.DataProtection.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\Security\Pottmayer.Tars.Security.DataProtection\Pottmayer.Tars.Security.DataProtection.csproj" />
+    <ProjectReference Include="..\..\src\Security\Pottmayer.Tars.Security.Authorization.Abstractions\Pottmayer.Tars.Security.Authorization.Abstractions.csproj" />
+    <ProjectReference Include="..\..\src\Security\Pottmayer.Tars.Security.Authorization\Pottmayer.Tars.Security.Authorization.csproj" />
+    <ProjectReference Include="..\..\src\Security\Pottmayer.Tars.Security.Authorization.AspNetCore\Pottmayer.Tars.Security.Authorization.AspNetCore.csproj" />
+    <ProjectReference Include="..\..\src\FeatureFlags\Pottmayer.Tars.FeatureFlags\Pottmayer.Tars.FeatureFlags.csproj" />
   </ItemGroup>
 
 </Project>
