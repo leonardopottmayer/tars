@@ -38,6 +38,36 @@
         <Description>ASP.NET Core middleware for tenant resolution pipeline integration in the Pottmayer.Tars framework.</Description>
       </PropertyGroup>
     </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.FeatureFlags.Abstractions'">
+      <PropertyGroup>
+        <Description>Abstractions for global feature flags in the Pottmayer.Tars framework: flag definitions, catalog, store and the flag service contract.</Description>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.FeatureFlags'">
+      <PropertyGroup>
+        <Description>Feature flag catalog declared in code, startup validation, cached flag service and an in-memory store for the Pottmayer.Tars framework.</Description>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.FeatureFlags.AspNetCore'">
+      <PropertyGroup>
+        <Description>ASP.NET Core [RequiresFeature] attribute that short-circuits controllers while a Pottmayer.Tars feature flag is off.</Description>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Security.Authorization.Abstractions'">
+      <PropertyGroup>
+        <Description>Abstractions for per-action permissions in the Pottmayer.Tars framework: permission definitions, catalog, grants store, checker, actor resolver and the [RequiresPermission] attribute.</Description>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Security.Authorization'">
+      <PropertyGroup>
+        <Description>Permission catalog declared in code with startup validation, wildcard grants with deny, cached checker, feature-aware authorization gate and a mediator pipeline behavior for the Pottmayer.Tars framework.</Description>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Security.Authorization.AspNetCore'">
+      <PropertyGroup>
+        <Description>Global ASP.NET Core MVC filter that enforces [RequiresPermission] on controllers and actions in the Pottmayer.Tars framework.</Description>
+      </PropertyGroup>
+    </When>
     <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Caching.Abstractions'">
       <PropertyGroup>
         <Description>Abstractions for the Pottmayer.Tars caching stack, including cache service, serialization, key building and entry options.</Description>
