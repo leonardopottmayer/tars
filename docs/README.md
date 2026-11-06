@@ -11,6 +11,7 @@ This folder gathers the functional documentation of the `Pottmayer.Tars` framewo
   - [Localization](./core/localization.md): `IMessageProvider`, `IMessageSource`, `InMemoryMessageSource`, `.resx`, `IStringLocalizer`, `appsettings`
 - [Caching](./caching/overview.md): abstractions, memory, redis, serializer, key builder
   - [Scenarios and testing](./caching/scenarios.md): memory-only, Redis-only, read-through cache, invalidation, faking `ICacheStore`
+- [Feature Flags](./feature-flags/overview.md): global switches declared in code with defaults and parents, startup validation, cached service, application-owned store, `[RequiresFeature]`
 - [Messaging](./messaging/overview.md): integration events, in-process event bus, handler scanning, broker-ready contracts
   - [Broker transports](./messaging/brokers.md): portable routing model, subscriptions, per-broker capability matrix, MassTransit over RabbitMQ and Kafka, reusable topology steps, transactional outbox
   - [Multi transport](./messaging/multi-transport.md): several transports in one process, the composite bus and event-to-transport map (with fan-out), the two-plane (event backbone + work queue) architecture

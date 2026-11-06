@@ -21,6 +21,7 @@ Requires **.NET 10**.
 | **Messaging** | Integration events with an in-process bus, RabbitMQ and Kafka over MassTransit, several brokers in one process, transactional outbox | [Messaging](docs/messaging/overview.md) |
 | **Security** | Identity (JWT, refresh token rotation, revocation, magic link, API key, OAuth, ready-made endpoints) and DataProtection (AES-GCM secret protection with key rotation) | [Identity](docs/security/identity/overview.md) |
 | **Caching** | Cache abstractions with in-memory and Redis providers | [Caching](docs/caching/overview.md) |
+| **Feature Flags** | Global switches declared in code, validated at startup, overrides from your own store, `[RequiresFeature]` for controllers | [Feature Flags](docs/feature-flags/overview.md) |
 | **Multitenancy** | Tenant resolution pipeline, tenant context, catalog and store, per-tenant execution | [Multitenancy](docs/multitenancy/overview.md) |
 | **Web** | HTTP response envelopes, error mapping, response wrapping and pagination for MVC and Minimal APIs | [Web](docs/web/overview.md) |
 | **User Context** | Current-user resolution from claims, typed or claims-based | [User Context](docs/user-context/overview.md) |

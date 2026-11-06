@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Pottmayer.Tars.FeatureFlags.AspNetCore</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Pottmayer.Tars.FeatureFlags.Abstractions\Pottmayer.Tars.FeatureFlags.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Web\Pottmayer.Tars.Web.Http.AspNetCore\Pottmayer.Tars.Web.Http.AspNetCore.csproj" />
+  </ItemGroup>
+
+</Project>

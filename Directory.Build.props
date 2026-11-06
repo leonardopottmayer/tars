@@ -38,6 +38,21 @@
         <Description>ASP.NET Core middleware for tenant resolution pipeline integration in the Pottmayer.Tars framework.</Description>
       </PropertyGroup>
     </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.FeatureFlags.Abstractions'">
+      <PropertyGroup>
+        <Description>Abstractions for global feature flags in the Pottmayer.Tars framework: flag definitions, catalog, store and the flag service contract.</Description>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.FeatureFlags'">
+      <PropertyGroup>
+        <Description>Feature flag catalog declared in code, startup validation, cached flag service and an in-memory store for the Pottmayer.Tars framework.</Description>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.FeatureFlags.AspNetCore'">
+      <PropertyGroup>
+        <Description>ASP.NET Core [RequiresFeature] attribute that short-circuits controllers while a Pottmayer.Tars feature flag is off.</Description>
+      </PropertyGroup>
+    </When>
     <When Condition="'$(MSBuildProjectName)' == 'Pottmayer.Tars.Caching.Abstractions'">
       <PropertyGroup>
         <Description>Abstractions for the Pottmayer.Tars caching stack, including cache service, serialization, key building and entry options.</Description>
