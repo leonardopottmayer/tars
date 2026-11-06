@@ -74,6 +74,9 @@
     <Project Path="src/Security/Pottmayer.Tars.Security.Identity.AspNetCore/Pottmayer.Tars.Security.Identity.AspNetCore.csproj" Id="f9a1b2c3-d4e5-4f6a-7b8c-9d0e1f2a3b4c" />
     <Project Path="src/Security/Pottmayer.Tars.Security.DataProtection.Abstractions/Pottmayer.Tars.Security.DataProtection.Abstractions.csproj" />
     <Project Path="src/Security/Pottmayer.Tars.Security.DataProtection/Pottmayer.Tars.Security.DataProtection.csproj" />
+    <Project Path="src/Security/Pottmayer.Tars.Security.Authorization.Abstractions/Pottmayer.Tars.Security.Authorization.Abstractions.csproj" />
+    <Project Path="src/Security/Pottmayer.Tars.Security.Authorization/Pottmayer.Tars.Security.Authorization.csproj" />
+    <Project Path="src/Security/Pottmayer.Tars.Security.Authorization.AspNetCore/Pottmayer.Tars.Security.Authorization.AspNetCore.csproj" />
   </Folder>
   <Folder Name="/src/UserContext/">
     <Project Path="src/UserContext/Pottmayer.Tars.UserContext.Abstractions/Pottmayer.Tars.UserContext.Abstractions.csproj" Id="d1e2f3a4-b5c6-4d7e-8f9a-0b1c2d3e4f5a" />

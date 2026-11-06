@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Pottmayer.Tars.Security.Authorization.AspNetCore</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Pottmayer.Tars.Security.Authorization\Pottmayer.Tars.Security.Authorization.csproj" />
+    <ProjectReference Include="..\..\Web\Pottmayer.Tars.Web.Http.AspNetCore\Pottmayer.Tars.Web.Http.AspNetCore.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Pottmayer.Tars.Security.Tests.Unit" />
+  </ItemGroup>
+
+</Project>
