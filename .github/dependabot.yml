@@ -1,4 +1,6 @@
 # Security updates ignore target-branch: they always open against main and are handled like hotfixes.
+# Each ecosystem's group takes only minor and patch updates; every major update arrives in its own
+# pull request (devkit handbook, security.md).
 version: 2
 updates:
   - package-ecosystem: github-actions
@@ -11,6 +13,7 @@ updates:
     groups:
       actions:
         patterns: ["*"]
+        update-types: ["minor", "patch"]
 
   # NuGet doesn't tell dev dependencies apart, so every update is a fix(deps).
   - package-ecosystem: nuget
@@ -30,3 +33,4 @@ updates:
     groups:
       nuget:
         patterns: ["*"]
+        update-types: ["minor", "patch"]
